@@ -1,0 +1,9 @@
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\bin\Debug\Steuerung.exe.config
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\bin\Debug\Steuerung.exe
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\bin\Debug\Steuerung.pdb
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.csprojResolveAssemblyReference.cache
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.Form1.resources
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.Properties.Resources.resources
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.csproj.GenerateResource.Cache
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.exe
+B:\Tim\Documents\GitHub\Drohne\Basis\Steuerung\Steuerung\obj\Debug\Steuerung.pdb
