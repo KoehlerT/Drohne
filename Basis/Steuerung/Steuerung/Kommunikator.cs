@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.IO;
 using System.Diagnostics;
 using System.Globalization;
+using System.Drawing;
 
 namespace Steuerung
 {
@@ -42,6 +43,34 @@ namespace Steuerung
             string zahl = empf.Split('=')[1].Split('\'')[0];
             float temp = float.Parse(zahl, new CultureInfo("us-US").NumberFormat);
             return temp;
+        }
+
+        public void getBild()
+        {
+            DateTime start = DateTime.Now;
+            sw.Write("bild");
+            sw.Flush();
+            int c = 0;
+            Debug.Write("Bild wird geladen: ");
+            StreamWriter fw = new StreamWriter("bild.txt");
+            LinkedList<Byte> bytearray = new LinkedList<byte>();
+            char[] bytes = new char[370000];
+            System.Threading.Thread.Sleep(500);
+            while (sr.Peek()>=0)
+            {
+                sr.Read(bytes, c, 1);
+                fw.Write(bytes[c]);
+                if ((c % 5000) == 0)
+                {
+                    System.Threading.Thread.Sleep(500);
+                    Debug.WriteLine((c / 1000f) + "KB Übertragen");
+                }
+                
+                c++;                
+            }
+            fw.Close();
+            Debug.WriteLine((c/1000f) + "KB Daten Übertragen in "+DateTime.Now.Subtract(start).TotalMilliseconds+"ms");
+            return;
         }
 
     }

@@ -17,7 +17,17 @@ while True:
     data = conn.recv(BUFFER_SIZE)
     if not data:
         break
-    print("Empfangen : ", data)
     if data == "temp":
         output = subprocess.check_output(["/opt/vc/bin/vcgencmd", "measure_temp"])
         conn.send(output)
+    elif data == "bild":
+        print("Bild wird geoeffnet")
+        bild = open("../Bilder/pic1.bmp", 'rb')
+        data = bytearray(bild.read())
+        print("Bild wird konvertiert")
+	senden = str(data)
+	print('Bild wird gesendet '+str(len(senden))+' Stringlaenge '+str(len(data))+' Arraylaenge')
+	conn.send(senden)
+	print("Bild wurde gesendet. Fertig!")
+    else:
+        print('Unbekannte Anweisung: ' + data)

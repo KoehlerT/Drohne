@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace Steuerung
         Kommunikator verbindung = new Kommunikator(new byte[] {192,168,178,201});
         private void Form1_Load(object sender, EventArgs e)
         {
-            Abfrage.Start();
+            //Abfrage.Start();
         }
 
         private void Abfrage_Tick(object sender, EventArgs e)
@@ -29,6 +30,11 @@ namespace Steuerung
             float temp = verbindung.getTemp();
             lbl_ping.Text = String.Format("Ping: {0:00.0}ms", DateTime.Now.Subtract(a).TotalMilliseconds);
             lbl_temp.Text = String.Format("Temperatur: {0}°C", temp);
+        }
+
+        private void btn_download_Click(object sender, EventArgs e)
+        {
+            verbindung.getBild();
         }
     }
 }

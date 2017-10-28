@@ -34,6 +34,7 @@
             this.lbl_temp = new System.Windows.Forms.Label();
             this.Abfrage = new System.Windows.Forms.Timer(this.components);
             this.lbl_ping = new System.Windows.Forms.Label();
+            this.btn_download = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.PB_Bildschirm)).BeginInit();
             this.SuspendLayout();
             // 
@@ -71,11 +72,22 @@
             this.lbl_ping.TabIndex = 2;
             this.lbl_ping.Text = "Ping: 100ms";
             // 
+            // btn_download
+            // 
+            this.btn_download.Location = new System.Drawing.Point(674, 488);
+            this.btn_download.Name = "btn_download";
+            this.btn_download.Size = new System.Drawing.Size(75, 23);
+            this.btn_download.TabIndex = 3;
+            this.btn_download.Text = "Bild laden";
+            this.btn_download.UseVisualStyleBackColor = true;
+            this.btn_download.Click += new System.EventHandler(this.btn_download_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(912, 621);
+            this.Controls.Add(this.btn_download);
             this.Controls.Add(this.lbl_ping);
             this.Controls.Add(this.lbl_temp);
             this.Controls.Add(this.PB_Bildschirm);
@@ -95,6 +107,7 @@
         private System.Windows.Forms.Label lbl_temp;
         private System.Windows.Forms.Timer Abfrage;
         private System.Windows.Forms.Label lbl_ping;
+        private System.Windows.Forms.Button btn_download;
     }
 }
 
