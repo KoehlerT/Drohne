@@ -15,22 +15,17 @@ namespace Steuerung
     {
         StreamReader sr;
         StreamWriter sw;
+        Stream s;
         public Kommunikator(byte[] ip)
         {
             TcpClient client = new TcpClient("Drohne", 5892);
-            sr = new StreamReader(client.GetStream());
+            sr = new StreamReader(client.GetStream(), Encoding.UTF8, false, 65536);
             sw = new StreamWriter(client.GetStream());
+            s = client.GetStream();
 
             sw.WriteLine("Hi_Drohne");
             sw.Flush();
 
-            /*string data = sr.ReadLine();
-            while (data!= null)
-            {
-                Debug.WriteLine(data);
-                data = sr.ReadLine();
-            }*/
-            //client.Close();
             Debug.WriteLine("HI");
         }
 
@@ -52,22 +47,20 @@ namespace Steuerung
             sw.Flush();
             int c = 0;
             Debug.Write("Bild wird geladen: ");
-            StreamWriter fw = new StreamWriter("bild.txt");
-            LinkedList<Byte> bytearray = new LinkedList<byte>();
-            char[] bytes = new char[370000];
-            System.Threading.Thread.Sleep(500);
-            while (sr.Peek()>=0)
+
+            StreamWriter fw = new StreamWriter("bild.bmp");
+            LinkedList<char> chars = new LinkedList<char>();
+
+            char[] bytes = new char[1024];
+            int data = s.ReadByte();
+            //sr.Read(bytes, 0, 1024);
+            while (data >= 0)
             {
-                sr.Read(bytes, c, 1);
-                fw.Write(bytes[c]);
-                if ((c % 5000) == 0)
-                {
-                    System.Threading.Thread.Sleep(500);
-                    Debug.WriteLine((c / 1000f) + "KB Übertragen");
-                }
-                
-                c++;                
+                fw.Write((char)data);
+                data = s.ReadByte();
+                c++;
             }
+
             fw.Close();
             Debug.WriteLine((c/1000f) + "KB Daten Übertragen in "+DateTime.Now.Subtract(start).TotalMilliseconds+"ms");
             return;
