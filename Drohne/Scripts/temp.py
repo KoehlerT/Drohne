@@ -38,6 +38,5 @@ while True:
         conn.sendall(data)
         bild.close()
         print(str(int(size, 2) / float(1000)) + " KB Bild wurde gesendet. Fertig!")
-        break
     else:
         print('Unbekannte Anweisung: ' + data)
