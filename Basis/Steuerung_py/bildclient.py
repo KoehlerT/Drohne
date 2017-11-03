@@ -1,7 +1,6 @@
 import socket
 from datetime import datetime
 from System.IO import MemoryStream
-import wx
 
 s = socket.socket()
 host = 'Drohne'
