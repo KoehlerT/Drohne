@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2BBC99E0-AAB2-48CA-AEE0-954F86C6712D}</ProjectGuid>
+    <ProjectGuid>{C65804F5-A27A-4419-9C95-FFCCA5AE0CB9}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Steuerung</RootNamespace>
-    <AssemblyName>Steuerung</AssemblyName>
+    <RootNamespace>ErkennungCis</RootNamespace>
+    <AssemblyName>ErkennungCis</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -45,13 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="erkenner.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Kommunikator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

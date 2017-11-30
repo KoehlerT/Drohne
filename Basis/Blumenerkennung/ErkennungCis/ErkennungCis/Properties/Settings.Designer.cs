@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Steuerung.Properties
+namespace ErkennungCis.Properties
 {
 
 
