@@ -42,6 +42,7 @@
             this.image_Box.Size = new System.Drawing.Size(600, 600);
             this.image_Box.TabIndex = 0;
             this.image_Box.TabStop = false;
+            this.image_Box.MouseClick += new System.Windows.Forms.MouseEventHandler(this.image_Box_MouseClick);
             // 
             // btn_opem
             // 
