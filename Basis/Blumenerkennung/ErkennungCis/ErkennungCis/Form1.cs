@@ -33,10 +33,10 @@ namespace ErkennungCis
         private void btn_opem_Click(object sender, EventArgs e)
         {
             string dokumente = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            Debug.WriteLine(dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder");
-            if (Directory.Exists(dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder"))
+            Debug.WriteLine(dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder\\klein");
+            if (Directory.Exists(dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder\\klein"))
             {
-                openFileDialog.InitialDirectory = dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder";
+                openFileDialog.InitialDirectory = dokumente + "\\GitHub\\Drohne\\Basis\\Blumenbilder\\klein";
             }
             openFileDialog.Filter = "JPG (*.jpg)|*.JPG|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == DialogResult.OK)
