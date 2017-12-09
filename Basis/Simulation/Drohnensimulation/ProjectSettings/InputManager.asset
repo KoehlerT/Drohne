@@ -313,8 +313,8 @@ InputManager:
     m_Name: Level
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: k
-    positiveButton: i
+    negativeButton: left shift
+    positiveButton: space
     altNegativeButton: 5
     altPositiveButton: 8
     gravity: 1000
@@ -329,8 +329,8 @@ InputManager:
     m_Name: RotUp
     descriptiveName: 
     descriptiveNegativeName: 
-    negativeButton: o
-    positiveButton: l
+    negativeButton: '[5]'
+    positiveButton: '[8]'
     altNegativeButton: 5
     altPositiveButton: 8
     gravity: 1000

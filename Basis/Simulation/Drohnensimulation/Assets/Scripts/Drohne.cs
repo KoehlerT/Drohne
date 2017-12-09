@@ -8,8 +8,8 @@ public class Drohne : MonoBehaviour {
     private Vector3 rotation = Vector3.zero;
     private Rigidbody rb;
 
-    private float speed = 50f;
-    private float aspeed = 1f;
+    public float speed = 5f;
+    public float aspeed = 0.5f;
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody>();
