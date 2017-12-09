@@ -66,7 +66,7 @@ namespace ErkennungCis
                         for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
                         {
                             int r = (int)(5 * Math.Pow(1.5, g));
-                            erkannt bl = blumigkeit(x, y, 8, r); //Erkennt ob eine Blume da ist, oder nicht.
+                            erkannt bl = blumigkeit(x, y, 16, r); //Erkennt ob eine Blume da ist, oder nicht.
                             //Verbesserungsvorschalg. blumigkeit nur float, erkannt objekt erst bei approoveter blume
                             if (bl.blumigkeit >= 0.7)
                                 blumen.Add(bl);
