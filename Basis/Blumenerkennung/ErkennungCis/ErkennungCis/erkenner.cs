@@ -41,12 +41,12 @@ namespace ErkennungCis
 
             Debug.WriteLine("Bild -> Arr: {0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
             start = DateTime.Now;
-            erkannt[] erg= schablone();
+            erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
             maleErgebnisse(erg);
         }
 
-        private erkannt[] schablone()
+        private erkannt[] raster()
         {
             //Kaskade. Es wird ein Gitter über das Bild gelegt und dann abgesucht
             int width = pixel.Length;
@@ -60,13 +60,13 @@ namespace ErkennungCis
                 {
                     for (int x = 0; x < width; x+=a)
                     {
-                        form.drawPoint(x, y);
+                        //form.drawPoint(x, y);
                         //Prüfe, ob hier ein Blumenmittelpunkt sein kann!
                         //Eventuell prüfen ob schwarz ist und dann umgebung beobachten
                         for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
                         {
                             int r = (int)(5 * Math.Pow(1.5, g));
-                            erkannt bl = blumigkeit(x, y, 8, r); //Erkennt ob eine Blume da ist, oder nicht.
+                            erkannt bl = blumigkeit(x, y, 16, r); //Erkennt ob eine Blume da ist, oder nicht.
                             //Verbesserungsvorschalg. blumigkeit nur float, erkannt objekt erst bei approoveter blume
                             if (bl.blumigkeit >= 0.7)
                                 blumen.Add(bl);
@@ -74,8 +74,8 @@ namespace ErkennungCis
                     }
                 }
                 //Clear image
-                Thread.Sleep(500);
-                form.showImage(getGray());
+                //Thread.Sleep(500);
+                //form.showImage(getGray());
             }
             return blumen.ToArray() ;
         }
@@ -83,7 +83,7 @@ namespace ErkennungCis
         byte gray(Color c) {
             //Für mehr kontrast, wird das ganze mit einer sigmoid funktion gestreckt.
             byte gray = (byte)((c.R + c.G + c.B) / 3f); //- Linear, wenn direkt returnt
-            return (byte)(255*(1/(1+Math.Pow(Math.E,-0.02*(gray-127)))));//Sigmoid
+            return (byte)(255*(1/(1+Math.Pow(Math.E,-0.025*(gray-127)))));//Sigmoid
         }
 
         public erkannt blumigkeit(int x, int y, int checks, float r, bool debug = false)
@@ -93,33 +93,63 @@ namespace ErkennungCis
             // r: radius
 
             //Muster: schwarzes Pixel in der Mitte, Weißes Pixel weiter außen
-            float schwarz = 0.2f * r; float weiß = 1 * r;
             int s = 0;
 
             for (int i = 0; i < checks; i ++)
             {
                 //Berechnen der x und y werte der Pixel
                 double a = (2 * Math.PI * i)/checks; //Winkel in dem geprüft wird !Bogenmaß! //TODO: Konstante
-                double wx = Math.Cos(a) * weiß+x; double wy = Math.Sin(a) * weiß+y; //Zusammennehmen cache konstanten appr.
-                if (wx < 0 || wx >= pixel.Length || wy >= pixel[0].Length || wy < 0)
-                    break;//Check ob raus / Verbessern... unnötiges testen im prinzip
-                double sx = Math.Cos(a) * schwarz+x; double sy = Math.Sin(a) * schwarz+y;
-
-                byte pw = pixel[(int)wx][(int)wy];
-                byte ps = pixel[(int)sx][(int)sy];
-                //Debug.WriteLine("daten: cos(a)={0} sin(a)={1}; a={2}/{3}°; r={4}", Math.Cos(a), Math.Sin(a), a, Rad2Deg(a), r);
-                Debug.WriteLineIf(debug,String.Format("Prüfe Pixel S({0:0.0}|{1:0.0}) = {2}  und W({3:0.0}|{4:0.0}) = {5}", sx, sy, ps, wx, wy,pw));
-                if ((float)pw/(float)ps >= 3)
+                bool res = schablone(a, r, new Point(x,y));
+                if (res)
                 {
-                    //form.drawLine(x, y, (int)wx, (int)wy);
+                    //form.drawLine(x, y, (int)(Math.Cos(a) * r + x), (int)(Math.Sin(a) * r + y));
                     s++;
                 }
+                    
+                
             }
 
             Debug.WriteLineIf(debug,String.Format("K({0}|{1}) Blumigkeit = {2:0.00} für r={3}", x, y,s/(float)checks,r));
             return new erkannt(x,y,(int)r,s/(float)checks);
         }
-        
+
+        private bool schablone(double a, float r, Point mitte)
+        {
+            //Perfekte welt: 0-0.4*r = Schwarz 0.4*r - r = weiß
+            float schwarz = 0.2f * r; float weiß = 0.9f * r; //definieren die abstände von der Mite rel. zum Radius
+            float weiß2 = 0.6f * r;
+
+            double wx = Math.Cos(a) * weiß + mitte.X;
+            double wy = Math.Sin(a) * weiß + mitte.Y;
+
+            if (wx < 0 || wx >= pixel.Length || wy >= pixel[0].Length || wy < 0)
+                return false;//Check ob raus / Verbessern... unnötiges testen im prinzip
+
+            byte pw = pixel[(int)wx][(int)wy];
+            //Andere Pixel frei
+            
+            byte ps = colorAt(mitte, a, schwarz);
+            byte pw2 = colorAt(mitte, a, weiß2);
+
+            if (((float)pw / (float)ps >= 3)&& ((float)pw2 / (float)ps >= 3))
+            {
+                //form.drawLine(x, y, (int)wx, (int)wy);
+                return true;
+            }
+
+            return false;
+            //Debug.WriteLineIf(debug,String.Format("Prüfe Pixel S({0:0.0}|{1:0.0}) = {2}  und W({3:0.0}|{4:0.0}) = {5}", sx, sy, ps, wx, wy,pw));
+        }
+
+        private byte colorAt(Point mitte, double a, float r)
+        {
+            double x = Math.Cos(a) * r + mitte.X; //Oftes Sinusberechnen!
+            double y = Math.Sin(a) * r + mitte.Y;
+            return pixel[(int)x][(int)y];
+        }
+
+
+        //Helfermethoden
 
         public static double Rad2Deg(double a)
         {
