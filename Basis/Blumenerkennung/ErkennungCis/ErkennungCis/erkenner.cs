@@ -19,7 +19,7 @@ namespace ErkennungCis
         }
         #endregion
 
-        private readonly float kontr = 5; //Weiß/ Schwarz schablone e.g 255/10 = 25 ...
+        private readonly float kontr = 3; //Weiß/ Schwarz schablone e.g 255/10 = 25 ...
 
         Bitmap grayscale;
         Form1 form;
@@ -47,6 +47,7 @@ namespace ErkennungCis
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
             maleErgebnisse(erg);
+            cluster(erg);
         }
 
         private erkannt[] raster()
@@ -86,9 +87,9 @@ namespace ErkennungCis
         byte gray(Color c) {
             //Für mehr kontrast, wird das ganze mit einer sigmoid funktion gestreckt.
             byte gray = (byte)((c.R + c.G + c.B) / 3f); //- Linear, wenn direkt returnt
-            /*//Schlechter Grünfilter
-            if (c.G > ((c.R+c.B)/2f)*1.5)
-                gray /= 10;*/
+            //Schlechter (Grün-) Filter
+            if (c.R < 100)
+                gray = 0;
             return (byte)(255*(1/(1+Math.Pow(Math.E,-0.025*(gray-127)))));//Sigmoid
         }
 
@@ -140,7 +141,7 @@ namespace ErkennungCis
 
             if (((float)pw / (float)ps >= kontr) && ((float)pw2 / (float)ps >= kontr))
             {
-                form.drawLine(mitte.X, mitte.Y, (int)wx, (int)wy);
+                //form.drawLine(mitte.X, mitte.Y, (int)wx, (int)wy);
                 return true;
             }
 
@@ -153,6 +154,21 @@ namespace ErkennungCis
             double x = Math.Cos(a) * r + mitte.X; //Oftes Sinusberechnen!
             double y = Math.Sin(a) * r + mitte.Y;
             return pixel[(int)x][(int)y];
+        }
+
+        private void cluster(erkannt[] erks)
+        {
+            //DBSCAN Clustering SIEHE https://de.wikipedia.org/wiki/DBSCAN
+            //Problem: wir müssen anzahl der Cluster geben
+            Debug.WriteLine("Clustering startet");
+            Thread.Sleep(1000);
+            form.showImage(getGray()); //Clear image
+            foreach (erkannt e in erks)
+            {
+                //Anzeigen
+                form.fillEll(e.x, e.y, (int)(e.blumigkeit * 2), Brushes.Orange);
+
+            }
         }
 
 
