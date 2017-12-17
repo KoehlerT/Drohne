@@ -70,7 +70,7 @@ namespace ErkennungCis
         public void drawEll(int mx, int my, int r)
         {
             Graphics g = image_Box.CreateGraphics();
-            g.DrawEllipse(Pens.Aqua, (int)((mx - r)*scl), (int)((my - r)*scl+deltaY), 2 * r, 2 * r);
+            g.DrawEllipse(Pens.Red, (int)((mx - r)*scl), (int)((my - r)*scl+deltaY), 2 * r, 2 * r);
         }
 
         private void image_Box_MouseClick(object sender, MouseEventArgs e)

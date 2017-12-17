@@ -19,6 +19,8 @@ namespace ErkennungCis
         }
         #endregion
 
+        private readonly float kontr = 5; //Weiß/ Schwarz schablone e.g 255/10 = 25 ...
+
         Bitmap grayscale;
         Form1 form;
         byte[][] pixel;
@@ -40,6 +42,7 @@ namespace ErkennungCis
                     pixel[x][y] = gray(bmp.GetPixel(x, y));
 
             Debug.WriteLine("Bild -> Arr: {0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
+            form.showImage(getGray());
             start = DateTime.Now;
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
@@ -83,6 +86,9 @@ namespace ErkennungCis
         byte gray(Color c) {
             //Für mehr kontrast, wird das ganze mit einer sigmoid funktion gestreckt.
             byte gray = (byte)((c.R + c.G + c.B) / 3f); //- Linear, wenn direkt returnt
+            /*//Schlechter Grünfilter
+            if (c.G > ((c.R+c.B)/2f)*1.5)
+                gray /= 10;*/
             return (byte)(255*(1/(1+Math.Pow(Math.E,-0.025*(gray-127)))));//Sigmoid
         }
 
@@ -129,11 +135,12 @@ namespace ErkennungCis
             //Andere Pixel frei
             
             byte ps = colorAt(mitte, a, schwarz);
+            ps = (ps == (byte)0) ? (byte)1 : ps;
             byte pw2 = colorAt(mitte, a, weiß2);
 
-            if (((float)pw / (float)ps >= 3)&& ((float)pw2 / (float)ps >= 3))
+            if (((float)pw / (float)ps >= kontr) && ((float)pw2 / (float)ps >= kontr))
             {
-                //form.drawLine(x, y, (int)wx, (int)wy);
+                form.drawLine(mitte.X, mitte.Y, (int)wx, (int)wy);
                 return true;
             }
 
@@ -159,7 +166,10 @@ namespace ErkennungCis
         private void maleErgebnisse(erkannt[] erg)
         {
             foreach (erkannt e in erg)
+            {
                 form.drawEll(e.x, e.y, e.r);
+            }
+                
         }
 
         private Bitmap getGray()
