@@ -64,7 +64,7 @@ namespace ErkennungCis
                 {
                     for (int x = 0; x < width; x+=a)
                     {
-                        form.drawPoint(x, y);
+                        //form.drawPoint(x, y);
                         //Prüfe, ob hier ein Blumenmittelpunkt sein kann!
                         //Eventuell prüfen ob schwarz ist und dann umgebung beobachten
                         for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
@@ -78,7 +78,7 @@ namespace ErkennungCis
                     }
                 }
                 //Clear image
-                Thread.Sleep(500);
+                //Thread.Sleep(500);
                 //form.showImage(getGray());
             }
             return blumen.ToArray() ;
