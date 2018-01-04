@@ -47,7 +47,8 @@ namespace ErkennungCis
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
             maleErgebnisse(erg);
-            cluster(erg);
+            Point[] blumen = cluster(erg);
+            
         }
 
         private erkannt[] raster()
@@ -78,7 +79,7 @@ namespace ErkennungCis
                     }
                 }
                 //Clear image
-                //Thread.Sleep(500);
+                 //Thread.Sleep(500);
                 //form.showImage(getGray());
             }
             return blumen.ToArray() ;
@@ -156,19 +157,29 @@ namespace ErkennungCis
             return pixel[(int)x][(int)y];
         }
 
-        private void cluster(erkannt[] erks)
+        private Point[] cluster(erkannt[] erks)
         {
             //DBSCAN Clustering SIEHE https://de.wikipedia.org/wiki/DBSCAN
             //Problem: wir müssen anzahl der Cluster geben
             Debug.WriteLine("Clustering startet");
             Thread.Sleep(1000);
             form.showImage(getGray()); //Clear image
-            foreach (erkannt e in erks)
+            Point[] punkte = new Point[erks.Length];
+            for (int i = 0; i < erks.Length; i++)
             {
                 //Anzeigen
-                form.fillEll(e.x, e.y, (int)(e.blumigkeit * 2), Brushes.Orange);
-
+                erkannt e = erks[i];
+                //form.fillEll(e.x, e.y, (int)(e.blumigkeit * 2), Brushes.Orange);
+                punkte[i] = new Point(e.x, e.y);
             }
+            Point[] blumen = Cluster.cluster(punkte, 10);
+            Debug.WriteLine("Clustering beendet. {0} Blumen gefunden", blumen.Length);
+            foreach (Point p in blumen)
+            {
+                form.fillEll(p.X, p.Y, (int)(10), Brushes.Blue);
+            }
+            return blumen;
+
         }
 
 

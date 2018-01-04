@@ -76,7 +76,7 @@ namespace ErkennungCis
         public void fillEll(int mx, int my , int r, Brush farbe)
         {
             Graphics g = image_Box.CreateGraphics();
-            g.FillEllipse(Brushes.Orange, (int)((mx - r) * scl), (int)((my - r) * scl + deltaY), 2 * r, 2 * r);
+            g.FillEllipse(farbe, (int)((mx - r) * scl), (int)((my - r) * scl + deltaY), 2 * r, 2 * r);
         }
 
         private void image_Box_MouseClick(object sender, MouseEventArgs e)

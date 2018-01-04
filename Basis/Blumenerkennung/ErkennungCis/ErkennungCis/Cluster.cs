@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace ErkennungCis
 {
@@ -12,12 +13,14 @@ namespace ErkennungCis
 
         public static Point[] cluster(Point[] punkte, int dichte, int minpts = 0)
         {
+            DateTime start = DateTime.Now;
             int cID = 0;
             Dictionary<Point, int> labels = new Dictionary<Point, int>();
             //Punkte Labeln
             foreach (Point p in punkte)
             {
-                labels.Add(p, -2);
+                if (!labels.ContainsKey(p))
+                    labels.Add(p, -2);
             }
             //Lables: -2 = Undefined
             //Lables: -1 = Noise
@@ -37,17 +40,19 @@ namespace ErkennungCis
                 cID++; //Neues Cluster
                 labels[p] = cID; //p neues Cluster
                 neighbors.Remove(p);
-                foreach (Point n in neighbors)
+                for (int i = 0; i < neighbors.Count; i++)
                 {
+                    Point n = neighbors.ElementAt<Point>(i);
                     if (labels[n] == -1)
                         labels[n] = cID;
-                    if (labels[n] == -2)
+                    if (labels[n] != -2)
                         continue;
                     labels[n] = cID;
                     var nn = RangeQuery(punkte, n, dichte);
                     if (nn.Count >= minpts)
                     {
                         mergeLists(neighbors, nn);
+                        //Debug.WriteLine("neighbours: " + neighbors.Count+ " CID: "+cID);
                     }
                 }
 
@@ -55,8 +60,35 @@ namespace ErkennungCis
 
             //Ergebnis fertig machen
             //Pro Cluster ein Punkt
+            // Durchschnittlichen Mittelpunkt berechnen
+            Point[] punkt = new Point[cID]; //So viele Punkte wie Cluster
+            byte[] zähler = new byte[cID]; //o viele Zähler wie Cluster
+            //Arrays mit Leerwerten befüllen
+            for (int i = 0; i < cID; i++)
+            {
+                punkt[i] = Point.Empty;
+                zähler[i] = 0;
+            }
+            //Durchschnitt aufaddieren
+            foreach (Point p in punkte)
+            {
+                int lbl = labels[p]-1;
+                if (lbl < 0)
+                    continue;
+                punkt[lbl].X += p.X;
+                punkt[lbl].Y += p.Y;
+                zähler[lbl]++;
 
-            return null;
+            }
+
+            //Durchschnitt teilen
+            for (int i = 0; i < cID; i++)
+            {
+               punkt[i].X /= zähler[i];
+                punkt[i].Y /= zähler[i];
+            }
+            Debug.WriteLine("{0} Cluster in {1}ms",punkt.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
+            return punkt;
         }
 
         private static LinkedList<Point> RangeQuery(Point[] points, Point mitte, int minD)
