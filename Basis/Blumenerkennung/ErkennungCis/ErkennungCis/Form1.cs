@@ -21,11 +21,19 @@ namespace ErkennungCis
 
     public partial class Form1 : Form
     {
+        #region singleton
+        static Form1 inst = null;
+        public static Form1 getInstance()
+        {
+            return inst;
+        }
+        #endregion
         double scl;
         int deltaY;
 
         public Form1()
         {
+            inst = this;
             InitializeComponent();
             
         }

@@ -47,7 +47,8 @@ namespace ErkennungCis
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
             maleErgebnisse(erg);
-            Point[] blumen = cluster(erg);
+            Point[] mittelpunkte = cluster(erg);
+            Blume[] blumen = Radius.blume(pixel, mittelpunkte);
             
         }
 
@@ -57,10 +58,11 @@ namespace ErkennungCis
             int width = pixel.Length;
             int height = pixel[0].Length;
             List<erkannt> blumen = new List<erkannt>();
+            int a = (int)(0.015f * width);
             //Raster absuchen
             //Rastergröße Startet bei 30% wird kleiner bis 1%.
-            for (int a = (int)(0.3f*width); a >= (int)(0.02f*width); a-=(int)(a*0.5f))
-            {
+            //for (int a = (int)(0.3f*width); a >= (int)(0.02f*width); a-=(int)(a*0.5f))
+            //{
                 for (int y = 0; y < height; y+=a)
                 {
                     for (int x = 0; x < width; x+=a)
@@ -81,7 +83,7 @@ namespace ErkennungCis
                 //Clear image
                  //Thread.Sleep(500);
                 //form.showImage(getGray());
-            }
+            //}
             return blumen.ToArray() ;
         }
 
@@ -172,11 +174,11 @@ namespace ErkennungCis
                 //form.fillEll(e.x, e.y, (int)(e.blumigkeit * 2), Brushes.Orange);
                 punkte[i] = new Point(e.x, e.y);
             }
-            Point[] blumen = Cluster.cluster(punkte, 10);
+            Point[] blumen = Cluster.cluster(punkte, 15);
             Debug.WriteLine("Clustering beendet. {0} Blumen gefunden", blumen.Length);
             foreach (Point p in blumen)
             {
-                form.fillEll(p.X, p.Y, (int)(10), Brushes.Blue);
+                form.fillEll(p.X, p.Y, (int)(2), Brushes.Blue);
             }
             return blumen;
 
