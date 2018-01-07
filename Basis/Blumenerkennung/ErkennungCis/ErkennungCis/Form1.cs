@@ -87,6 +87,11 @@ namespace ErkennungCis
             g.FillEllipse(farbe, (int)((mx - r) * scl), (int)((my - r) * scl + deltaY), 2 * r, 2 * r);
         }
 
+        public void showText(int x, int y, string text)
+        {
+            Graphics g = image_Box.CreateGraphics();
+            g.DrawString(text, new Font("Arial", 10), Brushes.Blue, new PointF((int)(x * scl), (int)(y * scl + deltaY)));
+        }
         private void image_Box_MouseClick(object sender, MouseEventArgs e)
         {
             int x = e.X; int y = e.Y;
@@ -95,7 +100,7 @@ namespace ErkennungCis
             for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
             {
                 int r = (int)(5 * Math.Pow(1.5, g));
-                erkannt erk = erkenner.getInstance().blumigkeit((int)(x / scl),(int) ((y - deltaY) / scl), 8, r, true);
+                erkannt erk = erkenner.getInstance().blumigkeit((int)(x / scl),(int) ((y - deltaY) / scl), r, true);
                 if (max.blumigkeit < erk.blumigkeit)
                     max = erk;
             }

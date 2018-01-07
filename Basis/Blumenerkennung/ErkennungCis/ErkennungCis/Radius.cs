@@ -10,13 +10,14 @@ namespace ErkennungCis
 {
     static class Radius
     {
+#region Konstanten
         private static readonly int incr = 5;
         private static readonly int anzTest = 32;
         private static readonly int maxAbweichung = 10;
 
         private static float[] sin = new float[anzTest];
         private static float[] cos = new float[anzTest];
-
+        #endregion
         private static int iorC = 0;
 
         static Radius()
@@ -32,19 +33,22 @@ namespace ErkennungCis
 
         public static Blume[] blume(byte[][] bild, Point[] mittelpunkte)
         {
+            LinkedList<Blume> erg = new LinkedList<Blume>();
+            DateTime start = DateTime.Now;
             foreach (Point mittelpunkt in mittelpunkte)
             {
-                DateTime start = DateTime.Now;
+                
                 UPunkt[] umr = Umriss(bild, mittelpunkt);
-                Debug.WriteLine("Umriss berechnet in {0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
                 if (umr == null)
                     continue;
-                showUmr(umr);
+                //showUmr(umr);
                 int rad = radius(umr);
-                Debug.WriteLine("Radius der Blume: {0}", rad);
+                if (rad == 0)
+                    continue;
+                erg.AddFirst(new Blume(mittelpunkt,rad,entfernung(rad)));
             }
-
-            return new Blume[]{ new Blume(0, 0, 0, 0)};
+            Debug.WriteLine("Blumen validiert und Radius/Rntfernungsrechnungen in {0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
+            return erg.ToArray<Blume>();
         }
 
         private static UPunkt[] Umriss(byte[][] bild,  Point mittelpunkt)
@@ -56,7 +60,7 @@ namespace ErkennungCis
                 erg[i] = ende(bild, mittelpunkt, i);
                 if (iorC > 3)
                 {
-                    Debug.WriteLine("ungültige Blume entdeckt");
+                    //Debug.WriteLine("ungültige Blume entdeckt");
                     return null;
                 }
             }
@@ -75,17 +79,13 @@ namespace ErkennungCis
                 y += (int)sin[ang];
 
                 //indexoutofrangecheck
-                /*if (x >= bild.Length || x < 0 || y >= bild[0].Length || y < 0)
-                    return new Point(0, 0);*/
-                try
-                {
-                    if (bild[x][y] >= 150)
-                        schwarz = false;
-                }catch (IndexOutOfRangeException)
+                if (x >= bild.Length || x < 0 || y >= bild[0].Length || y < 0)
                 {
                     iorC++;
                     return new UPunkt(false);
                 }
+                if (bild[x][y] >= 150)
+                    schwarz = false;
             }
             return new UPunkt(x,y);
         }
@@ -115,16 +115,25 @@ namespace ErkennungCis
             //Durchschnittl. Abweichung:
             if (maxAbw >= maxAbweichung)
             {
-                Debug.WriteLine("Bume UNGÜLTIG!");
+                //Debug.WriteLine("Bume UNGÜLTIG!");
                 return 0;
             }
             //Konvertieren in Ellipse? Perfekte Kreise?
             return dRad;
         }
 
+        //Definition von Konstanten bei Berechnung der Distanz
+        private static readonly float radSchw = 3.5f; //Radius des Blumeninneren in cm
+        private static readonly float fokusl = 0.14f; //Fokuslänge der Kamera in cm
+        private static readonly float gr = 0.36736f; //Breite des Kamerasensors in cm
+        private static readonly int aufl = 640; //Auflösung des Bildes in Px (Breite)
+        private static readonly float fakt = gr/aufl;
+
         private static int entfernung(int rad)
         {
-            return 0;
+            // s = (d*f)/a
+            // a = rad * fakt
+            return (int)((radSchw*fokusl)/(rad*fakt));
         }
 
         private static void showUmr(UPunkt[] ps)

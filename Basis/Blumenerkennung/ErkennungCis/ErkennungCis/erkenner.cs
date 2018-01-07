@@ -19,7 +19,28 @@ namespace ErkennungCis
         }
         #endregion
 
-        private readonly float kontr = 3; //Weiß/ Schwarz schablone e.g 255/10 = 25 ...
+        #region Konstanten
+        private static readonly float kontr = 3; //Weiß/ Schwarz schablone e.g 255/10 = 25 ...
+        private static readonly int anzChecks = 16;
+        private static float[] sin = new float[anzChecks];
+        private static float[] cos = new float[anzChecks];
+
+        //Clustering
+        private static readonly int nachbarsch = 20; //nachbarschaftswert für Clustering. Wie weit müssen Punkte aneinander liegen
+        private static readonly int minpts = 0; //Wie viele Punkte braucht es mindestens für ein cluster (-1)
+
+        static erkenner()
+        {
+            for (int i = 0; i < anzChecks; i++)
+            {
+                double a = (2 * Math.PI*i) / anzChecks;
+                sin[i] = (float)Math.Sin(a);
+                cos[i] = (float)Math.Cos(a);
+            }
+        }
+        #endregion
+
+
 
         Bitmap grayscale;
         Form1 form;
@@ -43,12 +64,16 @@ namespace ErkennungCis
 
             Debug.WriteLine("Bild -> Arr: {0} ms", DateTime.Now.Subtract(start).TotalMilliseconds);
             form.showImage(getGray());
+            //Hauptblock
+
             start = DateTime.Now;
+            DateTime startkompl = DateTime.Now;
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
-            maleErgebnisse(erg);
             Point[] mittelpunkte = cluster(erg);
             Blume[] blumen = Radius.blume(pixel, mittelpunkte);
+            Debug.WriteLine("Blumenerkennung ausgeführt in {0} ms", DateTime.Now.Subtract(startkompl).TotalMilliseconds);
+            maleErgebnisse(blumen);
             
         }
 
@@ -58,33 +83,24 @@ namespace ErkennungCis
             int width = pixel.Length;
             int height = pixel[0].Length;
             List<erkannt> blumen = new List<erkannt>();
-            int a = (int)(0.015f * width);
-            //Raster absuchen
-            //Rastergröße Startet bei 30% wird kleiner bis 1%.
-            //for (int a = (int)(0.3f*width); a >= (int)(0.02f*width); a-=(int)(a*0.5f))
-            //{
-                for (int y = 0; y < height; y+=a)
+            int a = (int)(0.02f * width);
+            for (int y = 0; y < height; y+=a)
+            {
+                for (int x = 0; x < width; x+=a)
                 {
-                    for (int x = 0; x < width; x+=a)
+                    //form.drawPoint(x, y);
+                    //Prüfe, ob hier ein Blumenmittelpunkt sein kann!
+                    //Eventuell prüfen ob schwarz ist und dann umgebung beobachten
+                    for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
                     {
-                        //form.drawPoint(x, y);
-                        //Prüfe, ob hier ein Blumenmittelpunkt sein kann!
-                        //Eventuell prüfen ob schwarz ist und dann umgebung beobachten
-                        for (int g = 0; g < 10; g++) //G ist der maximale grad der checks
-                        {
-                            int r = (int)(5 * Math.Pow(1.5, g));
-                            erkannt bl = blumigkeit(x, y, 16, r); //Erkennt ob eine Blume da ist, oder nicht.
-                            //Verbesserungsvorschalg. blumigkeit nur float, erkannt objekt erst bei approoveter blume
-                            if (bl.blumigkeit >= 0.7)
-                                blumen.Add(bl);
-                        }
+                        int r = (int)(5 * Math.Pow(1.5, g));
+                        erkannt bl = blumigkeit(x, y, r);
+                        if (bl.blumigkeit >= 0.7)
+                            blumen.Add(bl);
                     }
                 }
-                //Clear image
-                 //Thread.Sleep(500);
-                //form.showImage(getGray());
-            //}
-            return blumen.ToArray() ;
+            }
+            return blumen.ToArray();
         }
 
         byte gray(Color c) {
@@ -96,7 +112,7 @@ namespace ErkennungCis
             return (byte)(255*(1/(1+Math.Pow(Math.E,-0.025*(gray-127)))));//Sigmoid
         }
 
-        public erkannt blumigkeit(int x, int y, int checks, float r, bool debug = false)
+        public erkannt blumigkeit(int x, int y, float r, bool debug = false)
         {
             //x,y die koordinaten des Pixels
             //cheks: die anzahl der checks um das Pixel
@@ -105,11 +121,10 @@ namespace ErkennungCis
             //Muster: schwarzes Pixel in der Mitte, Weißes Pixel weiter außen
             int s = 0;
 
-            for (int i = 0; i < checks; i ++)
+            for (int i = 0; i < anzChecks; i ++)
             {
                 //Berechnen der x und y werte der Pixel
-                double a = (2 * Math.PI * i)/checks; //Winkel in dem geprüft wird !Bogenmaß! //TODO: Konstante
-                bool res = schablone(a, r, new Point(x,y));
+                bool res = schablone(i, r, new Point(x,y));
                 if (res)
                 {
                     //form.drawLine(x, y, (int)(Math.Cos(a) * r + x), (int)(Math.Sin(a) * r + y));
@@ -119,43 +134,43 @@ namespace ErkennungCis
                 
             }
 
-            Debug.WriteLineIf(debug,String.Format("K({0}|{1}) Blumigkeit = {2:0.00} für r={3}", x, y,s/(float)checks,r));
-            return new erkannt(x,y,(int)r,s/(float)checks);
+            Debug.WriteLineIf(debug,String.Format("K({0}|{1}) Blumigkeit = {2:0.00} für r={3}", x, y,s/(float)anzChecks,r));
+            return new erkannt(x,y,(int)r,s/(float)anzChecks);
         }
 
-        private bool schablone(double a, float r, Point mitte)
+        private bool schablone(int check, float r, Point mitte)
         {
+            //Check := nummer des checks
+
             //Perfekte welt: 0-0.4*r = Schwarz 0.4*r - r = weiß
             float schwarz = 0.2f * r; float weiß = 0.9f * r; //definieren die abstände von der Mite rel. zum Radius
             float weiß2 = 0.6f * r;
 
-            double wx = Math.Cos(a) * weiß + mitte.X;
-            double wy = Math.Sin(a) * weiß + mitte.Y;
+            double wx = cos[check] * weiß + mitte.X;
+            double wy = sin[check] * weiß + mitte.Y;
 
             if (wx < 0 || wx >= pixel.Length || wy >= pixel[0].Length || wy < 0)
-                return false;//Check ob raus / Verbessern... unnötiges testen im prinzip
+                return false;//Check ob raus
 
             byte pw = pixel[(int)wx][(int)wy];
             //Andere Pixel frei
             
-            byte ps = colorAt(mitte, a, schwarz);
+            byte ps = colorAt(mitte, check, schwarz);
             ps = (ps == (byte)0) ? (byte)1 : ps;
-            byte pw2 = colorAt(mitte, a, weiß2);
+            byte pw2 = colorAt(mitte, check, weiß2);
 
             if (((float)pw / (float)ps >= kontr) && ((float)pw2 / (float)ps >= kontr))
             {
-                //form.drawLine(mitte.X, mitte.Y, (int)wx, (int)wy);
                 return true;
             }
 
             return false;
-            //Debug.WriteLineIf(debug,String.Format("Prüfe Pixel S({0:0.0}|{1:0.0}) = {2}  und W({3:0.0}|{4:0.0}) = {5}", sx, sy, ps, wx, wy,pw));
         }
 
-        private byte colorAt(Point mitte, double a, float r)
+        private byte colorAt(Point mitte, int c, float r)
         {
-            double x = Math.Cos(a) * r + mitte.X; //Oftes Sinusberechnen!
-            double y = Math.Sin(a) * r + mitte.Y;
+            float x = cos[c] * r + mitte.X; //Oftes Sinusberechnen!
+            float y = sin[c] * r + mitte.Y;
             return pixel[(int)x][(int)y];
         }
 
@@ -164,8 +179,6 @@ namespace ErkennungCis
             //DBSCAN Clustering SIEHE https://de.wikipedia.org/wiki/DBSCAN
             //Problem: wir müssen anzahl der Cluster geben
             Debug.WriteLine("Clustering startet");
-            Thread.Sleep(1000);
-            form.showImage(getGray()); //Clear image
             Point[] punkte = new Point[erks.Length];
             for (int i = 0; i < erks.Length; i++)
             {
@@ -174,12 +187,8 @@ namespace ErkennungCis
                 //form.fillEll(e.x, e.y, (int)(e.blumigkeit * 2), Brushes.Orange);
                 punkte[i] = new Point(e.x, e.y);
             }
-            Point[] blumen = Cluster.cluster(punkte, 15);
+            Point[] blumen = Cluster.cluster(punkte, nachbarsch, minpts);
             Debug.WriteLine("Clustering beendet. {0} Blumen gefunden", blumen.Length);
-            foreach (Point p in blumen)
-            {
-                form.fillEll(p.X, p.Y, (int)(2), Brushes.Blue);
-            }
             return blumen;
 
         }
@@ -192,13 +201,15 @@ namespace ErkennungCis
             return (a / Math.PI) * 180.0;
         }
 
-        private void maleErgebnisse(erkannt[] erg)
+        private void maleErgebnisse(Blume[] erg)
         {
-            foreach (erkannt e in erg)
+            foreach (Blume b in erg)
             {
-                form.drawEll(e.x, e.y, e.r);
+                //Mittelpunkt einzeichnen
+                form.drawPoint(b.mitte.X, b.mitte.Y);
+                form.drawEll(b.mitte.X, b.mitte.Y, b.rad);
+                form.showText(b.mitte.X, b.mitte.Y, String.Format("entf: {0}cm", b.entfernung));
             }
-                
         }
 
         private Bitmap getGray()

@@ -32,7 +32,7 @@ namespace ErkennungCis
                 if (labels[p] != -2)
                     continue;
                 var neighbors = RangeQuery(punkte, p, dichte);
-                if (neighbors.Count <= minpts)
+                if (neighbors.Count < minpts)
                 {
                     labels[p] = -1; //Noise
                     continue;

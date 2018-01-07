@@ -25,9 +25,9 @@ namespace ErkennungCis
 
     struct Blume
     {
-        Point mitte;
-        int rad;
-        int entfernung;
+        public Point mitte;
+        public int rad;
+        public int entfernung;
         public Blume(Point mitte, int rad, int entfernung)
         {
             this.mitte = mitte; this.rad = rad; this.entfernung = entfernung;
