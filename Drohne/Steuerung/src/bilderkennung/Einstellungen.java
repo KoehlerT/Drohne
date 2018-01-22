@@ -11,6 +11,20 @@ final class Einstellungen {
 	static final int dichte = 20; //Wie Dicht müssen Punkte im gleichen Cluster liegen?
 	static final int minPts = 0; //Wie viele Punkte muss ein Cluster mindestens Umfassen?
 	
+	//Radiusberechnung
+	static final int incr = 5; //Schritt von einem Test zum nächsten
+	static final int anzTest = 32; //Anzahl der Radiustests (Vielfaches von2 !!!);
+	static final int maxAbw = 10; //Maximalabweichung vom Durchschnittsradius
+	static final int weiß = 150; //Minimalwert, dass ein Pixel "weiß" genannt wird
+	
+	//Kameraeigenschaften zur Distanzerkennung
+	static final float radSchw = 3.5f; //Radius des Blumeninneren in cm
+	static final float fokus = 0.14f; //Fokuslänge der Kamera in cm
+	static final float gr = 0.36736f; //Breite des Kamerasensors in cm
+	static final int aufl = 640; //Auflösung des Bildes in Px (breite)
+	static final float faktor = gr/aufl; //Vorgerechneter Faktor für entfernungsbemessung
+	
+	
 	//Sinus und Cosinus vorberechnen
 	static float[] sin = new float[schablonenChecks];
 	static float[] cos = new float[schablonenChecks];
