@@ -9,9 +9,11 @@ public class BildStart implements Managable {
 	public void start() {
 		// TODO Auto-generated method stub
 		starteThread();
+		System.out.println("Bilderkennungsthread wurde gestartet! Platzhalter terminiert in 4 Sekunden");
 	}
 	
 	private void starteThread() {
+		//Startet nur einen Platzhalter. Finale implementierung Später
 		bThread = new BildThread();
 		bThread.start();
 	}

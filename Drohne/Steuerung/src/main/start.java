@@ -1,12 +1,13 @@
 package main;
 
 import bilderkennung.BildStart;
+import kamera.KameraStart;
 import hardware.HwStart;
 import utility.*;
 
 public class start {
 	
-	private static Managable[] manag = new Managable[2];
+	private static Managable[] manag = new Managable[3];
 
 	public static void main(String[] args) {
 		// Start des Programms
@@ -24,6 +25,7 @@ public class start {
 		 * */
 		manag[0] = new BildStart();
 		manag[1] = new HwStart();
+		manag[2] = new KameraStart();
 		
 		for (Managable m : manag) {
 			m.start();
