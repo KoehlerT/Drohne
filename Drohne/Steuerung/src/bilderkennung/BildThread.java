@@ -1,31 +1,35 @@
 package bilderkennung;
 
+import main.BildPool;
+import utility.BildNotify;
 
-class BildThread extends Thread{
+class BildThread extends Thread implements BildNotify{
 	int test = 0;
 	
-	public BildThread() {
+	BildThread() {
 		
 	}
 	
 	@Override
-	public void run() {
-		/*Kleines Testprogramm.
-		 * Zählt bis 4 (jede 1/2 sekunde)
-		 * Wenn fertig, terminiert es den Thread
+	public synchronized void run() {
+		/*Wartet, bis der thread notifyed wird.
+		 * Dann wird ein neues Bild processed
 		 * */
 		while (true) {
-			test ++;
 			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {}
-			if (test >= 4) {
-				return;
+				this.wait(); //Wartet auf notify/ neues Bild
+			} catch (InterruptedException e) {
+				processPicture(BildPool.getBild().getImageData()); //Neues Bild verarbeiten
 			}
 		}
 	}
 	
 	void processPicture(byte[][] img) {
 		Blumenfinder.processPicture(img);
+	}
+
+	@Override
+	public void neuesBild() {
+		this.notify(); //Wird aufgerufen, wenn ein neues Bild angekommen ist
 	}
 }
