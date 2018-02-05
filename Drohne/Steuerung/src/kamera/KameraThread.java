@@ -16,7 +16,7 @@ class KameraThread extends Thread{
 	private RPiCamera piCamera;
 	
 	KameraThread() {
-		
+		this.setName("Bildaufnahme");
 	}
 	
 	@Override
@@ -37,6 +37,7 @@ class KameraThread extends Thread{
 		
 		try {
 			piCamera = new RPiCamera();
+			System.out.println("Kamera erkannt");
 			return true;
 		}catch(FailedToRunRaspistillException e) {
 			System.out.println("Keine Kamera erkannt. Kamerathread wird beendet");
@@ -60,7 +61,7 @@ class KameraThread extends Thread{
 			long start = System.nanoTime();
 			BufferedImage buffImg = piCamera.takeBufferedStill();
 			aufnahmezeit = (int)(System.nanoTime()-start);
-			System.out.println("Bild aufgenommen in "+aufnahmezeit+" ns");
+			System.out.println("Bild aufgenommen in "+aufnahmezeit/1000000+" ms");
 			return buffImg;
 		}catch (InterruptedException e) {
 			System.out.println("Bildaufnahme Unterbrochen!");

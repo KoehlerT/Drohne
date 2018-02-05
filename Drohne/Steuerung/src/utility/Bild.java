@@ -21,10 +21,10 @@ public class Bild {
 		return referenced > 0; //Returnt true, wenn das Bild noch gebraucht wird
 	}
 	
-	public void incref() {
+	public synchronized void incref() {
 		referenced ++;
 	}
-	public void decref() {
+	public synchronized void decref() {
 		referenced --;
 	}
 	
