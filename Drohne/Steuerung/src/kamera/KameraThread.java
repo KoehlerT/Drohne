@@ -26,8 +26,10 @@ class KameraThread extends Thread{
 		kameraKonfigurieren();
 		while (true) {
 			BufferedImage img = bildAufnehmen();
-			if (img == null)
+			if (img == null) {
+				System.out.println("Fehler Bild == null");
 				continue;
+			}	
 			byte[][] bild = grayArray(img);
 			BildPool.addBild(bild, aufnahmezeit);
 		}

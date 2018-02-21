@@ -18,7 +18,16 @@ class BildThread extends Thread implements BildNotify{
 		 * Dann wird ein neues Bild processed
 		 * */
 		while (true) { //Warte auf Bild
-			anstoﬂen();
+			synchronized(this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+			processNextPicture();
 		}
 	}
 	
@@ -32,17 +41,16 @@ class BildThread extends Thread implements BildNotify{
 		img.decref();
 	}
 	
-	public synchronized void anstoﬂen() {
-		try {
-			this.wait(); //Wartet auf notify/ neues Bild
-		} catch (InterruptedException e) {
-			
-		}
-		processNextPicture();
-	}
 
 	@Override
 	public void neuesBild() {
-		this.notify(); //Wird aufgerufen, wenn ein neues Bild angekommen ist
+		//Wird aufgerufen, wenn ein neues Bild angekommen ist
+		//Wird von anderem Thread aufgerufen
+		System.out.println("neuesBild()");
+		synchronized (this) {
+			System.out.println("Notifying");
+			this.notify(); 
+		}
+		
 	}
 }
