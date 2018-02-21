@@ -15,6 +15,10 @@ public class start {
 		starteProgrammteile();
 		
 		
+		
+		//Beendigungsbedingung. Derzeit, jeder manager returnt running -> false. 
+		//Sobald es "echte" Kommunikation gibt, kann diese Methode wahrscheinlich alleine beenden
+		//Bis zu diesem Zeitpunkt programm einfach zwangsbeenden (Taskmanager/ Stopp-Symbol)
 		while(running()); //Warten, bis alle Abschnitte beendet sind
 		System.out.println("Drohnenprogrammm beendet");
 	}

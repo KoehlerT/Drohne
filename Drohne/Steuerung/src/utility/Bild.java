@@ -3,6 +3,9 @@ package utility;
 import java.util.Date;
 
 public class Bild {
+	/*Objekte dieser Klasse halten informationen über die einzelnen Bilder
+	 * */
+	
 	private int aufnahmeDauer = 0;
 	private Date aufnahmeZeit;
 	private byte[][] imageData;
@@ -12,6 +15,8 @@ public class Bild {
 		
 	}
 	public void changeData(byte[][] data, int dauer, Date zeit) {
+		//Bilddaten werden geupdatet. Wichtig für den BildPool zum Funktionieren
+		//Anstatt das ein neues Objekt erstellt wird, wird das alte mit neuen Daten ausgestattet
 		referenced = 0;
 		imageData = data;
 		aufnahmeDauer = dauer;
@@ -21,14 +26,19 @@ public class Bild {
 		return referenced > 0; //Returnt true, wenn das Bild noch gebraucht wird
 	}
 	
+	
+	/*Referenzensystem, angelehnt an das Garbage System von python.
+	 * referenced zählt, wie oft das Objekt gerade gebraucht wird
+	 * */
 	public synchronized void incref() {
-		referenced ++;
+		referenced ++; //Objekt wird von einer Funktion Benutzt
 	}
 	public synchronized void decref() {
-		referenced --;
+		referenced --;//Funktion ist fertig und entlässt das Objekt
 	}
 	
-	public byte[][] getImageData() {return imageData;}
+	//Getter für die anderen Informationen GEHEIMNIS!!
+	public byte[][] getImageData() {return imageData;} 
 	public int getDauer() {return aufnahmeDauer;}
 	public Date getzeit() {return aufnahmeZeit;}
 }

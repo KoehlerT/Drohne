@@ -3,11 +3,14 @@ package bilderkennung;
 import utility.*;
 
 public class BildStart implements Managable {
+	/*Typischer Wrapper einer Thread klasse
+	 * 
+	 * */
 	private BildThread bThread;
 	
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
+		
 		starteThread();
 		System.out.println("Bilderkennungsthread wurde gestartet!");
 	}

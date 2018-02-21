@@ -21,22 +21,28 @@ class KameraThread extends Thread{
 	
 	@Override
 	public void run() {
+		//Testet, ob Kamera angeschlossen ist und instanziiert objekt
 		if (!kameraAngeschlossen())
 			return;
+		//Kamera wird konfiguruiert
 		kameraKonfigurieren();
+		//Jetzt werden Bilder aufgenommen
 		while (true) {
 			BufferedImage img = bildAufnehmen();
+			
 			if (img == null) {
 				System.out.println("Fehler Bild == null");
 				continue;
-			}	
+			}
+			
+			//Neues Bildobjekt updaten
 			byte[][] bild = grayArray(img);
 			BildPool.addBild(bild, aufnahmezeit);
 		}
 	}
 	
 	private Boolean kameraAngeschlossen() {
-		
+		//Testet, ob Kamera angeschlossen ist
 		try {
 			piCamera = new RPiCamera();
 			System.out.println("Kamera erkannt");
@@ -48,6 +54,7 @@ class KameraThread extends Thread{
 	}
 	
 	private void kameraKonfigurieren() {
+		//Einstellungen. Die Besten müssen noch gefunden werden
 		piCamera.setToDefaults();
 		piCamera.setWidth(500)
 				.setHeight(370)

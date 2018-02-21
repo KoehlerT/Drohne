@@ -9,13 +9,15 @@ class BildThread extends Thread implements BildNotify{
 	
 	BildThread() {
 		this.setName("Bilderkennung");
+		//Sagt BildPool bescheid, dass diese Klasse von einem neuen aufgenommenen Bild benachrichtigt werden möchte
 		BildPool.Abo(this);
 	}
 	
 	@Override
 	public void run() {
-		/*Wartet, bis der thread notifyed wird.
-		 * Dann wird ein neues Bild processed
+		/*Thread wartet, bis ein notify eintrifft
+		 * notify wird von Bildpool ausgeführt, wenn ein neues Bild vorhanden ist.
+		 * Dann wird das neue Bild bearbeitet
 		 * */
 		while (true) { //Warte auf Bild
 			synchronized(this) {
@@ -27,29 +29,31 @@ class BildThread extends Thread implements BildNotify{
 				}
 				
 			}
-			processNextPicture();
+			processNextPicture(); //Wird von Blumenthread ausgeführt
 		}
 	}
 	
 	void processNextPicture() {
 		System.out.println("Bilderkennung gestartet");
 		Bild img = BildPool.getBild();
-		img.incref();
-		long start = System.nanoTime();
-		Blumenfinder.processPicture(img.getImageData());
+		img.incref(); //Das Bild wird reserviert, sodass es nicht überschrieben werden kann
+		long start = System.nanoTime();//Zeitmessung
+		
+		Blumenfinder.processPicture(img.getImageData());//Bildbearbeitung startet
+		
 		System.out.println("Blumen erkannt in: "+((System.nanoTime()-start)/1000000)+ " ms");
-		img.decref();
+		img.decref(); //Bild wird freigegeben
 	}
 	
 
 	@Override
 	public void neuesBild() {
 		//Wird aufgerufen, wenn ein neues Bild angekommen ist
-		//Wird von anderem Thread aufgerufen
+		//Wird vom Bildpool / Kamerathread aufgerufen
 		System.out.println("neuesBild()");
 		synchronized (this) {
 			System.out.println("Notifying");
-			this.notify(); 
+			this.notify(); //Kommuniziert zum Bildthread, dass der Kuchen fertig ist
 		}
 		
 	}
