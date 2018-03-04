@@ -3,7 +3,7 @@ import sys
 import socket
 import os
 
-TCP_IP = ''  # IP muss verwendet werden RPI3 das ist ein TEST
+TCP_IP = ''  # IP muss verwendet werden RPI3 DAS ist ein TEST
 TCP_Port = 5892  # random Port. Der gleiche wie bei bildclient
 BUFFER_SIZE = 1024  # Maximale sendegröße
 
