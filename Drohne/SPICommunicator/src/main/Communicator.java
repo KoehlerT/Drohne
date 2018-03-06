@@ -8,30 +8,46 @@ public class Communicator {
 	/*Danke: SpiExample Pi4j
 	 * */
 	private SpiDevice device = null;
-	
-	public Communicator(){
+	private byte[] res;
+	public Communicator(int streamLength){
+		res = new  byte[streamLength];
 		try {
 			//CS0 = Pin 24 => Serial Select
-			device = SpiFactory.getInstance(SpiChannel.CS0, SpiDevice.DEFAULT_SPI_SPEED, SpiDevice.DEFAULT_SPI_MODE);
+			//Normale Geschwindigkeit: 1MHz besser: 100kHz
+			device = SpiFactory.getInstance(SpiChannel.CS0, 100000, SpiDevice.DEFAULT_SPI_MODE);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public byte[] Send(char send) throws IOException{
-		byte[] arr = new byte[]{(byte)send,'B','C','D','E','F','G'};
-		byte[] res = new byte[arr.length];
-		for (int i = 0; i<arr.length;i++){
-			res[i] = device.write(arr[i])[0];
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public byte[] TransmitData(byte[] data){
+		if (data.length > res.length)
+			return null; //Problem: der Receive Buffer ist nicht groß genug für das Ergebnis!
+		//Handshake
+		shakeHands();
+		//Transmission
+		for (int i = 0; i < data.length; i++){
+			res[i] = sendPackage(data[i]);
+		}
+		return res ;
+	}
+	
+	
+	private byte sendPackage(byte send){
+		byte res = 0;
+		try{
+			res = device.write(send)[0];
+			Thread.sleep(5);//Warte an Übermittlung
+		}catch (InterruptedException | IOException e){
+			System.out.println("Problem bim Senden");
 		}
 		return res;
-		//return device.write(send);
+	}
+	
+	private void shakeHands(){
+		//Spamt Requests bis ein Acknowledge
+		while (sendPackage((byte)'R') != (byte)'A');
+		sendPackage((byte)0);
 	}
 }
