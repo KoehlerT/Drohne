@@ -19,18 +19,14 @@ public class Communicator {
 	 *@param streamLength gibt die Länge der Rückgabe an. Muss so groß sein, wie das zu sendende Bytearray
 	 *@param packageWait gibt die Zeit in ms an, wie lange nach jedem Packet gewartet werden soll. Empfolen 4
 	 *@param speed gibt die Tacktfrequenz des Buses in Hz an. 200kHz Empfohlen
+	 * @throws IOException Wenn das SPI Gerät nciht eingrichtet werden konnte
 	 * */
-	public Communicator(int streamLength, int packageWait, int speed){
+	public Communicator(int streamLength, int packageWait, int speed) throws IOException{
 		res = new  byte[streamLength];
 		wait = packageWait;
-		try {
-			//CS0 = Pin 24 => Serial Select
-			//Normale Geschwindigkeit: 1MHz besser: 200kHz
-			device = SpiFactory.getInstance(SpiChannel.CS0, speed, SpiDevice.DEFAULT_SPI_MODE);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//CS0 = Pin 24 => Serial Select
+		//Normale Geschwindigkeit: 1MHz besser: 200kHz
+		device = SpiFactory.getInstance(SpiChannel.CS0, speed, SpiDevice.DEFAULT_SPI_MODE);
 	}
 	/**Übermittelt daten vom Raspberry PI zum arduino
 	 * @param ein Array an Bites, das übermittelt werden soll

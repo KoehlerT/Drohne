@@ -7,17 +7,18 @@ public class Tester {
 	private static byte[] data = new byte[]{10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		Communicator c = new Communicator(data.length, 4, 200000);
-		while (true){
-			byte[] res = c.TransmitData(data);
-			printArr(res);
-			try {
+		try{
+			Communicator c = new Communicator(data.length, 4, 200000);
+			while (true){
+				byte[] res = c.TransmitData(data);
+				printArr(res);
 				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+
 			}
+		}catch(IOException | InterruptedException e){
+			
 		}
+		
 	}
 	
 	static void printArr(byte[] arr){
