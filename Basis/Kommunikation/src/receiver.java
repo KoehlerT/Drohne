@@ -2,7 +2,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.concurrent.TimeUnit;
 
 
 public class receiver {
@@ -19,11 +18,6 @@ public class receiver {
 
   public static void main (String [] args ) throws IOException {
 	  datenEmpfangen(SOCKET_PORT, SERVER);
-	  try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	  datenEmpfangen(SOCKET_PORT, SERVER);
   }
   public static int bytetoint(byte[] bar) {

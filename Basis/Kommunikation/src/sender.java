@@ -4,7 +4,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.concurrent.TimeUnit;
+
 //http://www.rgagnon.com/javadetails/java-0542.html
 public class sender {
 
@@ -15,13 +15,9 @@ public class sender {
 		ServerSocket s = sock÷ffnen(SOCKET_PORT);
 		ma = inttobyte(10);
 		verschicken(s, ma);
-		ma = inttobyte(12);
-		try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		ma = inttobyte(24);
 		verschicken(s, ma);
+		sockSchlieﬂen(s);
 	}
 
 	public static byte[] inttobyte(int data) {
@@ -81,16 +77,19 @@ public class sender {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-            if (sock!=null)
-				try {
-					sock.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
           }
         
           }
+	public static void sockSchlieﬂen(ServerSocket s) {
+		if (s != null) { 
+			try {
+				s.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
 	  
   
 }
