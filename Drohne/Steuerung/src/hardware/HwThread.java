@@ -1,11 +1,17 @@
 package hardware;
 
+import java.io.IOException;
+
 class HwThread extends Thread{
 	
 	SPIManager arduinoMng;
 	
 	public HwThread() {
-		arduinoMng = new SPIManager();
+		try {
+			arduinoMng = new SPIManager();
+		} catch (IOException e) {
+			System.out.println("SPI Fehler");
+		}
 	}
 	
 	@Override

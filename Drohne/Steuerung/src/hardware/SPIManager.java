@@ -9,14 +9,16 @@ class SPIManager {
 	 * https://blogs.oracle.com/javatraining/using-device-io-with-java-embedded-suite-on-a-raspberry-pi
 	 * */
 	//SPIDeviceConfig arduino;
+	Communicator c;
 	
-	public SPIManager() {
-		try {
-			Communicator c = new Communicator(10,4,200000);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public SPIManager() throws IOException {
+		c = new Communicator(10,4,200000);
+	}
+	
+	byte[] sendAndReceive(byte[] send) {
+		if (c == null)
+			return null;
+		return c.TransmitData(send);
 	}
 	
 }
