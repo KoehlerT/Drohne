@@ -1,3 +1,4 @@
+package wert;
 
 public class intWert extends Wert {
 	int minimum; 

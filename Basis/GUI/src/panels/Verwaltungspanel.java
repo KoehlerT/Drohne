@@ -1,3 +1,4 @@
+package panels;
 import javax.swing.*;
 
 public class Verwaltungspanel extends Frame {

@@ -1,3 +1,4 @@
+package wert;
 
 public class doubleWert extends Wert {
 	double minimum; 

@@ -1,3 +1,4 @@
+package wert;
 
 public class Wert {
 	private String name;

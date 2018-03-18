@@ -1,3 +1,4 @@
+package panels;
 import java.awt.*;
 import javax.swing.*;
 public class Frame {
