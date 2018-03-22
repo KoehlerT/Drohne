@@ -4,10 +4,11 @@ import bilderkennung.BildStart;
 import kamera.KameraStart;
 import hardware.HwStart;
 import utility.*;
+import wlanClient.WlanManager;
 
 public class start {
 	
-	private static Managable[] manag = new Managable[3];
+	private static Managable[] manag = new Managable[4];
 
 	public static void main(String[] args) {
 		// Start des Programms
@@ -30,6 +31,7 @@ public class start {
 		manag[0] = new BildStart();
 		manag[1] = new HwStart();
 		manag[2] = new KameraStart();
+		manag[3] = new WlanManager();
 		
 		for (Managable m : manag) {
 			m.start();

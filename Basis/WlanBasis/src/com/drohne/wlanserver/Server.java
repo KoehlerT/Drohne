@@ -14,16 +14,29 @@ public class Server {
 		try {
 			server = new ServerSocket(1213);
 			while (true) {
+				System.out.println("Suche Klienten");
+				
 				Socket connected = server.accept();
 				connection = true;
 				inFromClient = new BufferedReader(new InputStreamReader(connected.getInputStream()));
 				outToClient = new DataOutputStream(connected.getOutputStream());
-				while (connected.isConnected()) {
-					System.out.println(inFromClient.readLine());
-					outToClient.writeUTF("Hi\n");
+				
+				System.out.println("Client angeschlossen ");
+				while (/*connected.isConnected() && !connected.isClosed()*/ true) {
+					//Write
+					System.out.println("Sende...");
+					outToClient.writeUTF("Hi Client/ Drohne\n");
+					outToClient.flush();
+					System.out.println("?!");
+					//Read
+					int i;
+					while ((i = inFromClient.read()) >=0) {
+						System.out.print((char)i);
+					}
+					System.out.println("Status: Conn.: "+connected.isConnected()+" Cl.: "+connected.isClosed());
 				}
-				connection = false;
-				System.out.println("Connected: "+connection);
+				//connection = false;
+				//System.out.println("Connected: "+connection);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

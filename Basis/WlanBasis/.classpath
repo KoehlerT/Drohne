@@ -2,5 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jxinput.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/B:/Tim/Documents/GitHub/Drohne/Basis/WlanBasis/lib/javadoc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
