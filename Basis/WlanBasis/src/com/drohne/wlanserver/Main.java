@@ -21,9 +21,9 @@ public class Main {
 			s.acceptClients();
 			start = System.nanoTime();
 			while (true) {
-				//c.update(System.nanoTime()-start);
-				//start = System.nanoTime();
-				s.sendControl(1000, 1100, 1200, 1300);
+				c.update(System.nanoTime()-start);
+				start = System.nanoTime();
+				s.sendControl(c.getThrottle(), c.getPitch(), c.getRoll(), c.getYaw());
 			}
 		}
 	}

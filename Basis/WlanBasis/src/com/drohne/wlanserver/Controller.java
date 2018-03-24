@@ -91,4 +91,9 @@ public class Controller implements KeyListener{
 			return 2000;
 		return i;
 	}
+	
+	public int getThrottle() {return throttle;}
+	public int getPitch() {return pitch;}
+	public int getRoll() {return roll;}
+	public int getYaw() {return yaw;}
 }

@@ -63,6 +63,8 @@ class KameraThread extends Thread{
 				.setContrast(100)
 				.setSharpness(100)
 				.setEncoding(Encoding.BMP);
+		piCamera.setFullPreviewOff();
+		piCamera.setPreviewOpacity(0);
 	}
 	
 	private BufferedImage bildAufnehmen() {
