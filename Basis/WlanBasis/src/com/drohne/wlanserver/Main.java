@@ -18,12 +18,12 @@ public class Main {
 	private static void test() {
 		long start;
 		while (true) {
-			//s.acceptClients();
+			s.acceptClients();
 			start = System.nanoTime();
 			while (true) {
-				c.update(System.nanoTime()-start);
-				start = System.nanoTime();
-				//s.sendControl(1000, 1100, 1200, 1300);
+				//c.update(System.nanoTime()-start);
+				//start = System.nanoTime();
+				s.sendControl(1000, 1100, 1200, 1300);
 			}
 		}
 	}

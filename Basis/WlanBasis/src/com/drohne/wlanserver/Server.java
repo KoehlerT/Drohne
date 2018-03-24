@@ -46,10 +46,10 @@ public class Server {
 	
 	public void sendControl(int thr, int pitch, int roll, int yaw) {
 		long start = System.nanoTime();
-		outToClient.println(-1);
-		while(inFromClient.nextInt() != -2) {
+		//outToClient.println(-1);
+		/*while(inFromClient.nextInt() != -2) {
 			outToClient.println(-1);
-		}
+		}*/
 		send(thr); send(pitch); send(roll); send(yaw);
 		float dauer = (System.nanoTime()-start)/1000000000f;
 		System.out.println("Übertragungsdauer: "+dauer*1000+"ms / "+1/dauer+" Hz");
