@@ -35,11 +35,11 @@ public class Client {
 	
 	public int[] receiveControls(){
 		int[] res = new int[4];
-		while(inFromServer.nextInt() != -1);
-		outToServer.println(-2);
+		//while(inFromServer.nextInt() != -1);
+		//outToServer.println(-2);
 		for (int i = 0; i < res.length; i++){
 			res[i] = receive();
-			System.out.println(res[i]);
+			//System.out.println(i+ " "+res[i]);
 		}
 		return res;
 		
