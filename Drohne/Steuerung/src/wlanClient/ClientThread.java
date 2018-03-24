@@ -1,51 +1,31 @@
 package wlanClient;
-import java.io.*;
-import java.net.*;
+
+
+import com.drohne.wlandrohne.Client;
+
+import main.Daten;
 
 
 public class ClientThread extends Thread{
 
-	//Danke an: https://stackoverflow.com/questions/2165006/simple-java-client-server-program
-	private Socket client;
-	private DataOutputStream outToServer;
-	private BufferedReader inFromServer;
+	private Client c;
 	
 	private Boolean running = true;
 	
 	ClientThread() {
-		try {
-			client = new Socket("localhost",1213);
-			inFromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			outToServer = new DataOutputStream(client.getOutputStream());
-		}catch(IOException e) {
-			System.out.println("Keine Verbindung möglich");
-			running = false;
-		}
+		c = new Client();
 		
 	}
 	
 	@Override
 	public void run() {
-		System.out.println("Kommunikation gestartet");
 		while (running) {
-			try {
-				//Read
-				int i;
-				while ((i = inFromServer.read()) >=0) {
-					System.out.print((char)i);
-				}
-				//Write 
-				//outToServer.writeUTF("Hi Server/ Basis\n");
-				//outToServer.flush();
-				outToServer.writeInt(42);
-				outToServer.flush();
-				
-			}catch (IOException e) {
-				System.out.println("Serverproblem");
-				e.printStackTrace();
-				running = false;
-			}
-			
+			int[] conts = c.receiveControls();
+			//Reihenfolge: Throttle, pitch, roll, yaw
+			Daten.setCont_throttle(conts[0]);
+			Daten.setCont_pitch(conts[1]);
+			Daten.setCont_roll(conts[2]);
+			Daten.setCont_yaw(conts[3]);
 		}
 	}
 	
