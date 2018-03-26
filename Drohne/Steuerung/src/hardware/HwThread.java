@@ -33,7 +33,8 @@ class HwThread extends Thread{
 			writeToArray(ci,roll,4);
 			writeToArray(ci,yaw,6);
 			
-			arduinoMng.sendAndReceive(ci);
+			byte[] recv = arduinoMng.sendAndReceive(ci);
+			printRecv(recv);
 		}
 	}
 	private void writeToArray(byte[] arr, int val, int ind) {
@@ -41,5 +42,13 @@ class HwThread extends Thread{
 		byte hb = (byte)((val >> 8)& 0xFF); //Higher Byte value
 		arr[ind] = lb;
 		arr[ind+1] = hb;
+	}
+	
+	private void printRecv(byte[] recv) {
+		System.out.print("Empfangen: ");
+		for (byte b : recv) {
+			System.out.print(b+", ");
+		}
+		System.out.println();
 	}
 }

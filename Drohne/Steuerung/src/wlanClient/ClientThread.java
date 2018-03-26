@@ -26,6 +26,7 @@ public class ClientThread extends Thread{
 			Daten.setCont_pitch(conts[1]);
 			Daten.setCont_roll(conts[2]);
 			Daten.setCont_yaw(conts[3]);
+			//System.out.println("Thr: "+conts[0]+" pit: "+conts[1]+" rll: "+conts[2]+" yaw: "+conts[3]);
 		}
 	}
 	

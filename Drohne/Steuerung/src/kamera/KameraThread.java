@@ -31,7 +31,7 @@ class KameraThread extends Thread{
 			BufferedImage img = bildAufnehmen();
 			
 			if (img == null) {
-				System.out.println("Fehler Bild == null");
+				//System.out.println("Fehler Bild == null");
 				continue;
 			}
 			
@@ -72,7 +72,7 @@ class KameraThread extends Thread{
 			long start = System.nanoTime();
 			BufferedImage buffImg = piCamera.takeBufferedStill();
 			aufnahmezeit = (int)(System.nanoTime()-start);
-			System.out.println("Bild aufgenommen in "+aufnahmezeit/1000000+" ms");
+			//System.out.println("Bild aufgenommen in "+aufnahmezeit/1000000+" ms");
 			return buffImg;
 		}catch (InterruptedException e) {
 			System.out.println("Bildaufnahme Unterbrochen!");
