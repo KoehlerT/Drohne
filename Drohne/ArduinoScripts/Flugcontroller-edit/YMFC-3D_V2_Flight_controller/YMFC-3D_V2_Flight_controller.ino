@@ -272,7 +272,7 @@ void loop(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-ISR(PCINT0_vect){
+/*ISR(PCINT0_vect){
   current_time = micros();
   //Channel 1=========================================
   if(PINB & B00000001){                                        //Is input 8 high?
@@ -319,7 +319,7 @@ ISR(PCINT0_vect){
     last_channel_4 = 0;                                        //Remember current input state
     receiver_input[4] = current_time - timer_4;                //Channel 4 is current_time - timer_4
   }
-}
+}*/
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Subroutine for reading the gyro
@@ -468,6 +468,10 @@ void receive(){
         }
       }
       //Fertig mit übermittlung
+      receiver_input_channel_1 = convert_integer(0);
+      receiver_input_channel_2 = convert_integer(2);
+      receiver_input_channel_3 = convert_integer(4);
+      receiver_input_channel_4 = convert_integer(6);
     }
 }
 
