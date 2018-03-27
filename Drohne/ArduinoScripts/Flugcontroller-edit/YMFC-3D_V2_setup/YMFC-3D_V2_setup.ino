@@ -46,6 +46,8 @@ void setup(){
   PCMSK0 |= (1 << PCINT2);  // set PCINT2 (digital input 10)to trigger an interrupt on state change
   PCMSK0 |= (1 << PCINT3);  // set PCINT3 (digital input 11)to trigger an interrupt on state change*/
   pinMode(MISO, OUTPUT); //SPI
+  pinMode(8, OUTPUT); //LED
+  SPCR |= _BV(SPE);                                            //Configure SPI Slave
   Wire.begin();             //Start the I2C as master
   Serial.begin(57600);      //Start the serial connetion @ 57600bps
   delay(250);               //Give the gyro time to start
@@ -372,11 +374,11 @@ void loop(){
     Serial.println(F("==================================================="));
     Serial.println(F("LED test"));
     Serial.println(F("==================================================="));
-    digitalWrite(12, HIGH);
+    digitalWrite(8, HIGH);
     Serial.println(F("The LED should now be lit"));
     Serial.println(F("Move stick 'nose up' and back to center to continue"));
     check_to_continue();
-    digitalWrite(12, LOW);
+    digitalWrite(8, LOW);
   }
 
   Serial.println(F(""));
@@ -424,7 +426,7 @@ void loop(){
     EEPROM.write(9, high_channel_1 >> 8);
     EEPROM.write(10, high_channel_2 & 0b11111111);
     EEPROM.write(11, high_channel_2 >> 8);
-    EEPROM.write(12, high_channel_3 & 0b11111111);
+    EEPROM.write(8, HIGH_channel_3 & 0b11111111);
     EEPROM.write(13, high_channel_3 >> 8);
     EEPROM.write(14, high_channel_4 & 0b11111111);
     EEPROM.write(15, high_channel_4 >> 8);
@@ -617,6 +619,7 @@ void check_receiver_inputs(byte movement){
   int pulse_length;
   timer = millis() + 30000;
   while(timer > millis() && trigger == 0){
+    receive();
     delay(250);
     if(receiver_input_channel_1 > 1750 || receiver_input_channel_1 < 1250){
       trigger = 1;
@@ -667,6 +670,7 @@ void check_receiver_inputs(byte movement){
 void check_to_continue(){
   byte continue_byte = 0;
   while(continue_byte == 0){
+    receive();
     if(channel_2_assign == 0b00000001 && receiver_input_channel_1 > center_channel_1 + 150)continue_byte = 1;
     if(channel_2_assign == 0b10000001 && receiver_input_channel_1 < center_channel_1 - 150)continue_byte = 1;
     if(channel_2_assign == 0b00000010 && receiver_input_channel_2 > center_channel_2 + 150)continue_byte = 1;
@@ -684,6 +688,7 @@ void check_to_continue(){
 void wait_sticks_zero(){
   byte zero = 0;
   while(zero < 15){
+    receive();
     if(receiver_input_channel_1 < center_channel_1 + 20 && receiver_input_channel_1 > center_channel_1 - 20)zero |= 0b00000001;
     if(receiver_input_channel_2 < center_channel_2 + 20 && receiver_input_channel_2 > center_channel_2 - 20)zero |= 0b00000010;
     if(receiver_input_channel_3 < center_channel_3 + 20 && receiver_input_channel_3 > center_channel_3 - 20)zero |= 0b00000100;
@@ -697,6 +702,7 @@ void wait_for_receiver(){
   byte zero = 0;
   timer = millis() + 10000;
   while(timer > millis() && zero < 15){
+    receive();
     if(receiver_input_channel_1 < 2100 && receiver_input_channel_1 > 900)zero |= 0b00000001;
     if(receiver_input_channel_2 < 2100 && receiver_input_channel_2 > 900)zero |= 0b00000010;
     if(receiver_input_channel_3 < 2100 && receiver_input_channel_3 > 900)zero |= 0b00000100;
@@ -714,6 +720,7 @@ void wait_for_receiver(){
 
 //Register the min and max receiver values and exit when the sticks are back in the neutral position
 void register_min_max(){
+  receive();
   byte zero = 0;
   low_channel_1 = receiver_input_channel_1;
   low_channel_2 = receiver_input_channel_2;
@@ -722,6 +729,7 @@ void register_min_max(){
   while(receiver_input_channel_1 < center_channel_1 + 20 && receiver_input_channel_1 > center_channel_1 - 20)delay(250);
   Serial.println(F("Measuring endpoints...."));
   while(zero < 15){
+    receive();
     if(receiver_input_channel_1 < center_channel_1 + 20 && receiver_input_channel_1 > center_channel_1 - 20)zero |= 0b00000001;
     if(receiver_input_channel_2 < center_channel_2 + 20 && receiver_input_channel_2 > center_channel_2 - 20)zero |= 0b00000010;
     if(receiver_input_channel_3 < center_channel_3 + 20 && receiver_input_channel_3 > center_channel_3 - 20)zero |= 0b00000100;
