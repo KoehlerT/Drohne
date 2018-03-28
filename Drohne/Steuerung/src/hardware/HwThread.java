@@ -12,6 +12,7 @@ class HwThread extends Thread{
 	public HwThread() {
 		try {
 			arduinoMng = new SPIManager();
+			System.out.println("SPI gestartet");
 		} catch (IOException e) {
 			System.out.println("SPI Fehler");
 			running = false;
@@ -21,6 +22,7 @@ class HwThread extends Thread{
 	@Override
 	public void run() {
 		byte[] ci = new byte[8]; //Controller input bytes
+		System.out.println("SPI Run");
 		while(running) {
 			//Nehme Variablen
 			int throttle = Daten.getCont_throttle();
