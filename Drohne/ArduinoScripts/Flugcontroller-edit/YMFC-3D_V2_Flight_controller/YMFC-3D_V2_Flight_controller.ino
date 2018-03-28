@@ -61,6 +61,8 @@ float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_
 //SPI Kommunikation
 byte datenplatzhalter[] = {1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
 byte controllerInputs[8]; //Inputs vom Controller
+//ADS read
+Adafruit_ADS1115 ads1115(0x49);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
@@ -72,6 +74,7 @@ void setup(){
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
 
   Wire.begin();                                                //Start the I2C as master.
+  ads1115.begin()                                              //Start I2C ADS
 
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
@@ -140,7 +143,7 @@ void setup(){
   //12.6V equals 1023 analogRead(0).
   //1260 / 1023 = 1.2317.
   //The variable battery_voltage holds 1050 if the battery voltage is 10.5V. centiVolt
-  battery_voltage = (analogRead(0) + 65) * 1.2317; //Verbessern
+  battery_voltage = getBatteryVoltage();
 
   //When everything is done, turn off the led.
   digitalWrite(8,LOW);                                        //Turn off the warning led.
@@ -212,7 +215,7 @@ void loop(){
   //The battery voltage is needed for compensation.
   //A complementary filter is used to reduce noise.
   //0.09853 = 0.08 * 1.2317.
-  battery_voltage = battery_voltage * 0.92 + (analogRead(0) + 65) * 0.09853;
+  battery_voltage = battery_voltage * 0.92 + (getBatteryVoltage()*0.08);
 
   //Turn on the led if battery voltage is too low.
   if(battery_voltage < 1030 && battery_voltage > 600)digitalWrite(8, HIGH);
@@ -572,6 +575,5 @@ void set_gyro_registers(){
 
 int getBatteryVoltage(){
     int input = ads1115.readADC_SingleEnded(1);
-    int voltageSens = ads1115.readAdC_SingleEnded(3);
-    return input*(1/voltageSens)*5; // Spannung von 0-voltageSens  fünffaches
+    return input*500; // Input * 5 = Volt, Input*500 = centivolt
 }
