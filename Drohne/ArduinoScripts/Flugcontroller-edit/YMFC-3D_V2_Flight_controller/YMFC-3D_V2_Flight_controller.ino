@@ -17,6 +17,7 @@
 
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
 #include <EEPROM.h>                        //Include the EEPROM.h library so we can store information onto the EEPROM
+#include <Adafruit_ADS1015.h>              //Read Voltage Sensor
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -566,4 +567,11 @@ void set_gyro_registers(){
       while(1)delay(10);                                         //Stay in this loop for ever
     }
   }
+}
+
+
+int getBatteryVoltage(){
+    int input = ads1115.readADC_SingleEnded(1);
+    int voltageSens = ads1115.readAdC_SingleEnded(3);
+    return input*(1/voltageSens)*5; // Spannung von 0-voltageSens  fünffaches
 }
