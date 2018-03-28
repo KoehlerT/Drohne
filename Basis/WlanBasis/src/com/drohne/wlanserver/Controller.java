@@ -5,10 +5,10 @@ import java.awt.event.KeyListener;
 
 public class Controller implements KeyListener{
 	
-	private int throttle = 1000;
-	private int pitch = 1500;
-	private int roll = 1500;
-	private int yaw = 1500;
+	private float throttle = 1000;
+	private float pitch = 1500;
+	private float roll = 1500;
+	private float yaw = 1500;
 	
 	private Boolean w = false;
 	private Boolean a = false;
@@ -63,7 +63,7 @@ public class Controller implements KeyListener{
 	}
 	
 	public void update(long timePassed) {
-		int incr = (int)(timePassed/2000);
+		float incr = (float)(timePassed*0.000001);
 		if (w) {throttle += incr;}
 		if (a) {yaw -= incr;}
 		if (s) {throttle -= incr;}
@@ -73,15 +73,15 @@ public class Controller implements KeyListener{
 		if (k) {pitch -= incr;}
 		if (l) {roll += incr;}
 		
-		yaw = norm(yaw);
-		throttle = norm(throttle);
-		pitch = norm(pitch);
-		roll = norm(roll);
+		yaw = norm((int)yaw);
+		throttle = norm((int)throttle);
+		pitch = norm((int)pitch);
+		roll = norm((int)roll);
 		
-		Window.instance.setThrottle(throttle);
-		Window.instance.setPitch(pitch);
-		Window.instance.setRoll(roll);
-		Window.instance.setYaw(yaw);
+		Window.instance.setThrottle((int)throttle);
+		Window.instance.setPitch((int)pitch);
+		Window.instance.setRoll((int)roll);
+		Window.instance.setYaw((int)yaw);
 	}
 	
 	private int norm(int i) {
@@ -92,8 +92,8 @@ public class Controller implements KeyListener{
 		return i;
 	}
 	
-	public int getThrottle() {return throttle;}
-	public int getPitch() {return pitch;}
-	public int getRoll() {return roll;}
-	public int getYaw() {return yaw;}
+	public int getThrottle() {return (int)throttle;}
+	public int getPitch() {return (int)pitch;}
+	public int getRoll() {return (int)roll;}
+	public int getYaw() {return (int)yaw;}
 }
