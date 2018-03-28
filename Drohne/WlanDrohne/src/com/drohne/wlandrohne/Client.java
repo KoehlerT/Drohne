@@ -12,9 +12,9 @@ public class Client {
 	private Scanner inFromServer;
 	private PrintStream outToServer;
 	
-	public Client(){
+	public Client(String host){
 		try {
-			s = new Socket("192.168.178.50",1213);
+			s = new Socket(host,1213);
 			inFromServer = new Scanner(s.getInputStream());
 			outToServer = new PrintStream(s.getOutputStream());
 			

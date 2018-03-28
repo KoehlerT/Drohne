@@ -9,7 +9,7 @@ public class Main {
 	static private byte[][] pic = new byte[100][];
 	
 	public static void main(String[] args) {
-		b = new Client();
+		b = new Client("192.168.178.50");
 		constrPic();
 		test();
 	}
