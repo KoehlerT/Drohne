@@ -18,6 +18,8 @@
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
 #include <EEPROM.h>                        //Include the EEPROM.h library so we can store information onto the EEPROM
 #include <Adafruit_ADS1015.h>              //Read Voltage Sensor
+#include <MPU9250.h>
+MPU9250 IMU(Wire,0x68);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -74,7 +76,7 @@ void setup(){
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
 
   Wire.begin();                                                //Start the I2C as master.
-  ads1115.begin()                                              //Start I2C ADS
+  ads1115.begin();                                             //Start I2C ADS
 
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
@@ -330,7 +332,7 @@ void loop(){
 //Subroutine for reading the gyro
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gyro_signalen(){
-  //Read the L3G4200D or L3GD20H
+  /*//Read the L3G4200D or L3GD20H
   if(eeprom_data[31] == 2 || eeprom_data[31] == 3){
     Wire.beginTransmission(gyro_address);                        //Start communication with the gyro (adress 1101001)
     Wire.write(168);                                             //Start reading @ register 28h and auto increment with every read
@@ -359,19 +361,26 @@ void gyro_signalen(){
     gyro_axis[2] = Wire.read()<<8|Wire.read();                   //Read high and low part of the angular data
     gyro_axis[3] = Wire.read()<<8|Wire.read();                   //Read high and low part of the angular data
   }
+  */
+
+IMU.readSensor();                                                // Reads Sensorinformations of the MPU9250
+gyro_roll = IMU.getGyroY_rads();                                 // Takes the Informations and gives it as rad/s
+gyro_pitch = IMU.getGyroY_rads();                                // X and Y are switched, because of the mounting on the board
+gyro_yaw = IMU.getGyroZ_rads();
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
     gyro_axis[2] -= gyro_axis_cal[2];                            //Only compensate after the calibration
     gyro_axis[3] -= gyro_axis_cal[3];                            //Only compensate after the calibration
   }
+  /*
   gyro_roll = gyro_axis[eeprom_data[28] & 0b00000011];
   if(eeprom_data[28] & 0b10000000)gyro_roll *= -1;
   gyro_pitch = gyro_axis[eeprom_data[29] & 0b00000011];
   if(eeprom_data[29] & 0b10000000)gyro_pitch *= -1;
   gyro_yaw = gyro_axis[eeprom_data[30] & 0b00000011];
   if(eeprom_data[30] & 0b10000000)gyro_yaw *= -1;
-
+*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -496,7 +505,7 @@ void pulse(int delay){
 
 void set_gyro_registers(){
   //Setup the MPU-6050
-  if(eeprom_data[31] == 1){
+ /* if(eeprom_data[31] == 1){
     Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
     Wire.write(0x6B);                                            //We want to write to the PWR_MGMT_1 register (6B hex)
     Wire.write(0x00);                                            //Set the register bits as 00000000 to activate the gyro
@@ -569,8 +578,9 @@ void set_gyro_registers(){
       digitalWrite(8,HIGH);                                     //Turn on the warning led
       while(1)delay(10);                                         //Stay in this loop for ever
     }
-  }
+    }*/
 }
+
 
 
 int getBatteryVoltage(){
