@@ -40,7 +40,7 @@ int pid_max_yaw = 400;                     //Maximum output of the PID-controlle
 //Declaring global variables
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;
-byte eeprom_data[36];
+//byte eeprom_data[36];   //Keine EEProm Data in unserem Fall
 byte highByte, lowByte;
 int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;
 int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;
@@ -67,8 +67,8 @@ byte controllerInputs[8]; //Inputs vom Controller
 void setup(){
   //Serial.begin(57600);
   //Read EEPROM for fast access data.
-  for(start = 0; start <= 35; start++)eeprom_data[start] = EEPROM.read(start);
-  gyro_address = eeprom_data[32];                              //Store the gyro address in the variable.
+  /*for(start = 0; start <= 35; start++)eeprom_data[start] = EEPROM.read(start);
+  gyro_address =  0x68;                           //Store the gyro address in the variable.*/
 
   Wire.begin();                                                //Start the I2C as master.
 
@@ -81,7 +81,7 @@ void setup(){
   digitalWrite(8,HIGH);                                       //Turn on the warning led.
 
   //Check the EEPROM signature to make sure that the setup program is executed
-  while(eeprom_data[33] != 'J' || eeprom_data[34] != 'M' || eeprom_data[35] != 'B')delay(10);
+  //while(eeprom_data[33] != 'J' || eeprom_data[34] != 'M' || eeprom_data[35] != 'B')delay(10);
 
   set_gyro_registers();                                        //Set the specific gyro registers.
   //Was tut die Forschleife? Kalibrieren!?
