@@ -12,7 +12,7 @@ class SPIManager {
 	Communicator c;
 	
 	public SPIManager() throws IOException {
-		c = new Communicator(10,4,200000);
+		c = new Communicator(10,6,100000);
 	}
 	
 	byte[] sendAndReceive(byte[] send) {
