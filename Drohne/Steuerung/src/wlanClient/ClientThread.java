@@ -12,8 +12,8 @@ public class ClientThread extends Thread{
 	
 	private Boolean running = true;
 	
-	ClientThread() {
-		c = new Client();
+	ClientThread(String host) {
+		c = new Client(host);
 		
 	}
 	

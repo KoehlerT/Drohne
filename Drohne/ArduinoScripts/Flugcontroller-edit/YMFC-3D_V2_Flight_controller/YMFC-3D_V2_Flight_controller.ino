@@ -125,7 +125,7 @@ void setup(){
   //Wait until the receiver is active and the throttle is set to the lower position.
   while(receiver_input_channel_3 < 990 || receiver_input_channel_3 > 1020 || receiver_input_channel_4 < 1400){
     receive();                                                 //Receive new Controller inputs
-    receiver_input_channel_3 = convert_integer(4);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
+    receiver_input_channel_3 = convert_integer(0);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
     receiver_input_channel_4 = convert_integer(6);             //Convert the actual receiver signals for yaw to the standard 1000 - 2000us
     start ++;                                                  //While waiting increment start whith every loop.
     //We don't want the esc's to be beeping annoyingly. So let's give them a 1000us puls while waiting for the receiver inputs.
@@ -161,9 +161,9 @@ void loop(){
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
   //Get Controller Inputs via SPI#
   receive();
-  receiver_input_channel_1 = convert_integer(0);
+  receiver_input_channel_1 = convert_integer(4);
   receiver_input_channel_2 = convert_integer(2);
-  receiver_input_channel_3 = convert_integer(4);
+  receiver_input_channel_3 = convert_integer(0);
   receiver_input_channel_4 = convert_integer(6);
 
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
@@ -482,9 +482,9 @@ void receive(){
         }
       }
       //Fertig mit übermittlung
-      receiver_input_channel_1 = convert_integer(0);
+      receiver_input_channel_1 = convert_integer(4);
       receiver_input_channel_2 = convert_integer(2);
-      receiver_input_channel_3 = convert_integer(4);
+      receiver_input_channel_3 = convert_integer(0);
       receiver_input_channel_4 = convert_integer(6);
     }
 }
