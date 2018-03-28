@@ -167,9 +167,9 @@ void loop(){
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
 
-  gyro_roll_input = (gyro_roll_input * 0.8) + ((gyro_roll / 57.14286) * 0.2);            //Gyro pid input is deg/sec.
-  gyro_pitch_input = (gyro_pitch_input * 0.8) + ((gyro_pitch / 57.14286) * 0.2);         //Gyro pid input is deg/sec.
-  gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw / 57.14286) * 0.2);               //Gyro pid input is deg/sec.
+  gyro_roll_input = (gyro_roll_input * 0.8) + ((gyro_roll * 57.14286) * 0.2);            //Gyro pid input is deg/sec.
+  gyro_pitch_input = (gyro_pitch_input * 0.8) + ((gyro_pitch * 57.14286) * 0.2);         //Gyro pid input is deg/sec.
+  gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw * 57.14286) * 0.2);               //Gyro pid input is deg/sec.
 
   //For starting the motors: throttle low and yaw left (step 1).
   if(receiver_input_channel_3 < 1050 && receiver_input_channel_4 < 1050)start = 1;
