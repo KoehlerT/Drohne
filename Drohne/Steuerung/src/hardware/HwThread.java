@@ -22,7 +22,7 @@ class HwThread extends Thread{
 	@Override
 	public void run() {
 		byte[] ci = new byte[8]; //Controller input bytes
-		System.out.println("SPI Run");
+		System.out.println("SPI Run "+running);
 		while(running) {
 			//Nehme Variablen
 			int throttle = Daten.getCont_throttle();
@@ -35,6 +35,7 @@ class HwThread extends Thread{
 			writeToArray(ci,roll,4);
 			writeToArray(ci,yaw,6);
 			
+			System.out.println("asdf");
 			byte[] recv = arduinoMng.sendAndReceive(ci);
 			printRecv(recv);
 		}
