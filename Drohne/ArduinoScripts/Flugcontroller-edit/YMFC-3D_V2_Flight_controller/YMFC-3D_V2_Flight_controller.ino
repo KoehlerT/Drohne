@@ -70,7 +70,8 @@ Adafruit_ADS1115 ads1115(0x49);
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){
-  //Serial.begin(57600);
+  Serial.begin(57600);
+  Serial.println("HI");
   //Read EEPROM for fast access data.
   /*for(start = 0; start <= 35; start++)eeprom_data[start] = EEPROM.read(start);
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
@@ -460,6 +461,7 @@ void calculate_pid(){
 
 //Instead: Receive Controller Inputs via SPI
 void receive(){
+  Serial.println("Versuche zu Empfangen");
     int s = 0;
     if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
       if (SPDR == (byte)'R'){
@@ -486,6 +488,15 @@ void receive(){
       receiver_input_channel_2 = convert_integer(2);
       receiver_input_channel_3 = convert_integer(0);
       receiver_input_channel_4 = convert_integer(6);
+
+      Serial.print("Throttle: ");
+      Serial.println(receiver_input_channel_3);
+      Serial.print("Roll: ");
+      Serial.println(receiver_input_channel_2);
+      Serial.print("Pitch: ");
+      Serial.println(receiver_input_channel_1);
+      Serial.print("Yaw: ");
+      Serial.println(receiver_input_channel_4);
     }
 }
 
