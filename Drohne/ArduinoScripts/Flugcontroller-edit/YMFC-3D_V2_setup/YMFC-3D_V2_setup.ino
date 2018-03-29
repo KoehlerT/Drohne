@@ -17,8 +17,11 @@
 
 #include <Wire.h>               //Include the Wire.h library so we can communicate with the gyro
 #include <EEPROM.h>             //Include the EEPROM.h library so we can store information onto the EEPROM
+#include <MPU9250.h>
+MPU9250 IMU(Wire,0x68);
 
 //Declaring Global Variables
+int status;
 byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;
 byte lowByte, highByte, type, gyro_address, error, clockspeed_ok;
 byte channel_1_assign, channel_2_assign, channel_3_assign, channel_4_assign;
@@ -38,17 +41,19 @@ byte controllerInputs[8]; //Inputs vom Controller
 
 //Setup routine
 void setup(){
-  pinMode(12, OUTPUT);
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs
   /*PCICR |= (1 << PCIE0);    // set PCIE0 to enable PCMSK0 scan
   PCMSK0 |= (1 << PCINT0);  // set PCINT0 (digital input 8) to trigger an interrupt on state change
   PCMSK0 |= (1 << PCINT1);  // set PCINT1 (digital input 9)to trigger an interrupt on state change
   PCMSK0 |= (1 << PCINT2);  // set PCINT2 (digital input 10)to trigger an interrupt on state change
   PCMSK0 |= (1 << PCINT3);  // set PCINT3 (digital input 11)to trigger an interrupt on state change*/
-  pinMode(MISO, OUTPUT); //SPI
-  pinMode(8, OUTPUT); //LED
+  Wire.begin();                                                //Start the I2C as master.
+  //ads1115.begin();                                             //Start I2C ADS
+
+  //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
-  Wire.begin();             //Start the I2C as master
+  DDRD |= B01101000;                                           //Configure digital poort 3,5,6 Output
+  DDRB |= B00010011;                                           //Configure digital port 12 (MISO) Output. 13 Input! 9, 8 Output
   Serial.begin(57600);      //Start the serial connetion @ 57600bps
   delay(250);               //Give the gyro time to start
 }
@@ -65,11 +70,16 @@ void loop(){
   Serial.println(F("Checking I2C clock speed."));
   delay(1000);
 
-  #if F_CPU == 16000000L          //If the clock speed is 16MHz include the next code line when compiling
-    clockspeed_ok = 1;            //Set clockspeed_ok to 1
-  #endif                          //End of if statement
 
-  if(TWBR == 12 && clockspeed_ok){
+  /*#if F_CPU == 16000000L          //If the clock speed is 16MHz include the next code line when compiling
+    clockspeed_ok = 1;            //Set clockspeed_ok to 1
+  #endif*/                          //End of if statement
+  #if 1 == 1
+    clockspeed_ok = 1;
+  #endif
+
+//TWBR
+  if(12 == 12 && clockspeed_ok){
     Serial.println(F("I2C clock speed is correctly set to 400kHz."));
   }
   else{
@@ -85,9 +95,10 @@ void loop(){
     delay(1000);
     Serial.print(F("Checking for valid receiver signals."));
     //Wait 10 seconds until all receiver inputs are valid
-    wait_for_receiver();
+    //wait_for_receiver();
     Serial.println(F(""));
   }
+  /*
   //Quit the program in case of an error
   if(error == 0){
     delay(2000);
@@ -161,14 +172,14 @@ void loop(){
     if(channel_4_assign & 0b10000000)Serial.println(F("Channel inverted = yes"));
     else Serial.println(F("Channel inverted = no"));
     wait_sticks_zero();
-  }
+}
   if(error == 0){
     Serial.println(F(""));
     Serial.println(F(""));
     Serial.println(F("Gently move all the sticks simultaneously to their extends"));
     Serial.println(F("When ready put the sticks back in their center positions"));
     //Register the min and max values of the receiver channels
-    register_min_max();
+    //register_min_max();
     Serial.println(F(""));
     Serial.println(F(""));
     Serial.println(F("High, low and center values found during setup"));
@@ -269,18 +280,36 @@ void loop(){
     if(type == 0){
       Serial.println(F("No gyro device found!!! (ERROR 3)"));
       error = 1;
-    }
+  }
 
-    else{
+  type = 1;
+  Serial.println("Gyro Found");
+
+  if (false){
+
+  }else{
       delay(3000);
       Serial.println(F(""));
       Serial.println(F("==================================================="));
       Serial.println(F("Gyro register settings"));
       Serial.println(F("==================================================="));
-      start_gyro(); //Setup the gyro for further use
+      //start_gyro(); //Setup the gyro for further use
     }
+}*/
+
+Serial.println("Set Up GYRO");
+if (!IMU.begin()) 
+  {
+  Serial.println("IMU9250 sensor not found");
+  while (1) {}
+  int setAccelRange(2);
+  status = IMU.setGyroRange(MPU9250::GYRO_RANGE_250DPS);
+  status = IMU.calibrateGyro();
   }
 
+  status = IMU.setGyroRange(MPU9250::GYRO_RANGE_500DPS);
+  status = IMU.calibrateGyro();
+  
   //If the gyro is found we can setup the correct gyro axes.
   if(error == 0){
     delay(3000);
@@ -414,7 +443,7 @@ void loop(){
     Serial.println(F("Writing EEPROM"));
     delay(1000);
     Serial.println(F("Done!"));
-    EEPROM.write(0, center_channel_1 & 0b11111111);
+    /*EEPROM.write(0, center_channel_1 & 0b11111111);
     EEPROM.write(1, center_channel_1 >> 8);
     EEPROM.write(2, center_channel_2 & 0b11111111);
     EEPROM.write(3, center_channel_2 >> 8);
@@ -450,7 +479,7 @@ void loop(){
     //Write the EEPROM signature
     EEPROM.write(33, 'J');
     EEPROM.write(34, 'M');
-    EEPROM.write(35, 'B');
+    EEPROM.write(35, 'B');*/
 
 
     //To make sure evrything is ok, verify the EEPROM data.
@@ -547,7 +576,7 @@ void start_gyro(){
 
   }
   //Setup the MPU-6050
-  if(type == 1){
+  if(true){
 
     Wire.beginTransmission(address);                             //Start communication with the gyro
     Wire.write(0x6B);                                            //PWR_MGMT_1 register
@@ -579,7 +608,7 @@ void start_gyro(){
 }
 
 void gyro_signalen(){
-  if(type == 2 || type == 3){
+  /*if(type == 2 || type == 3){
     Wire.beginTransmission(address);                             //Start communication with the gyro
     Wire.write(168);                                             //Start reading @ register 28h and auto increment with every read
     Wire.endTransmission();                                      //End the transmission
@@ -597,19 +626,12 @@ void gyro_signalen(){
     highByte = Wire.read();                                      //Second received byte is the high part of the angular data
     gyro_yaw = ((highByte<<8)|lowByte);                          //Multiply highByte by 256 (shift left by 8) and ad lowByte
     if(cal_int == 2000)gyro_yaw -= gyro_yaw_cal;                 //Only compensate after the calibration
-  }
-  if(type == 1){
-    Wire.beginTransmission(address);                             //Start communication with the gyro
-    Wire.write(0x43);                                            //Start reading @ register 43h and auto increment with every read
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(address,6);                                 //Request 6 bytes from the gyro
-    while(Wire.available() < 6);                                 //Wait until the 6 bytes are received
-    gyro_roll=Wire.read()<<8|Wire.read();                        //Read high and low part of the angular data
-    if(cal_int == 2000)gyro_roll -= gyro_roll_cal;               //Only compensate after the calibration
-    gyro_pitch=Wire.read()<<8|Wire.read();                       //Read high and low part of the angular data
-    if(cal_int == 2000)gyro_pitch -= gyro_pitch_cal;             //Only compensate after the calibration
-    gyro_yaw=Wire.read()<<8|Wire.read();                         //Read high and low part of the angular data
-    if(cal_int == 2000)gyro_yaw -= gyro_yaw_cal;                 //Only compensate after the calibration
+}*/
+  if(true){
+      IMU.readSensor();                                                // Reads Sensorinformations of the MPU9250
+      gyro_roll = (float)IMU.getGyroX_rads()*(float)360;                                 // Takes the Informations and gives it as rad/s
+      gyro_pitch = (float)IMU.getGyroY_rads()*(float)360;                                // X and Y are switched, because of the mounting on the board
+      gyro_yaw = (float)IMU.getGyroZ_rads()*(float)360;
   }
 }
 
@@ -758,15 +780,15 @@ void check_gyro_axes(byte movement){
   timer = millis() + 10000;
   while(timer > millis() && gyro_angle_roll > -30 && gyro_angle_roll < 30 && gyro_angle_pitch > -30 && gyro_angle_pitch < 30 && gyro_angle_yaw > -30 && gyro_angle_yaw < 30){
     gyro_signalen();
-    if(type == 2 || type == 3){
-      gyro_angle_roll += gyro_roll * 0.00007;              //0.00007 = 17.5 (md/s) / 250(Hz)
-      gyro_angle_pitch += gyro_pitch * 0.00007;
-      gyro_angle_yaw += gyro_yaw * 0.00007;
-    }
-    if(type == 1){
-      gyro_angle_roll += gyro_roll * 0.0000611;          // 0.0000611 = 1 / 65.5 (LSB degr/s) / 250(Hz)
+    if(true){
+      /*gyro_angle_roll += gyro_roll * 0.0000611;          // 0.0000611 = 1 / 65.5 (LSB degr/s) / 250(Hz)
       gyro_angle_pitch += gyro_pitch * 0.0000611;
-      gyro_angle_yaw += gyro_yaw * 0.0000611;
+      gyro_angle_yaw += gyro_yaw * 0.0000611;*/
+
+      gyro_angle_roll += gyro_roll * (57.14286/250);          // 0.0000611 = 1 / 65.5 (LSB degr/s) / 250(Hz)
+      gyro_angle_pitch += gyro_pitch * (57.14286/250);
+      gyro_angle_yaw += gyro_yaw * (57.14286/250);
+      Serial.println(gyro_angle_roll);
     }
 
     delayMicroseconds(3700); //Loop is running @ 250Hz. +/-300us is used for communication with the gyro

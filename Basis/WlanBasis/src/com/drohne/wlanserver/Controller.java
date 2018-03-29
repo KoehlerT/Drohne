@@ -27,24 +27,27 @@ public class Controller implements KeyListener{
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		switch(arg0.getKeyCode()) {
-		case KeyEvent.VK_W: w = true; break;
-		case KeyEvent.VK_A: a = true; break;
-		case KeyEvent.VK_S: s = true; break;
-		case KeyEvent.VK_D: d = true; break;
-		case KeyEvent.VK_I: i = true; break;
-		case KeyEvent.VK_J: j = true; break;
-		case KeyEvent.VK_K: k = true; break;
-		case KeyEvent.VK_L: l = true; break;
+		case KeyEvent.VK_W: throttle += 50; break;
+		case KeyEvent.VK_A: yaw -= 50; break;
+		case KeyEvent.VK_S: throttle-=50; break;
+		case KeyEvent.VK_D: yaw+=50; break;
+		case KeyEvent.VK_I: pitch+=50; break;
+		case KeyEvent.VK_J:roll-=50; break;
+		case KeyEvent.VK_K: pitch-=50; break;
+		case KeyEvent.VK_L: roll+=50; break;
 		default: break;
+		
 		}
-		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
-			throttle += 50;
-			System.out.println(throttle);
-		}
-		if (arg0.getKeyCode() == KeyEvent.VK_M) {
-			throttle -= 50;
-			System.out.println(throttle);
-		}
+		yaw = norm((int)yaw);
+		throttle = norm((int)throttle);
+		pitch = norm((int)pitch);
+		roll = norm((int)roll);
+		
+		Window.instance.setThrottle((int)throttle);
+		Window.instance.setPitch((int)pitch);
+		Window.instance.setRoll((int)roll);
+		Window.instance.setYaw((int)yaw);
+		
 		if (arg0.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 			throttle = 1000;
 			System.out.println(throttle);
@@ -54,7 +57,7 @@ public class Controller implements KeyListener{
 	@Override
 	public void keyReleased(KeyEvent arg0) {
 		
-		switch(arg0.getKeyCode()) {
+		/*switch(arg0.getKeyCode()) {
 		case KeyEvent.VK_W: w = false; break;
 		case KeyEvent.VK_A: a = false; yaw = 1500; break;
 		case KeyEvent.VK_S: s = false; break;
@@ -64,21 +67,17 @@ public class Controller implements KeyListener{
 		case KeyEvent.VK_K: k = false; pitch = 1500;break;
 		case KeyEvent.VK_L: l = false; roll = 1500;break;
 		default: break;
-		}
+		}*/
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
-			throttle += 50;
-			System.out.println(throttle);
-		}
-	}
+			}
 	
 	public void update(long timePassed) {
 		//float incr = (float)(timePassed*0.0000001);
-		float incr = 0.1f;
+		/*float incr = 0.1f;
 		if (w) {throttle += incr;}
 		if (a) {yaw -= incr;}
 		if (s) {throttle -= incr;}
@@ -96,7 +95,7 @@ public class Controller implements KeyListener{
 		Window.instance.setThrottle((int)throttle);
 		Window.instance.setPitch((int)pitch);
 		Window.instance.setRoll((int)roll);
-		Window.instance.setYaw((int)yaw);
+		Window.instance.setYaw((int)yaw);*/
 	}
 	
 	private int norm(int i) {
