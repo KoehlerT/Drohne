@@ -257,6 +257,18 @@ void loop(){
     esc_4 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-4.
   }
 
+  //Send times
+  Serial.println(start);
+  Serial.print("Sende ESC Signale: OP3: ");
+  Serial.print(esc_1);
+  Serial.print(" OP6: ");
+  Serial.print(esc_2);
+  Serial.print(" OP9: ");
+  Serial.print(esc_3);
+  Serial.print(" OP5: ");
+  Serial.print(esc_4);
+  Serial.println();
+  
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
@@ -268,13 +280,13 @@ void loop(){
   timer_channel_2 = esc_2 + loop_timer;                                     //Calculate the time of the faling edge of the esc-2 pulse.
   timer_channel_3 = esc_3 + loop_timer;                                     //Calculate the time of the faling edge of the esc-3 pulse.
   timer_channel_4 = esc_4 + loop_timer;                                     //Calculate the time of the faling edge of the esc-4 pulse.
-
+  
   while(PORTD >= 16){                                                       //Stay in this loop until output 4,5,6 and 7 are low.
     esc_loop_timer = micros();                                              //Read the current time.
-    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired. Vorne Rechts
-    if(timer_channel_2 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired.
-    if(timer_channel_3 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired.
-    if(timer_channel_4 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired.
+    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired. Vorne Rechts
+    if(timer_channel_2 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired. Hinten Rechts
+    if(timer_channel_3 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired. Hinten Links
+    if(timer_channel_4 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired. Vorne Links
   }
 }
 
