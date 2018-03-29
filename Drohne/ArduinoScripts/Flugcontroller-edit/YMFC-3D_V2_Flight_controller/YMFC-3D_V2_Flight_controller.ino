@@ -271,10 +271,10 @@ void loop(){
 
   while(PORTD >= 16){                                                       //Stay in this loop until output 4,5,6 and 7 are low.
     esc_loop_timer = micros();                                              //Read the current time.
-    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired.
-    if(timer_channel_2 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired.
-    if(timer_channel_3 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired.
-    if(timer_channel_4 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired.
+    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired. Vorne Rechts
+    if(timer_channel_2 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired.
+    if(timer_channel_3 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired.
+    if(timer_channel_4 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired.
   }
 }
 
@@ -369,6 +369,9 @@ IMU.readSensor();                                                // Reads Sensor
 gyro_roll = IMU.getGyroY_rads();                                 // Takes the Informations and gives it as rad/s
 gyro_pitch = IMU.getGyroY_rads();                                // X and Y are switched, because of the mounting on the board
 gyro_yaw = IMU.getGyroZ_rads();
+
+gyro_roll = -gyro_roll;
+gyro_pitch = -gyro_pitch;
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
