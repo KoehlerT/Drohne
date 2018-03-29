@@ -262,7 +262,8 @@ void loop(){
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
-  PORTD |= B11110000;                                                       //Set digital outputs 4,5,6 and 7 high.
+  PORTD |= B01101000;                                        //Set digital poort 3,5,6 HIGH
+  PORTB |= B00000010;                                        //Set digital port 9 High
   timer_channel_1 = esc_1 + loop_timer;                                     //Calculate the time of the faling edge of the esc-1 pulse.
   timer_channel_2 = esc_2 + loop_timer;                                     //Calculate the time of the faling edge of the esc-2 pulse.
   timer_channel_3 = esc_3 + loop_timer;                                     //Calculate the time of the faling edge of the esc-3 pulse.
@@ -270,10 +271,10 @@ void loop(){
 
   while(PORTD >= 16){                                                       //Stay in this loop until output 4,5,6 and 7 are low.
     esc_loop_timer = micros();                                              //Read the current time.
-    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11101111;                //Set digital output 4 to low if the time is expired.
+    if(timer_channel_1 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired.
     if(timer_channel_2 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired.
     if(timer_channel_3 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired.
-    if(timer_channel_4 <= esc_loop_timer)PORTD &= B01111111;                //Set digital output 7 to low if the time is expired.
+    if(timer_channel_4 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired.
   }
 }
 
@@ -596,5 +597,6 @@ void set_gyro_registers(){
 
 int getBatteryVoltage(){
     int input = ads1115.readADC_SingleEnded(1);
-    return input*500; // Input * 5 = Volt, Input*500 = centivolt
+    return 1100;
+    //return input*500; // Input * 5 = Volt, Input*500 = centivolt
 }

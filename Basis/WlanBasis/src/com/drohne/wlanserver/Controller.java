@@ -37,7 +37,18 @@ public class Controller implements KeyListener{
 		case KeyEvent.VK_L: l = true; break;
 		default: break;
 		}
-		
+		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
+			throttle += 50;
+			System.out.println(throttle);
+		}
+		if (arg0.getKeyCode() == KeyEvent.VK_M) {
+			throttle -= 50;
+			System.out.println(throttle);
+		}
+		if (arg0.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+			throttle = 1000;
+			System.out.println(throttle);
+		}
 	}
 
 	@Override
@@ -59,11 +70,15 @@ public class Controller implements KeyListener{
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
-		
+		if (arg0.getKeyCode() == KeyEvent.VK_SPACE) {
+			throttle += 50;
+			System.out.println(throttle);
+		}
 	}
 	
 	public void update(long timePassed) {
-		float incr = (float)(timePassed*0.000001);
+		//float incr = (float)(timePassed*0.0000001);
+		float incr = 0.1f;
 		if (w) {throttle += incr;}
 		if (a) {yaw -= incr;}
 		if (s) {throttle -= incr;}
