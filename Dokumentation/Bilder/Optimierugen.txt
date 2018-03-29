@@ -1,7 +1,0 @@
-Optimierungen:
-Blumenraster früher: 120ms
-Blumenraster sin/cos vorgekaut: 45ms
-
-Umrissberechnung früher: 0-77ms
-Umrissberechnung ohne try/catch: 0.5-1.5 ms
-
