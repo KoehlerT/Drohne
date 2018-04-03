@@ -10,6 +10,6 @@ public class Randomnumber {
 	}
 	
 	public static int randomisieren() {
-		return r.nextInt(100);
+		return r.nextInt(20);
 	}
 }

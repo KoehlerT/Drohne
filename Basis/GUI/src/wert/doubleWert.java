@@ -1,14 +1,21 @@
 package wert;
 
-public class doubleWert extends Wert {
+import java.awt.Color;
+
+public class doubleWert implements Werteverwalter {
 	double minimum; 
 	double maximum; 
 	double wert;
+	String name;
+	Boolean kritisch;
+	Color color;
 	public doubleWert(String n, Boolean krit, double min, double max, double w) {
-		super(n, krit);
+		name = n;
+		kritisch = krit;
 		minimum = min;
 		maximum = max;
 		wert = w;
+		color = Color.BLACK;
 	}
 
 	public double getMinimum() {
@@ -33,10 +40,41 @@ public class doubleWert extends Wert {
 
 	public void setWert(double wert) {
 		this.wert = wert;
+		if(istUnnormal()) {
+			color = Color.red;			
+		} else {
+			color = Color.BLACK;			
+		}
 	}
 
 	@Override
 	public String toString() {
 		return this.getname();		
+	}
+
+
+	public String getname() {
+		return name;
+	}
+
+
+	public boolean getkritisch() {
+		return kritisch;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+	private Boolean istUnnormal() {
+		if(this.wert > this.maximum || this.wert < minimum) {
+			return true;
+		} 
+		else {return false;
+		}
+		
+	}
+	
+	public String getString() {
+		return String.valueOf(this.wert);
 	}
 }
