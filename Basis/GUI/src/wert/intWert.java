@@ -15,6 +15,9 @@ public class intWert implements Werteverwalter {
 		minimum = min;
 		maximum = max;
 		wert = w;
+		if(istUnnormal()) {
+			color = Color.red;
+		}
 	}
 	public int getMinimum() {
 		return minimum;

@@ -29,6 +29,9 @@ public class vektorenWert implements Werteverwalter {
 		wert1 = w1;
 		wert2 = w2;
 		wert3 = w3;
+		if(istUnnormal()) {
+			color = Color.red;
+		}
 	}
 
 	public int[] getMinimum() {
@@ -100,6 +103,11 @@ public class vektorenWert implements Werteverwalter {
 
 	public void setWert1(int wert1) {
 		this.wert1 = wert1;
+		if (istUnnormal()) {
+			color = Color.red;
+		} else {
+			color = Color.BLACK;
+		}
 	}
 
 	public int getWert2() {
@@ -108,6 +116,11 @@ public class vektorenWert implements Werteverwalter {
 
 	public void setWert2(int wert2) {
 		this.wert2 = wert2;
+		if (istUnnormal()) {
+			color = Color.red;
+		} else {
+			color = Color.BLACK;
+		}
 	}
 
 	public int getWert3() {
@@ -116,6 +129,11 @@ public class vektorenWert implements Werteverwalter {
 
 	public void setWert3(int wert3) {
 		this.wert3 = wert3;
+		if (istUnnormal()) {
+			color = Color.red;
+		} else {
+			color = Color.BLACK;
+		}
 	}
 
 	public String getName() {
@@ -138,8 +156,10 @@ public class vektorenWert implements Werteverwalter {
 		this.color = color;
 	}
 
-	public void setWert(int wert) {
-		this.wert1 = wert;
+	public void setWert(int w1,int w2, int w3) {
+		this.wert1 = w1;
+		this.wert2 = w2;
+		this.wert3 = w3;
 		if (istUnnormal()) {
 			color = Color.red;
 		} else {

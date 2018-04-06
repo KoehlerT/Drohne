@@ -9,7 +9,7 @@ public class Buttonmanager {
 	public Buttonmanager(JDesktopPane p) {
 		JButton[] b = new JButton[4];
 		// neues Fenster machen
-		JInternalFrame j = new JInternalFrame("Buttomanager",true);
+		JInternalFrame j = new JInternalFrame("Buttonmanager",true);
 		p.add(j);
 		j.setSize(250, 250);
 		j.setLocation(250,250);

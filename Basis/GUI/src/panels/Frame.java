@@ -10,7 +10,6 @@ import Bild.Kreiszeichner;
 import wert.*;
 @SuppressWarnings("unused")
 public class Frame {
-	int[] al = new int[5];
 	static JDialog mf = new JDialog();
 	static LinkedList<Werteverwalter> listkomplett = new LinkedList<Werteverwalter>();
 	public Frame() {
@@ -25,15 +24,10 @@ public class Frame {
 		mf.add(p);
 		mf.setVisible(true);
 	}
-
-	
-
 	public static void addtoll(Werteverwalter w) {
 		listkomplett.add(w);
 	}
-
-
-
-
-	
+	public static LinkedList<Werteverwalter> getListkomplett() {
+		return listkomplett;
+	}
 }

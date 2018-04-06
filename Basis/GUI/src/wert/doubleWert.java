@@ -16,6 +16,9 @@ public class doubleWert implements Werteverwalter {
 		maximum = max;
 		wert = w;
 		color = Color.BLACK;
+		if(istUnnormal()) {
+			color = Color.red;
+		}
 	}
 	//getter und setter
 

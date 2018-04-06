@@ -12,6 +12,7 @@ import wert.vektorenWert;
 @SuppressWarnings("unused")
 public class Exec {
 	public static void main(String[] args) {
+		Frame.addtoll(new vektorenWert("Richtung",true,0,0,0,20,20,20,Randomnumber.randomisieren(),Randomnumber.randomisieren(),Randomnumber.randomisieren()));
 		Frame.addtoll(new intWert("Geschwindigkeit",true,0,20,Randomnumber.randomisieren()));
 		Frame.addtoll(new intWert("Höhe",true,0,20,Randomnumber.randomisieren()));
 		Frame.addtoll(new intWert("Status",false,0,20,Randomnumber.randomisieren()));

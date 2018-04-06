@@ -49,7 +49,7 @@ public class Vitalmonitore {
 		uncritic.add(l);
 	}
 	public static void splitlist(LinkedList<Werteverwalter> l) {
-		for (int i = 0; i < l.size() - 1; i++) {
+		for (int i = 0; i < l.size(); i++) {
 			if (l.get(i).getkritisch() && !(kritisch.contains(l.get(i)))) {
 				kritisch.add(l.get(i));
 			} else if (!(l.get(i).getkritisch()) && !(unkritisch.contains(l.get(i)))) {
