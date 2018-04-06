@@ -6,12 +6,19 @@ import main.Daten;
 
 class HwThread extends Thread{
 	
-	SPIManager arduinoMng;
+	private Arduino arduinoMng;
+	private Beeper beeper;
+	private Ultrasonic ultrasonic;
+	private GPS gps;
+	
 	private Boolean running = true;
 	
 	public HwThread() {
+		beeper = new Beeper();
+		ultrasonic = new Ultrasonic();
+		gps = new GPS();
 		try {
-			arduinoMng = new SPIManager();
+			arduinoMng = new Arduino();
 			System.out.println("SPI gestartet");
 		} catch (IOException e) {
 			System.out.println("SPI Fehler");
@@ -21,37 +28,47 @@ class HwThread extends Thread{
 	
 	@Override
 	public void run() {
-		byte[] ci = new byte[8]; //Controller input bytes
 		System.out.println("SPI Run "+running);
+		beeper.beep(500);
 		while(running) {
 			//Nehme Variablen
-			int throttle = Daten.getCont_throttle();
-			int pitch = Daten.getCont_pitch();
-			int roll = Daten.getCont_roll();
-			int yaw = Daten.getCont_yaw();
+			//SPI
+			arduinoMng.sendControllerInputs();
 			
-			writeToArray(ci,throttle,0);
-			writeToArray(ci,pitch,2);
-			writeToArray(ci,roll,4);
-			writeToArray(ci,yaw,6);
+			//Ultraschall
+			try {
+				 ultrasonic.measureDistanceDm();
+				System.out.println("nächster Gegenstand "+Daten.getDistanceUltrasonic()
+					+" dm entfernt");
+			} catch (InterruptedException e) {
+				System.out.println("Fehler beim Messend er Entfernung");
+				e.printStackTrace();
+			}
 			
-			System.out.println("asdf");
-			byte[] recv = arduinoMng.sendAndReceive(ci);
-			printRecv(recv);
+			//GPS
+			//Automatisch / Event driven
+			GPS.printGps();
+			
+			//Antenne
+			
+			
+			
+			//Warte ein wenig
+			try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+			
 		}
 	}
-	private void writeToArray(byte[] arr, int val, int ind) {
-		byte lb = (byte)(val & 0xFF); //Lower Byte value
-		byte hb = (byte)((val >> 8)& 0xFF); //Higher Byte value
-		arr[ind] = lb;
-		arr[ind+1] = hb;
-	}
 	
-	private void printRecv(byte[] recv) {
+	
+	/*private void printRecv(byte[] recv) {
+		if (recv == null) {
+			System.out.println("Arr: null");
+			return;
+		}
 		System.out.print("Empfangen: ");
 		for (byte b : recv) {
 			System.out.print(b+", ");
 		}
 		System.out.println();
-	}
+	}*/
 }

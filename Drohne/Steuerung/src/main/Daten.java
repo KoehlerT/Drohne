@@ -20,6 +20,16 @@ public class Daten {
 	
 	//Sensorwerte Position 
 	private static Vector3 tilt; //Item1: roll Item2: pitch Item3: Yaw
+	private static float latitude;
+	private static float longitude;
+	private static float gpsAltitude;
+	
+	//Sensorwerte Umgebung
+	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
+	
+	//Statusinformationen
+	private static int numGpsSatellites;
+	private static boolean gpsAvailable;
 	
 	//Getter
 	public static synchronized int getCont_throttle() {return cont_throttle;}
@@ -33,6 +43,14 @@ public class Daten {
 	public static synchronized float getAmperage() {return amperage;}
 	
 	public static synchronized Vector3 getTilt() {return tilt;}
+	public static synchronized float getLatitude() {return latitude;}
+	public static synchronized float getLongitude() {return longitude;}
+	public static synchronized float getGpsAltitude() {return gpsAltitude;}
+	
+	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
+	
+	public static synchronized int getNumGpsSatellites() {return numGpsSatellites;}
+	public static synchronized boolean getGpsAvailable() {return gpsAvailable;}
 	
 	//Setter
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
@@ -46,6 +64,14 @@ public class Daten {
 	public static synchronized void setAmperage(float ap) {amperage = ap;}
 	
 	public static synchronized void setTilt(Vector3 tlt) {tilt = tlt;}
+	public static synchronized void setLatitude(float lt) {latitude = lt;}
+	public static synchronized void setLongitude(float lt) {longitude = lt;}
+	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
+	
+	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;}
+	
+	public static synchronized void setNumGpsSatellites(int sat) {numGpsSatellites = sat;}
+	public static synchronized void setGpsAvailable(boolean available) {gpsAvailable = available;}
 }
 
 
