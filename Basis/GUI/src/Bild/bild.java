@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 public class bild {
 	public bild() {
-		
+	// andere Möglichkeit das Bild anzuzeigen jedoch nutzlos	
 		
 	}
 	public BufferedImage readPic() {
