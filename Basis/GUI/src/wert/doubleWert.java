@@ -17,6 +17,7 @@ public class doubleWert implements Werteverwalter {
 		wert = w;
 		color = Color.BLACK;
 	}
+	//getter und setter
 
 	public double getMinimum() {
 		return minimum;
@@ -37,7 +38,7 @@ public class doubleWert implements Werteverwalter {
 	public double getWert() {
 		return wert;
 	}
-
+	// spezieller setter bei dem gleichzeitig noch die Farbe verändert wird wenn der werte ins unnormale verändert wird
 	public void setWert(double wert) {
 		this.wert = wert;
 		if(istUnnormal()) {
@@ -65,11 +66,13 @@ public class doubleWert implements Werteverwalter {
 	public Color getColor() {
 		return color;
 	}
+	//Abfrage ob es über dem Maximum oder unter dem Minimum liegt
 	private Boolean istUnnormal() {
 		if(this.wert > this.maximum || this.wert < minimum) {
 			return true;
 		} 
-		else {return false;
+		else {
+			return false;
 		}
 		
 	}

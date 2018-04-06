@@ -1,7 +1,7 @@
 package wert;
 
 import java.awt.Color;
-
+//siehe Klasse Doublewert
 public class vektorenWert implements Werteverwalter {
 	int minimum1;
 	int maximum1;
