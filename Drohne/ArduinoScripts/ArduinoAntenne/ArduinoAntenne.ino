@@ -12,10 +12,12 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Serial.println("Start");
   //Serial.println(16,BIN);
   SPI.setClockDivider(SPI_CLOCK_DIV128);
   SPI.setBitOrder(MSBFIRST);
-  //SPI.begin();
+  SPI.setDataMode(SPI_MODE0);
+  SPI.begin();
 
   //Pinmodes
   pinMode(TXE,OUTPUT);
@@ -27,9 +29,18 @@ void setup() {
   pinMode(AM,INPUT);
   pinMode(DR,INPUT);
 
+  //SPI Pinmodes
+  pinMode(MISO, INPUT);
+  pinMode(MOSI, OUTPUT);
+  pinMode(13,OUTPUT);
+
   digitalWrite(CS,HIGH); //nRF disabled
+
+  digitalWrite(TXE, LOW);
+  digitalWrite(PWR, LOW);
+  digitalWrite(CE, LOW);
   configure();
-  
+
 }
 char toSend[100];
 int index = 0;
@@ -55,18 +66,19 @@ void loop() {
 
 void configure(){
   //Configure Outputs:
-  digitalWrite(PWR,LOW); //Power down
-  digitalWrite(CE,LOW);
-  digitalWrite(TXE,LOW);
+  digitalWrite(PWR,HIGH); //Power down
+  digitalWrite(CE,HIGH);
+  digitalWrite(TXE,HIGH);
   //No Power neither send nor receive enabled
   //Ready for Programming
-  
+
   //Frequenz: 864,8MHz (Legal: 863 - 865 MHz (EU-weites Harmonized Frequency Band); https://www.shure.de/support/frequenzen#anmeldefrei
   //CH_NO: 100 (Dec.) 64 (Hex)
-  //writeConfigRegister(0x0,0x64);
+  writeConfigRegister(0x0,0x64);
   //Check content
+  byte content = readConfigRegister(0x0);
   Serial.print("Content Register 0: ");
-  Serial.println(readConfigRegister(0x0));
+  Serial.println(content,BIN);
   //HFREQ_PLL: 1
 
   //Output Power: -10dBm PA_PWR: 00
@@ -97,9 +109,11 @@ void writeConfigRegister(byte registerNum, byte content){
 }
 
 byte readConfigRegister(byte registerNum){
-  byte instr = registerNum & 0b00011111; //Instruction = 0001AAAA (AAA => Address/ registerNum);
+  byte instr = registerNum & 0b00001111; //Instruction = 0001AAAA (AAA => Address/ registerNum);
+  instr |= 0b00010000;
+  Serial.print("instr: ");
+  Serial.println(instr,BIN);
   //Enable SPI
-  SPI.begin(); //2KHz
   digitalWrite(CS,LOW);
   //delay(1);
   //Transfer Instruction
@@ -118,8 +132,8 @@ byte readConfigRegister(byte registerNum){
 void sendData(){
   Serial.print("To Send: ");
   Serial.print(toSend);
-//PWR_UP => HIGH, Wait 
-  
+//PWR_UP => HIGH, Wait
+
   //StartLoop
   //TX_EN => HIGH, PWR_UP => HIGH, CE => LOW
   //Wait for chip ready
@@ -143,4 +157,3 @@ void clearSendBuffer(){
   }
   index = 0;
 }
-
