@@ -37,7 +37,7 @@ void setup() {
   digitalWrite(CS,HIGH); //nRF disabled
 
   digitalWrite(TXE, LOW);
-  digitalWrite(PWR, LOW);
+  digitalWrite(PWR, HIGH);
   digitalWrite(CE, LOW);
   configure();
 
@@ -66,7 +66,7 @@ void loop() {
 
 void configure(){
   //Configure Outputs:
-  digitalWrite(PWR,LOW); //Power down
+  digitalWrite(PWR,HIGH); //Power down
   digitalWrite(CE,LOW);
   digitalWrite(TXE,LOW);
   //No Power neither send nor receive enabled
@@ -134,7 +134,7 @@ byte readConfigRegister(byte registerNum){
   //Serial.println(instr,BIN);
   //Enable SPI
   digitalWrite(CS,LOW);
-  //delay(1);
+   delay(1);
   //Transfer Instruction
   SPI.transfer(instr);
   //Gather Information
