@@ -66,39 +66,58 @@ void loop() {
 
 void configure(){
   //Configure Outputs:
-  digitalWrite(PWR,HIGH); //Power down
-  digitalWrite(CE,HIGH);
-  digitalWrite(TXE,HIGH);
+  digitalWrite(PWR,LOW); //Power down
+  digitalWrite(CE,LOW);
+  digitalWrite(TXE,LOW);
   //No Power neither send nor receive enabled
   //Ready for Programming
+  delay(3);
 
   //Frequenz: 864,8MHz (Legal: 863 - 865 MHz (EU-weites Harmonized Frequency Band); https://www.shure.de/support/frequenzen#anmeldefrei
   //CH_NO: 100 (Dec.) 64 (Hex)
   writeConfigRegister(0x0,0x64);
-  //Check content
-  byte content = readConfigRegister(0x0);
-  Serial.print("Content Register 0: ");
-  Serial.println(content,BIN);
+  
   //HFREQ_PLL: 1
-
   //Output Power: -10dBm PA_PWR: 00
-
+  //Config byte 1: [7:6] none, RX_RED_PWR, PA_PWR[1:0], FREQ_PLL, 8th bit CH_NO 
+  byte b1 = 0b00000010;
+  writeConfigRegister(0x1,b1);
+  
   //RX-address width: 100 (4 bytes) RX_AFW: 100
-
   //TX-address width: 100 (4bytes) TX_AFW: 100
-
+  //7 none, TX_AFW[2:0], 3 none, RX_AFW[2:0]
+  byte b2 = 0b01000100;
+  writeConfigRegister(0x2,b2);
+  
   //RX Payload width: 32 bytes RX_PW: 100000
-
+  writeConfigRegister(0x3,0x20);
+  
   //TX Payload width: 32 bytes TX_PW: 100000
-
-  //RX-address 32 bits -> 4bytes: 956BCCB6 (HEX)
-
+  writeConfigRegister(0x4,0x20);
+  
+  //RX-address 32 bits -> 4bytes: 0x956BCCB6 (HEX)
+  writeConfigRegister(0x5,0x95);
+  writeConfigRegister(0x6,0x6B);
+  writeConfigRegister(0x7,0xCC);
+  writeConfigRegister(0x8,0xB6);
   //No External Clock UP_CLK_FREQ: 0
+  //CRC_MODE: 1; CRC_EN: 1; XOF: 011; UP_CLK_EN: 0; UP_CLK_FREQ: 11
+  writeConfigRegister(0x9,0b11011011);
+
+  //Check registers
+  Serial.println("Checking contents of Registers");
+  for (int i = 0; i <= 9; i++){
+    byte content = readConfigRegister((byte)i);
+    Serial.print("Content reg #");
+    Serial.print(i);
+    Serial.print(":");
+    Serial.println(content,BIN);
+  }
 }
 
 void writeConfigRegister(byte registerNum, byte content){
   byte instr = registerNum & 0b00001111; //Instruction = 0000AAAA (AAAA => Address/ registerNum)
-  Serial.println(instr,BIN);
+  //Serial.println(instr,BIN);
   //Enable SPI
   digitalWrite(CS,LOW);
   //Transfer instruction and content
@@ -111,8 +130,8 @@ void writeConfigRegister(byte registerNum, byte content){
 byte readConfigRegister(byte registerNum){
   byte instr = registerNum & 0b00001111; //Instruction = 0001AAAA (AAA => Address/ registerNum);
   instr |= 0b00010000;
-  Serial.print("instr: ");
-  Serial.println(instr,BIN);
+  //Serial.print("instr: ");
+  //Serial.println(instr,BIN);
   //Enable SPI
   digitalWrite(CS,LOW);
   //delay(1);
@@ -122,7 +141,6 @@ byte readConfigRegister(byte registerNum){
   byte result = SPI.transfer(0x00);
   //Disable SPI
   digitalWrite(CS,HIGH);
-  SPI.end();
   return result;
 }
 
