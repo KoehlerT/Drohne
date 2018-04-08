@@ -54,13 +54,13 @@ public class GPS implements SerialDataEventListener{
 	
 	private void splitData(String data) {
 		String[] parts = data.split(",");
-		if (parts[1] == "") {
+		if (parts[1] == "" || parts[1] == null || parts[1].length() == 0) {
 			//Kein GPS empfang
 			if (available) {
 				available = false;
 				Daten.setGpsAvailable(false);
 			}
-		}else {
+		}else if (parts[1] != ""){
 			//Tabelle
 			//https://www.engineersgarage.com/embedded/arduino/arduino-gps-interfacing-project-circuit/
 			String latStr = parts[2];

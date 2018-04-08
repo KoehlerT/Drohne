@@ -10,6 +10,7 @@ class HwThread extends Thread{
 	private Beeper beeper;
 	private Ultrasonic ultrasonic;
 	private GPS gps;
+	private Antenne ant;
 	
 	private Boolean running = true;
 	
@@ -17,6 +18,7 @@ class HwThread extends Thread{
 		beeper = new Beeper();
 		ultrasonic = new Ultrasonic();
 		gps = new GPS();
+		ant = new Antenne();
 		try {
 			arduinoMng = new Arduino();
 			System.out.println("SPI gestartet");
@@ -29,7 +31,7 @@ class HwThread extends Thread{
 	@Override
 	public void run() {
 		System.out.println("SPI Run "+running);
-		beeper.beep(500);
+		beeper.beep(200);
 		while(running) {
 			//Nehme Variablen
 			//SPI
