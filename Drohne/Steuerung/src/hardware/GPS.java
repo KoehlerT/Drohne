@@ -54,7 +54,8 @@ public class GPS implements SerialDataEventListener{
 	
 	private void splitData(String data) {
 		String[] parts = data.split(",");
-		if (parts[1] == "" || parts[1] == null || parts[1].length() == 0) {
+		//System.out.println(data);
+		if (parts[2] == "" || parts[2] == null || parts[2].length() == 0) {
 			//Kein GPS empfang
 			if (available) {
 				available = false;

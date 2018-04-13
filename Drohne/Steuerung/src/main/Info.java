@@ -20,4 +20,8 @@ public class Info {
 	/**Geschwindigkeit des Tons in dm/ns (Dezimeter pro Nanosekunde)
 	 * **/
 	public static final float SoundSpeed = 0.000003f; //300m/s => 300*10^-8 dm/ns => 3*10^-6
+	
+	/**Ist die untere Plattform angeschlossen
+	 * **/
+	public static final boolean sensorAttached = false;
 }

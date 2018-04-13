@@ -1,12 +1,18 @@
-package hardware;
+package com.drohne.rf;
 
 import java.io.IOException;
 
-import com.pi4j.io.gpio.*;
-import com.pi4j.io.spi.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalInput;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
+import com.pi4j.io.spi.SpiChannel;
+import com.pi4j.io.spi.SpiDevice;
+import com.pi4j.io.spi.SpiFactory;
 
-public class Antenne {
-	//Klasse zum Kontrollieren des nRF905
+public class RFModule {
 	
 	/*Pin Layout:
 	 * GPIO 18 (01): DR - Input
@@ -28,11 +34,17 @@ public class Antenne {
 	
 	private boolean running = true;
 	
-	private final byte transmitCommand = 0b00100000; //W_TX_PAYLOAD
-	private byte[] transmitBuffer = new byte[33]; //transmitBuffer[0] = Write TX-Buffer Command
+	//Send and Receiving data
 	
-	public Antenne() {
-		transmitBuffer[0] = transmitCommand;
+	private final byte RXcommand = 0b0010_0011;
+	private final byte[] emptyReceive = new byte[33];
+	
+	private byte[] txAddress = new byte[4];
+	private byte[] transmit = new byte[32];
+	private byte[] receive = new byte[33]; //Garbage [0], payload[1:32]
+	
+	public RFModule() {
+		emptyReceive[0] = RXcommand;
 		
 		GpioController contr = GpioFactory.getInstance();
 		
@@ -51,7 +63,6 @@ public class Antenne {
 		}
 		
 		configure();
-		setTransmitAddress();
 	}
 	
 	public void pwrUp() {
@@ -59,77 +70,46 @@ public class Antenne {
 		try {
 			Thread.sleep(3);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Problem nach Antenne Power Up");
 			e.printStackTrace();
 		}
 	}
+	
 	public void pwrDown() {
-		PWR.high();
+		PWR.low();
 		try {
 			Thread.sleep(1);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Problem nach Antenne Power Down");
 			e.printStackTrace();
 		}
 	}
 	
-	public void send() {
+	public void receive() {
 		if (PWR.isLow())
 			pwrUp();
-		TXE.high();
-		CE.low();
+		TXE.low();
+		CE.high();
 		
-		try {
-			//Set Transmit Register
-			spi.write(transmitBuffer);
-			CE.high(); //SEND
-			
-			//Wait for Transmission Ending
-			while(DR.isLow());
-			CE.low(); //End this Transmission
-			
-			System.out.println("Data has been sent");
-		} catch (IOException e) {
-			System.out.println("Transmit Register Set Error");
-			e.printStackTrace();
-		}
-	}
-	
-	public void setTransmitBuffer(byte[] toSend) {
-		for (int i = 0; i < toSend.length; i++) {
-			transmitBuffer[i+1] = toSend[i];
-		}
-	}
-	
-	public void setTransmitAddress() {
-		byte[] toSend = new byte[5];
-		toSend[0] = 0b00100010; //Command (Set Transmit Address)
-		toSend[1] = (byte)0x95;// Byte 0 TX Address
-		toSend[2] = (byte)0x6B;// Byte 1 ...
-		toSend[3] = (byte)0xCC;
-		toSend[4] = (byte)0xB6;
-		try {
-			spi.write(toSend);
-		} catch (IOException e) {
-			System.out.println("Antenna Error: Transmit set");
-			e.printStackTrace();
-		}
-	}
-	
-	private void checkTXPL() {
-		byte[] toSend = new byte[33];
-		toSend[0] = 0b00100001;
+		System.out.println("Waiting for incoming Data");
+		while(DR.isLow()); //Waiting for incoming Data
 		
+		//Get Payload
+		getPayload();
+	}
+	
+	private void getPayload() {
+		System.out.println("Getting payload");
 		try {
-			byte[] recv = spi.write(toSend);
+			receive = spi.write(emptyReceive);
 			
-			for (int i = 0; i < recv.length; i++) {
-				System.out.println(i+": "+recv[i]);
-			}
+			System.out.println("Received");
+			printBinaryArray(receive);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Fehler beim Epfangen");
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private void configure() {
@@ -161,11 +141,11 @@ public class Antenne {
 			//TX Payload width: 32 bytes TX_PW: 100000
 			writeConfRegister((byte)0x4,(byte)0x20);
 			
-			//RX Address 32 Bit: 0xDC8CEA72
-			writeConfRegister((byte)0x5,(byte)0xDC);
-			writeConfRegister((byte)0x6, (byte)0x8C);
-			writeConfRegister((byte)0x7,(byte)0xEA);
-			writeConfRegister((byte)0x8,(byte)0x72);
+			//RX Address 32 Bit: 0x956BCCB6
+			writeConfRegister((byte)0x5,(byte)0x95);
+			writeConfRegister((byte)0x6, (byte)0x6B);
+			writeConfRegister((byte)0x7,(byte)0xCC);
+			writeConfRegister((byte)0x8,(byte)0xB6);
 			
 			//No External Clock UP_CLK_FREQ: 0
 			//CRC_MODE: 1; CRC_EN: 1; XOF: 011; UP_CLK_EN: 0; UP_CLK_FREQ: 11
@@ -200,4 +180,11 @@ public class Antenne {
 		
 	}
 	
+	private void printBinaryArray(byte[] bin) {
+		for (int i = 0; i < bin.length; i++) {
+			byte content = bin[i];
+			String str = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');
+			System.out.println("Array ["+i+"]: "+str);
+		}
+	}
 }

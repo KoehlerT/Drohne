@@ -9,6 +9,7 @@ public class Ultrasonic {
 	
 	//Danke an: https://github.com/oksbwn/Ultrasonic-Sesnor-With-Raspberry-Pi/blob/master/Code/src/Main.java
 	
+	
 	private final Pin trigPinNum = RaspiPin.GPIO_04; //GPIO 16 = 4
 	private final Pin echoPinNum = RaspiPin.GPIO_05; //GPIO 18 = 5
 	
