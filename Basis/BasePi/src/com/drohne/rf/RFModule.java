@@ -91,6 +91,9 @@ public class RFModule {
 		TXE.low();
 		CE.high();
 		
+		try {Thread.sleep(1);
+		} catch (InterruptedException e1) {e1.printStackTrace();}
+		
 		System.out.println("Waiting for incoming Data");
 		while(DR.isLow()); //Waiting for incoming Data
 		
@@ -111,6 +114,8 @@ public class RFModule {
 		}
 		
 	}
+	
+	
 	
 	private void configure() {
 		if (!running)
@@ -187,4 +192,17 @@ public class RFModule {
 			System.out.println("Array ["+i+"]: "+str);
 		}
 	}
+	
+	private void checkContent(int size, byte command) {
+		byte[] toSend = new byte[size+1];
+		toSend[0] = command;
+		
+		try {
+			byte[] recv = spi.write(toSend);
+			printBinaryArray(recv);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
 }

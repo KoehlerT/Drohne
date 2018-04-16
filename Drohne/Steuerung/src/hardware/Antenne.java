@@ -79,7 +79,11 @@ public class Antenne {
 		TXE.high();
 		CE.low();
 		
+		try {Thread.sleep(1);
+		} catch (InterruptedException e1) {e1.printStackTrace();}
+		
 		try {
+			long starttime = System.nanoTime();
 			//Set Transmit Register
 			spi.write(transmitBuffer);
 			CE.high(); //SEND
@@ -89,6 +93,7 @@ public class Antenne {
 			CE.low(); //End this Transmission
 			
 			System.out.println("Data has been sent");
+			System.out.println("in "+((System.nanoTime()-starttime)/1000000)+" ms");
 		} catch (IOException e) {
 			System.out.println("Transmit Register Set Error");
 			e.printStackTrace();
@@ -110,21 +115,27 @@ public class Antenne {
 		toSend[4] = (byte)0xB6;
 		try {
 			spi.write(toSend);
+			
+			//Check
+			System.out.println("Transmit address:");
+			checkContent(4,(byte)0b00100011);
 		} catch (IOException e) {
 			System.out.println("Antenna Error: Transmit set");
 			e.printStackTrace();
 		}
 	}
 	
-	private void checkTXPL() {
-		byte[] toSend = new byte[33];
-		toSend[0] = 0b00100001;
+	private void checkContent(int size, byte command) {
+		byte[] toSend = new byte[size+1];
+		toSend[0] = command;
 		
 		try {
 			byte[] recv = spi.write(toSend);
 			
 			for (int i = 0; i < recv.length; i++) {
-				System.out.println(i+": "+recv[i]);
+				byte content = recv[i];
+				String bin = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');
+				System.out.println("Content "+i+": "+bin);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
