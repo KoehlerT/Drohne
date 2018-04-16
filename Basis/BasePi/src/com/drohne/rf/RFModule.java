@@ -39,12 +39,13 @@ public class RFModule {
 	private final byte RXcommand = 0b0010_0011;
 	private final byte[] emptyReceive = new byte[33];
 	
-	private byte[] txAddress = new byte[4];
-	private byte[] transmit = new byte[32];
+	private byte[] txAddress = new byte[] {(byte)0xDC,(byte)0x8C,(byte)0xEA,(byte)0x72};
+	private byte[] transmit = new byte[33];
 	private byte[] receive = new byte[33]; //Garbage [0], payload[1:32]
 	
 	public RFModule() {
 		emptyReceive[0] = RXcommand;
+		transmit[0] = (byte)0b00100000;
 		
 		GpioController contr = GpioFactory.getInstance();
 		
@@ -63,6 +64,7 @@ public class RFModule {
 		}
 		
 		configure();
+		setTxAddress();
 	}
 	
 	public void pwrUp() {
@@ -101,6 +103,32 @@ public class RFModule {
 		getPayload();
 	}
 	
+	public void send() {
+		if (PWR.isLow())
+			pwrUp();
+		CE.low();
+		TXE.high();
+		
+		try {Thread.sleep(1);} 
+		catch (InterruptedException e) {e.printStackTrace();}
+		
+		try {spi.write(transmit);}
+		catch (IOException e) {e.printStackTrace();}
+		System.out.println("Sending");
+		//Send
+		CE.high();
+		while(DR.isLow());
+		CE.low();
+		System.out.println("Data has been sent");
+	}
+	
+	
+	public void setTxRegister(byte[] content) {
+		for (int i = 0; i < 32; i++) {
+			transmit[i+1] = content[i];
+		}
+	}
+	
 	private void getPayload() {
 		System.out.println("Getting payload");
 		try {
@@ -116,6 +144,20 @@ public class RFModule {
 	}
 	
 	
+	private void setTxAddress() {
+		byte[] toSend = new byte[5];
+		toSend[0] = (byte)0b00100010;
+		for (int i = 0; i < 4; i++) {
+			toSend[i+1] = txAddress[i];
+		}
+		
+		try {
+			spi.write(toSend);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	private void configure() {
 		if (!running)

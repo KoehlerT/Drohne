@@ -100,6 +100,20 @@ public class Antenne {
 		}
 	}
 	
+	public void receive() {
+		if (PWR.isLow())
+			pwrUp();
+		TXE.low();
+		CE.high();
+		
+		try {Thread.sleep(1);
+		} catch (InterruptedException e1) {e1.printStackTrace();}
+		
+		System.out.println("Waiting for data");
+		while(DR.isLow());
+		System.out.println("Received!");
+	}
+	
 	public void setTransmitBuffer(byte[] toSend) {
 		for (int i = 0; i < toSend.length; i++) {
 			transmitBuffer[i+1] = toSend[i];
