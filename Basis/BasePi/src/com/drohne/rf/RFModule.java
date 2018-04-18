@@ -109,12 +109,13 @@ public class RFModule {
 		CE.low();
 		TXE.high();
 		
-		try {Thread.sleep(1);} 
+		try {Thread.sleep(2);} 
 		catch (InterruptedException e) {e.printStackTrace();}
 		
 		try {spi.write(transmit);}
 		catch (IOException e) {e.printStackTrace();}
 		System.out.println("Sending");
+		
 		//Send
 		CE.high();
 		while(DR.isLow());
@@ -127,6 +128,7 @@ public class RFModule {
 		for (int i = 0; i < 32; i++) {
 			transmit[i+1] = content[i];
 		}
+		System.out.println("transmit:");
 	}
 	
 	private void getPayload() {

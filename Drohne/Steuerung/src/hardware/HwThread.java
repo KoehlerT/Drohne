@@ -65,9 +65,9 @@ class HwThread extends Thread{
 			GPS.printGps();
 			
 			//Antenne
-			//ant.setTransmitBuffer(toSend);
-			//ant.send();
-			ant.receive();
+			ant.setTransmitBuffer(toSend);
+			ant.send();
+			//ant.receive();
 			
 			//Warte ein wenig
 			try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}

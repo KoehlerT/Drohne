@@ -15,9 +15,9 @@ public class StartBase {
 		antenna.setTxRegister(toSend);
 		
 		while (true) {
-			//antenna.receive();
+			antenna.receive();
 			//break;
-			antenna.send();
+			//antenna.send();
 		}
 	}
 	
