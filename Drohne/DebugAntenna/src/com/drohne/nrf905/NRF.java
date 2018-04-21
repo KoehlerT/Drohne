@@ -1,18 +1,12 @@
-package com.drohne.rf;
+package com.drohne.nrf905;
 
 import java.io.IOException;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalInput;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinState;
-import com.pi4j.io.gpio.RaspiPin;
-import com.pi4j.io.spi.SpiChannel;
-import com.pi4j.io.spi.SpiDevice;
-import com.pi4j.io.spi.SpiFactory;
+import com.pi4j.io.gpio.*;
+import com.pi4j.io.spi.*;
 
-public class RFModule {
+public class NRF {
+	//Klasse zum Kontrollieren des nRF905
 	
 	/*Pin Layout:
 	 * GPIO 18 (01): DR - Input
@@ -34,18 +28,11 @@ public class RFModule {
 	
 	private boolean running = true;
 	
-	//Send and Receiving data
+	private final byte transmitCommand = 0b00100000; //W_TX_PAYLOAD
+	private byte[] transmitBuffer = new byte[33]; //transmitBuffer[0] = Write TX-Buffer Command
 	
-	private final byte RXcommand = 0b0010_0100;
-	private final byte[] emptyReceive = new byte[33];
-	
-	private byte[] txAddress = new byte[] {(byte)0xDC,(byte)0x8C,(byte)0xEA,(byte)0x72};
-	private byte[] transmit = new byte[33];
-	private byte[] receive = new byte[33]; //Garbage [0], payload[1:32]
-	
-	public RFModule() {
-		emptyReceive[0] = RXcommand;
-		transmit[0] = (byte)0b00100000;
+	public NRF() {
+		transmitBuffer[0] = transmitCommand;
 		
 		GpioController contr = GpioFactory.getInstance();
 		
@@ -64,7 +51,7 @@ public class RFModule {
 		}
 		
 		configure();
-		setTxAddress();
+		setTransmitAddress();
 	}
 	
 	public void pwrUp() {
@@ -72,17 +59,45 @@ public class RFModule {
 		try {
 			Thread.sleep(3);
 		} catch (InterruptedException e) {
-			System.out.println("Problem nach Antenne Power Up");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void pwrDown() {
+		PWR.high();
+		try {
+			Thread.sleep(1);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void pwrDown() {
-		PWR.low();
+	public void send() {
+		if (PWR.isLow())
+			pwrUp();
+		TXE.high();
+		CE.low();
+		
+		try {Thread.sleep(1);
+		} catch (InterruptedException e1) {e1.printStackTrace();}
+		
 		try {
-			Thread.sleep(1);
-		} catch (InterruptedException e) {
-			System.out.println("Problem nach Antenne Power Down");
+			long starttime = System.nanoTime();
+			//Set Transmit Register
+			spi.write(transmitBuffer);
+			CE.high(); //SEND
+			
+			//Wait for Transmission Ending
+			while(DR.isLow());
+			System.out.println("Data has been sent");
+			
+			CE.low();
+			System.out.println("in "+((System.nanoTime()-starttime)/1000000)+" ms");
+			
+			System.out.println("State CE "+CE.getState().getName());
+		} catch (IOException e) {
+			System.out.println("Transmit Register Set Error");
 			e.printStackTrace();
 		}
 	}
@@ -96,65 +111,50 @@ public class RFModule {
 		try {Thread.sleep(1);
 		} catch (InterruptedException e1) {e1.printStackTrace();}
 		
-		System.out.println("Waiting for incoming Data");
-		while(DR.isLow()); //Waiting for incoming Data
-		
-		//Get Payload
-		getPayload();
-	}
-	
-	public void send() {
-		if (PWR.isLow())
-			pwrUp();
-		CE.low();
-		TXE.high();
-		
-		try {Thread.sleep(2);} 
-		catch (InterruptedException e) {e.printStackTrace();}
-		
-		try {spi.write(transmit);}
-		catch (IOException e) {e.printStackTrace();}
-		System.out.println("Sending");
-		
-		//Send
-		CE.high();
+		System.out.println("Waiting for data");
 		while(DR.isLow());
-		CE.low();
-		System.out.println("Data has been sent");
+		System.out.println("Received!");
 	}
 	
-	
-	public void setTxRegister(byte[] content) {
-		for (int i = 0; i < 32; i++) {
-			transmit[i+1] = content[i];
+	public void setTransmitBuffer(byte[] toSend) {
+		for (int i = 0; i < toSend.length; i++) {
+			transmitBuffer[i+1] = toSend[i];
 		}
-		System.out.println("transmit:");
+		System.out.println("Transmit Buffer:");
+		printBinArray(transmitBuffer);
 	}
 	
-	private void getPayload() {
-		System.out.println("Getting payload");
-		try {
-			receive = spi.write(emptyReceive);
-			
-			System.out.println("Received");
-			printBinaryArray(receive);
-		} catch (IOException e) {
-			System.out.println("Fehler beim Epfangen");
-			e.printStackTrace();
-		}
-		
-	}
-	
-	
-	private void setTxAddress() {
+	public void setTransmitAddress() {
 		byte[] toSend = new byte[5];
-		toSend[0] = (byte)0b00100010;
-		for (int i = 0; i < 4; i++) {
-			toSend[i+1] = txAddress[i];
-		}
-		
+		toSend[0] = 0b00100010; //Command (Set Transmit Address)
+		toSend[1] = (byte)0x95;// Byte 0 TX Address
+		toSend[2] = (byte)0x6B;// Byte 1 ...
+		toSend[3] = (byte)0xCC;
+		toSend[4] = (byte)0xB6;
 		try {
 			spi.write(toSend);
+			
+			//Check
+			System.out.println("Transmit address:");
+			checkContent(4,(byte)0b00100011);
+		} catch (IOException e) {
+			System.out.println("Antenna Error: Transmit set");
+			e.printStackTrace();
+		}
+	}
+	
+	private void checkContent(int size, byte command) {
+		byte[] toSend = new byte[size+1];
+		toSend[0] = command;
+		
+		try {
+			byte[] recv = spi.write(toSend);
+			
+			for (int i = 0; i < recv.length; i++) {
+				byte content = recv[i];
+				String bin = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');
+				System.out.println("Content "+i+": "+bin);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -190,11 +190,11 @@ public class RFModule {
 			//TX Payload width: 32 bytes TX_PW: 100000
 			writeConfRegister((byte)0x4,(byte)0x20);
 			
-			//RX Address 32 Bit: 0x956BCCB6
-			writeConfRegister((byte)0x5,(byte)0x95);
-			writeConfRegister((byte)0x6, (byte)0x6B);
-			writeConfRegister((byte)0x7,(byte)0xCC);
-			writeConfRegister((byte)0x8,(byte)0xB6);
+			//RX Address 32 Bit: 0xDC8CEA72
+			writeConfRegister((byte)0x5,(byte)0xDC);
+			writeConfRegister((byte)0x6, (byte)0x8C);
+			writeConfRegister((byte)0x7,(byte)0xEA);
+			writeConfRegister((byte)0x8,(byte)0x72);
 			
 			//No External Clock UP_CLK_FREQ: 0
 			//CRC_MODE: 1; CRC_EN: 1; XOF: 011; UP_CLK_EN: 0; UP_CLK_FREQ: 11
@@ -229,24 +229,13 @@ public class RFModule {
 		
 	}
 	
-	private void printBinaryArray(byte[] bin) {
-		for (int i = 0; i < bin.length; i++) {
-			byte content = bin[i];
-			String str = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');
-			System.out.println("Array ["+i+"]: "+str);
+	private void printBinArray(byte[] arr) {
+		for (int i = 0; i < arr.length; i++) {
+			byte content = arr[i];
+			String bin = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');
+			System.out.println("Content "+i+": "+bin);
 		}
 	}
-	
-	private void checkContent(int size, byte command) {
-		byte[] toSend = new byte[size+1];
-		toSend[0] = command;
 		
-		try {
-			byte[] recv = spi.write(toSend);
-			printBinaryArray(recv);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}
+
 }
