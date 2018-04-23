@@ -10,24 +10,29 @@ import Bild.Kreiszeichner;
 import wert.*;
 @SuppressWarnings("unused")
 public class Frame {
-	static JDialog mf = new JDialog();
-	static LinkedList<Werteverwalter> listkomplett = new LinkedList<Werteverwalter>();
+	JDialog mf = new JDialog();
+	
+	
+	private Bildanzeige bildanzeige;
+	private Vitalmonitore vitalmonitore;
+	private ManuSteu manuelleSteuerung;
+	private Buttonmanager buttonmanager;
+	private KonsolenFenster konsolenFenster;
+	
 	public Frame() {
 		mf.setSize(1400, 750);
 		JDesktopPane p = new JDesktopPane();
 		//initalisieren aller Fenster
-		new Bildanzeige(p);
-		new Vitalmonitore(p,listkomplett);
-		new ManuSteu("Key", p);
-		new Buttonmanager(p);
-		new KonsolenFenster(p);
+		bildanzeige = new Bildanzeige(p);
+		vitalmonitore = new Vitalmonitore(p);
+		manuelleSteuerung = new ManuSteu("Key", p);
+		buttonmanager = new Buttonmanager(p);
+		konsolenFenster = new KonsolenFenster(p);
 		mf.add(p);
 		mf.setVisible(true);
 	}
-	public static void addtoll(Werteverwalter w) {
-		listkomplett.add(w);
-	}
-	public static LinkedList<Werteverwalter> getListkomplett() {
-		return listkomplett;
+	
+	public void update() {
+		vitalmonitore.update();
 	}
 }

@@ -1,16 +1,19 @@
 package panels;
+import java.awt.Color;
 import java.awt.Component;
 import java.util.LinkedList;
 
 import javax.swing.*;
 
+import main.Data;
 import wert.Werteverwalter;
 public class Vitalmonitore {
-	static JInternalFrame critic = new JInternalFrame("kritisch", true, true, true, true);
-	static JInternalFrame uncritic = new JInternalFrame("unwichtig", true, true, true, true);
-	static LinkedList<Werteverwalter> kritisch = new LinkedList<Werteverwalter>();
-	static LinkedList<Werteverwalter> unkritisch = new LinkedList<Werteverwalter>();
-	public Vitalmonitore(JDesktopPane p,  LinkedList<Werteverwalter> listkomplett) {
+	JInternalFrame critic = new JInternalFrame("kritisch", true, true, true, true);
+	JInternalFrame uncritic = new JInternalFrame("unwichtig", true, true, true, true);
+	JLabel[] criticLabels;
+	JLabel[] uncriticLabels;
+	
+	public Vitalmonitore(JDesktopPane p) {
 		//Neune Fenster+ anzeigen
 		p.add(critic);
 		p.add(uncritic);
@@ -22,41 +25,62 @@ public class Vitalmonitore {
 		uncritic.setLayout(null);
 		critic.show();
 		uncritic.show();
-		// die Liste aller Werte zerteilen
-		splitlist(listkomplett);;
 		//Array aller kritischen werte zu anzeige umwandeln
-		JLabel[] c = new JLabel[kritisch.size()];
-		for (int i = 0; i < c.length ; i++) {
-			c[i] = new JLabel(kritisch.get(i).getname() + ": " + kritisch.get(i).getString());
-			c[i].setForeground(kritisch.get(i).getColor());
-			Vitalmonitore.addtocritic(c[i],0,i*15);
+		criticLabels = new JLabel[Data.numCrit];
+		for (int i = 0; i < criticLabels.length ; i++) {
+			criticLabels[i] = new JLabel("");
+			criticLabels[i].setForeground(Color.BLACK);
+			addtocritic(criticLabels[i],0,i*15);
 		}
+		
+		
 		//Array aller unkritischen werte zu anzeige umwandeln
-		JLabel[] uc = new JLabel[unkritisch.size()];
-		for (int i = 0; i < uc.length; i++) {
-			uc[i] = new JLabel(unkritisch.get(i).getname() + ": " + unkritisch.get(i).getString());
-			uc[i].setForeground(unkritisch.get(i).getColor());
-			Vitalmonitore.addtouncritic(uc[i],0,i*15);
+		uncriticLabels = new JLabel[Data.numUnCrit];
+		for (int i = 0; i < uncriticLabels.length; i++) {
+			uncriticLabels[i] = new JLabel("");
+			uncriticLabels[i].setForeground(Color.BLACK);
+			addtouncritic(uncriticLabels[i],0,i*15);
 		}
 	}
-	public static void addtocritic(Component l,int x,int y) {
+	
+	
+	public void update() {
+		//Manuelles eintragen der neuen Werte
+		//Controller Inputs
+		updateLabel(Data.getCont_throttle(),uncriticLabels[0]);
+		updateLabel(Data.getCont_roll(), uncriticLabels[1]);
+		updateLabel(Data.getCont_pitch(), uncriticLabels[2]);
+		updateLabel(Data.getCont_yaw(), uncriticLabels[3]);
+		
+		//Statusinformationen
+		updateLabel(Data.getTilt(),uncriticLabels[4]);
+		updateLabel(Data.getDistUltrasonic(),uncriticLabels[5]);
+		updateLabel(Data.getNumGpsSatellites(),uncriticLabels[6]);
+		
+		//Kritische Informationen
+		updateLabel(Data.getVoltageMain(), criticLabels[0]);
+		updateLabel(Data.getVoltage5v(), criticLabels[1]);
+		updateLabel(Data.getVoltage3v(),criticLabels[2]);
+		updateLabel(Data.getAmperage(),criticLabels[3]);
+		
+		//GPS
+		updateLabel(Data.getLatitude(), criticLabels[4]);
+		updateLabel(Data.getLongitude(),criticLabels[5]);
+		
+	}
+	
+	private void updateLabel(Werteverwalter wert, JLabel label) {
+		label.setText(wert.getname() + " :"+wert.getString());
+		label.setForeground(wert.getColor());
+	}
+	
+	public void addtocritic(Component l,int x,int y) {
 		l.setBounds(x, y, 250, 30);
 		critic.add(l);
 	}
 
-	public static void addtouncritic(Component l,int x, int y) {
+	public void addtouncritic(Component l,int x, int y) {
 		l.setBounds(x, y, 250, 30);
 		uncritic.add(l);
-	}
-	public static void splitlist(LinkedList<Werteverwalter> l) {
-		for (int i = 0; i < l.size(); i++) {
-			if (l.get(i).getkritisch() && !(kritisch.contains(l.get(i)))) {
-				kritisch.add(l.get(i));
-			} else if (!(l.get(i).getkritisch()) && !(unkritisch.contains(l.get(i)))) {
-				unkritisch.add(l.get(i));
-			} else {
-				System.out.println("großer Fehler bei: " + l.get(i).getname());
-			}
-		}
 	}
 }

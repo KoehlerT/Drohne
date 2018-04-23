@@ -53,7 +53,7 @@ public class RFModule {
 		CE = contr.provisionDigitalOutputPin(RaspiPin.GPIO_02, "CE",PinState.LOW);
 		TXE = contr.provisionDigitalOutputPin(RaspiPin.GPIO_03,"TX_Enable",PinState.LOW);
 		
-		DR = contr.provisionDigitalInputPin(RaspiPin.GPIO_01,"Data Ready");
+		DR = contr.provisionDigitalInputPin(RaspiPin.GPIO_04,"Data Ready"); //Umzug aufgrund defektem Pin
 		
 		try {
 			spi = SpiFactory.getInstance(SpiChannel.CS0, SpiSpeed, SpiDevice.DEFAULT_SPI_MODE);
@@ -98,7 +98,7 @@ public class RFModule {
 		
 		System.out.println("Waiting for incoming Data");
 		while(DR.isLow()); //Waiting for incoming Data
-		
+		System.out.println("Got Data");
 		//Get Payload
 		getPayload();
 	}
