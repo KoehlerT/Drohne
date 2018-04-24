@@ -1,4 +1,4 @@
-package com.drohne.rf;
+package com.drohne.hardware;
 
 import java.io.IOException;
 

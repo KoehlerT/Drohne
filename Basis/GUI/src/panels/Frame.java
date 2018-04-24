@@ -21,6 +21,7 @@ public class Frame {
 	
 	public Frame() {
 		mf.setSize(1400, 750);
+		mf.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		JDesktopPane p = new JDesktopPane();
 		//initalisieren aller Fenster
 		bildanzeige = new Bildanzeige(p);

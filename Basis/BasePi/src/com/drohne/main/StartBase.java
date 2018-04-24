@@ -1,9 +1,10 @@
 package com.drohne.main;
-import com.drohne.rf.*;
+import com.drohne.hardware.*;
 
 public class StartBase {
 
 	private static RFModule antenna;
+	private static SerialDevice computer;
 	private static byte[] toSend = new byte[32];
 	
 	public static void main(String[] args) {
@@ -14,10 +15,21 @@ public class StartBase {
 		prepareSending();
 		antenna.setTxRegister(toSend);
 		
+		computer = new SerialDevice();
+		
 		while (true) {
-			antenna.receive();
+			//antenna.receive();
 			//break;
 			//antenna.send();
+			
+			computer.write(toSend);
+			
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
