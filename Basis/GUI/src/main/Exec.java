@@ -17,7 +17,7 @@ public class Exec {
 	static HardwareCommunicator communicator;
 	
 	public static void main(String[] args) {
-		
+		System.out.println("RUN");
 		frame = new Frame();
 		communicator = new HardwareCommunicator();
 		
@@ -25,8 +25,9 @@ public class Exec {
 		KonsolenFenster.addText("Ich bin ein echter Gangster", Color.orange);
 		Bildanzeige.kreiszeichnen(Bildanzeige.getBil(), 100, 100, 30);
 		Bildanzeige.distAnzeige(Bildanzeige.getBil(), 100, 130, 3.5);
-		
+		System.out.println("RUNNING");
 		//loop();
+		communicator.send(new byte[] {(byte)'A',(byte)'B',(byte)'C'});
 	}
 	
 	

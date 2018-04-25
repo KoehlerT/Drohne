@@ -16,13 +16,16 @@ public class SerialDevice implements SerialPortDataListener{
 	
 	
 	private void getPort() {
-		SerialPort[] ports = SerialPort.getCommPorts();
-		for (int i = 0; i< ports.length; i++) {
+		//SerialPort[] ports = SerialPort.getCommPorts();
+		SerialPort p = SerialPort.getCommPort("COM3");
+		System.out.println("P: "+p.getDescriptivePortName());
+		/*for (int i = 0; i< ports.length; i++) {
 			String descr = ports[i].getPortDescription();
 			if (!descr.equals("Serial0")){
 				comPort = ports[i];
 			}
-		}
+		}*/
+		comPort = p;
 		
 		if (comPort == null) {
 			System.out.println("Kein Validen Port gefunden");
@@ -31,6 +34,10 @@ public class SerialDevice implements SerialPortDataListener{
 		}
 	}
 
+	
+	public void sendData(byte[] toSend) {
+		comPort.writeBytes(toSend, toSend.length);
+	}
 
 	@Override
 	public int getListeningEvents() {
@@ -42,8 +49,9 @@ public class SerialDevice implements SerialPortDataListener{
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		// TODO Auto-generated method stub
-		byte[] data = event.getReceivedData();
+		
 		System.out.println("Daten Empfangen:");
+		byte[] data = event.getReceivedData();
 		System.out.println(data);
 	}
 }

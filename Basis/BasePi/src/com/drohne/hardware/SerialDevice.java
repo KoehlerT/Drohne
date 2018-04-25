@@ -9,25 +9,28 @@ import com.pi4j.io.serial.FlowControl;
 import com.pi4j.io.serial.Parity;
 import com.pi4j.io.serial.Serial;
 import com.pi4j.io.serial.SerialConfig;
+import com.pi4j.io.serial.SerialDataEvent;
+import com.pi4j.io.serial.SerialDataEventListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.SerialPort;
 import com.pi4j.io.serial.StopBits;
 
-public class SerialDevice {
+public class SerialDevice implements SerialDataEventListener{
 	
 	Serial serial;
 	
 	public SerialDevice() {
 		serial = SerialFactory.createInstance();
 		openPort();
+		serial.addListener(this);
 	}
 	
 	public void write (byte[] data) {
 		try {
-			serial.write(data);
-			
-			serial.write('\r');
-			serial.write('\n');
+			//serial.write(data);
+			serial.write("HI");
+			//serial.write('\r');
+			//serial.write('\n');
 			
 			System.out.println("Data written");
 		} catch (IllegalStateException e) {
@@ -44,7 +47,9 @@ public class SerialDevice {
 		SerialConfig config = new SerialConfig();
 		
 		try {
-			config.device(SerialPort.getDefaultPort())
+			System.out.println("Default Port "+SerialPort.getDefaultPort());
+			
+			config.device(/*SerialPort.getDefaultPort()*/"/dev/ttyS0")
 				.baud(Baud._9600)
 				.dataBits(DataBits._8)
 				.parity(Parity.NONE)
@@ -61,6 +66,18 @@ public class SerialDevice {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void dataReceived(SerialDataEvent arg0) {
+		// TODO Auto-generated method stub
+		try {
+			System.out.println("Empfangen ");
+			System.out.println(arg0.getBytes());
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		
