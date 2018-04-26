@@ -27,8 +27,8 @@ public class SerialDevice implements SerialDataEventListener{
 	
 	public void write (byte[] data) {
 		try {
-			//serial.write(data);
-			serial.write("HI");
+			serial.write(data);
+			//serial.write("HI");
 			//serial.write('\r');
 			//serial.write('\n');
 			

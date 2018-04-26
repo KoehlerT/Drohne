@@ -42,16 +42,23 @@ public class SerialDevice implements SerialPortDataListener{
 	@Override
 	public int getListeningEvents() {
 		System.out.println("Get listening Events...");
-		return 0;
+		return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
 	}
 
 
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		// TODO Auto-generated method stub
+		if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+	         return;
 		
 		System.out.println("Daten Empfangen:");
-		byte[] data = event.getReceivedData();
-		System.out.println(data);
+		byte[] data = new byte[comPort.bytesAvailable()];
+		int numRead = comPort.readBytes(data, data.length);
+		System.out.println("Read: "+numRead+" bytes: ");
+		for (int i = 0; i < data.length; i++) {
+			System.out.print(data[i]+", ");
+		}
+		System.out.println();
 	}
 }
