@@ -2,6 +2,8 @@ package hardware;
 
 import com.fazecast.jSerialComm.*;
 
+import main.Data;
+
 public class SerialDevice implements SerialPortDataListener{
 	
 	SerialPort comPort = null;
@@ -17,7 +19,7 @@ public class SerialDevice implements SerialPortDataListener{
 	
 	private void getPort() {
 		//SerialPort[] ports = SerialPort.getCommPorts();
-		SerialPort p = SerialPort.getCommPort("COM3");
+		SerialPort p = SerialPort.getCommPort(Data.port);
 		System.out.println("P: "+p.getDescriptivePortName());
 		/*for (int i = 0; i< ports.length; i++) {
 			String descr = ports[i].getPortDescription();
@@ -36,7 +38,15 @@ public class SerialDevice implements SerialPortDataListener{
 
 	
 	public void sendData(byte[] toSend) {
-		comPort.writeBytes(toSend, toSend.length);
+		for (int i = 0; i < toSend.length; i++) {
+			comPort.writeBytes(new byte[] {toSend[i]}, 1);
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override

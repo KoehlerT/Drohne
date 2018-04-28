@@ -26,17 +26,17 @@ public class Exec {
 		Bildanzeige.kreiszeichnen(Bildanzeige.getBil(), 100, 100, 30);
 		Bildanzeige.distAnzeige(Bildanzeige.getBil(), 100, 130, 3.5);
 		System.out.println("RUNNING");
-		//loop();
-		communicator.send(new byte[] {(byte)'A',(byte)'B',(byte)'C'});
+		
+		loop();
 	}
 	
 	
 	public static void loop() {
 		while (true) {
 			frame.update();
-			
+			communicator.PrepareAndSend();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(2000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -56,7 +56,7 @@ class HwThread extends Thread{
 					System.out.println("nächster Gegenstand "+Daten.getDistanceUltrasonic()
 						+" dm entfernt");
 				} catch (InterruptedException e) {
-					System.out.println("Fehler beim Messend er Entfernung");
+					System.out.println("Fehler beim Messen der Entfernung");
 					e.printStackTrace();
 				}
 			}
@@ -65,9 +65,9 @@ class HwThread extends Thread{
 			GPS.printGps();
 			
 			//Antenne
-			ant.setTransmitBuffer(toSend);
-			ant.send();
-			//ant.receive();
+			//ant.setTransmitBuffer(toSend);
+			//ant.send();
+			ant.receive();
 			
 			//Warte ein wenig
 			try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}

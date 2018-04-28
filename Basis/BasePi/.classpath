@@ -2,7 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="libs/pi4j-core.jar"/>
+	<classpathentry kind="lib" path="libs/pi4j-core.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://pi4j.com/apidocs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libs/pi4j-device.jar"/>
 	<classpathentry kind="lib" path="libs/pi4j-gpio-extension.jar"/>
 	<classpathentry kind="output" path="bin"/>

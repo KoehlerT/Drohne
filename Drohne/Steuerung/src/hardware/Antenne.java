@@ -31,8 +31,11 @@ public class Antenne {
 	private final byte transmitCommand = 0b00100000; //W_TX_PAYLOAD
 	private byte[] transmitBuffer = new byte[33]; //transmitBuffer[0] = Write TX-Buffer Command
 	
+	private final byte[] emptyReceive = new byte[33];//Receive
+	
 	public Antenne() {
 		transmitBuffer[0] = transmitCommand;
+		emptyReceive[0] = 0b0010_0100;
 		
 		GpioController contr = GpioFactory.getInstance();
 		
@@ -100,6 +103,12 @@ public class Antenne {
 		}
 	}
 	
+	public void setTransmitBuffer(byte[] toSend) {
+		for (int i = 0; i < toSend.length; i++) {
+			transmitBuffer[i+1] = toSend[i];
+		}
+	}
+	
 	public void receive() {
 		if (PWR.isLow())
 			pwrUp();
@@ -111,15 +120,25 @@ public class Antenne {
 		
 		System.out.println("Waiting for data");
 		while(DR.isLow());
-		System.out.println("Received!");
+		getRxData();
 	}
 	
-	public void setTransmitBuffer(byte[] toSend) {
-		for (int i = 0; i < toSend.length; i++) {
-			transmitBuffer[i+1] = toSend[i];
+	
+	private void getRxData() {
+		
+		try {
+			byte[] payload = spi.write(emptyReceive);
+			Datapackager.untangleReceived(payload);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
 	
+	
+	
+	//------------------------------Konfiguration
 	public void setTransmitAddress() {
 		byte[] toSend = new byte[5];
 		toSend[0] = 0b00100010; //Command (Set Transmit Address)

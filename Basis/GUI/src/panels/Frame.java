@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import Bild.Kreiszeichner;
+import steuerung.ManuManager;
 import wert.*;
 @SuppressWarnings("unused")
 public class Frame {
@@ -26,9 +27,10 @@ public class Frame {
 		//initalisieren aller Fenster
 		bildanzeige = new Bildanzeige(p);
 		vitalmonitore = new Vitalmonitore(p);
-		manuelleSteuerung = new ManuSteu("Key", p);
+		manuelleSteuerung = new ManuSteu("Manuelle Steuerung", p);
 		buttonmanager = new Buttonmanager(p);
 		konsolenFenster = new KonsolenFenster(p);
+		
 		mf.add(p);
 		mf.setVisible(true);
 	}

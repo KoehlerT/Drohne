@@ -1,69 +1,113 @@
 package panels;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
 public class Buttonmanager {
-	@SuppressWarnings("serial")
+	
+	private JButton startB; //Starte die Drohne
+	private JButton recallB; //Rufe die Drohne zurück
+	private JButton stopB; //Stoppe alle Motoren
+	private JButton landB; //Lande SOFORT
+	private JButton manuB; //Manuelle Steuerung an
+	
+	
 	public Buttonmanager(JDesktopPane p) {
-		JButton[] b = new JButton[4];
 		// neues Fenster machen
-		JInternalFrame j = new JInternalFrame("Buttonmanager",true);
-		p.add(j);
-		j.setSize(250, 250);
-		j.setLocation(250,250);
-		j.setLayout(null);
-		// Knöpfe initalisieren und platzieren
-		b[0]= new JButton("Start");
-		b[1]= new JButton("Recall");
-		b[2]= new JButton("Not aus");
-		b[3]= new JButton("Landung");
-		b[0].setBounds(0,0,115,110);
-		b[1].setBounds(115,0,115,110);
-		b[2].setBounds(0,110,115,110);
-		b[3].setBounds(115,110,115,110);
-		j.add(b[0]);
-		j.add(b[1]);
-		j.add(b[2]);
-		j.add(b[3]);
+		JInternalFrame internalFr = new JInternalFrame("Buttonmanager",true);
+		p.add(internalFr);
+		internalFr.setSize(250, 250);
+		internalFr.setLocation(250,250);
+		internalFr.setLayout(null);
+		
+		// Knöpfe initalisieren
+		startB= new JButton("Start");
+		recallB= new JButton("Recall");
+		stopB= new JButton("Not aus");
+		landB= new JButton("Landung");
+		manuB = new JButton("Maunuelle Steuerung");
+		
+		//Positionen
+		startB.setBounds(0,0,83,83);
+		recallB.setBounds(83,0,83,83);
+		stopB.setBounds(0,83,83,83);
+		landB.setBounds(83,83,83,83);
+		manuB.setBounds(83+83, 0, 83, 83);;
+		
+		//Add buttons Internal Frame
+		internalFr.add(startB);
+		internalFr.add(recallB);
+		internalFr.add(stopB);
+		internalFr.add(landB);
+		internalFr.add(manuB);
+		
+		addActions();
+		
+		internalFr.show();
+	}
+	
+	private void addActions() {
 		//Hier werden die Actions der Buttons festgelegt; Kann verändert werden und wenn nötig in eigene Klassen geschoben werden
-		//siehe Steuerung
-		b[0].setAction(new AbstractAction() {
+				//siehe Steuerung
+				startB.setAction(new AbstractAction() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Wir starten");
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("Wir starten");
+						
+					}});
+				startB.setText("START");
+				startB.setBackground(Color.GREEN);
 				
-			}});
-		b[0].setText("START");
-		
-		b[1].setAction(new AbstractAction() {
+				recallB.setAction(new AbstractAction() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Zurück zur Basis");
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("Zurück zur Basis");
+						
+					}});
+				recallB.setText("Rückruf");
+				recallB.setBackground(Color.ORANGE);
 				
-			}});
-		b[1].setText("Rückruf");
-		
-		b[2].setAction(new AbstractAction() {
+				stopB.setAction(new AbstractAction() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Alle Motoren sofort STOPP");
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("Alle Motoren sofort STOPP");
+						
+					}});
+				stopB.setText("Not aus");
+				stopB.setBackground(Color.RED);
 				
-			}});
-		b[2].setText("Not aus");
-		
-		b[3].setAction(new AbstractAction() {
+				landB.setAction(new AbstractAction() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("NOTLANDEN");
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("NOTLANDEN");
+						
+					}});
+				landB.setText("<html>Not-<br>landung</html>");
+				landB.setBackground(Color.ORANGE);
 				
-			}});
-		b[3].setText("Notlandung");
-		j.show();
+				manuB.setAction(new AbstractAction() {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("Manuell");
+						
+					}
+				});
+				manuB.setText("<html>Manuelle<br>Steuerung</html>");
+				
+				manuB.setAction(new AbstractAction() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						ManuSteu.getInstance().toggleManu();
+					}
+				});
+				manuB.setBackground(Color.BLUE);
+				manuB.setForeground(Color.WHITE);
 	}
 }

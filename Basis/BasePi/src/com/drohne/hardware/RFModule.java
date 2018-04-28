@@ -124,11 +124,15 @@ public class RFModule {
 	}
 	
 	
-	public void setTxRegister(byte[] content) {
+	public synchronized void setTxRegister(byte[] content) {
 		for (int i = 0; i < 32; i++) {
-			transmit[i+1] = content[i];
+			if (i < content.length) {
+				transmit[i+1] = content[i];
+			}else {
+				transmit[i+1] = 0;
+			}
+			
 		}
-		System.out.println("transmit:");
 	}
 	
 	private void getPayload() {

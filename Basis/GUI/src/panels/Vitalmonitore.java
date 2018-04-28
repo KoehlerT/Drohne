@@ -70,7 +70,7 @@ public class Vitalmonitore {
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {
-		label.setText(wert.getname() + " :"+wert.getString());
+		label.setText(wert.getname() + ": "+wert.getString());
 		label.setForeground(wert.getColor());
 	}
 	

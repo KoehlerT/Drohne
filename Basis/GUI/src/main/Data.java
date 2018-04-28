@@ -6,15 +6,20 @@ public class Data {
 	
 	private Data() {}
 	
-	//Kritisch: 6
-	public static final int numCrit = 6;
-	//Unkritisch: 7
-	public static final int numUnCrit = 7;
+	//ProgrammKonstanten
+	public static final int numCrit = 6; //Kritisch: 6
+	public static final int numUnCrit = 7; //Unkritisch: 7
+	public static final String port = "COM6";
 	
+	//Programmdaten
+	private static boolean manuMode = false;
+	private static byte controlWord;
+	
+	//Flugdaten
 	private static intWert cont_throttle= new intWert("Throttle",false,1000,2000,1000);
-	private static intWert cont_pitch = new intWert("Throttle",false,1000,2000,1000);
-	private static intWert cont_roll = new intWert("Throttle",false,1000,2000,1000);
-	private static intWert cont_yaw = new intWert("Throttle",false,1000,2000,1000);
+	private static intWert cont_pitch = new intWert("Pitch",false,1000,2000,1000);
+	private static intWert cont_roll = new intWert("Roll",false,1000,2000,1000);
+	private static intWert cont_yaw = new intWert("Yaw",false,1000,2000,1000);
 	
 	private static doubleWert voltageMain = new doubleWert("Hauptspannung",true,10.0,14.0,11.0);
 	private static doubleWert voltage5v = new doubleWert("5V",true,2.5,7.5,5);
@@ -30,6 +35,11 @@ public class Data {
 	private static intWert numGpsSatellites = new intWert("GPS Satelliten",false,3,15,3);
 	
 	//Getter
+	
+	public static synchronized boolean getManuMode() {return manuMode;}
+	public static synchronized byte getControlWord() {return controlWord;}
+	
+	//-Flugdaten
 	public static synchronized intWert getCont_throttle() {return cont_throttle;}
 	public static synchronized intWert getCont_pitch() {return cont_pitch;}
 	public static synchronized intWert getCont_roll() {return cont_roll;}
@@ -48,4 +58,13 @@ public class Data {
 	
 	public static intWert getNumGpsSatellites() {return numGpsSatellites;}
 	
+	
+	//Setter
+	public static synchronized void setManuMode(boolean mm) {manuMode = mm;}
+	public static synchronized void setContrWord(byte cw) {controlWord = cw;}
+	
+	public static synchronized void setCont_throttle(int thr) {cont_throttle.setWert(thr);}
+	public static synchronized void setCont_roll(int roll) {cont_roll.setWert(roll);}
+	public static synchronized void setCont_pitch(int pitch) {cont_pitch.setWert(pitch);}
+	public static synchronized void setCont_yaw(int yaw) {cont_yaw.setWert(yaw);}
 }
