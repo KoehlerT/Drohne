@@ -141,12 +141,16 @@ public class RFModule {
 			receive = spi.write(emptyReceive);
 			
 			System.out.println("Received");
-			printBinaryArray(receive);
+			//printBinaryArray(receive);
 		} catch (IOException e) {
 			System.out.println("Fehler beim Epfangen");
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public byte[] getReceivedArray() {
+		return receive;
 	}
 	
 	

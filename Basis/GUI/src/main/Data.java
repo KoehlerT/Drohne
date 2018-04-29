@@ -67,4 +67,12 @@ public class Data {
 	public static synchronized void setCont_roll(int roll) {cont_roll.setWert(roll);}
 	public static synchronized void setCont_pitch(int pitch) {cont_pitch.setWert(pitch);}
 	public static synchronized void setCont_yaw(int yaw) {cont_yaw.setWert(yaw);}
+	
+	public static synchronized void setVoltageMain(float vm) {voltageMain.setWert((float)vm);}
+	public static synchronized void setVoltage5V(float v5) {voltage5v.setWert((double)v5);}
+	public static synchronized void setVoltage3v(float v3) {voltage3v.setWert((double)v3);}
+	public static synchronized void setAmperage(float amp) {amperage.setWert((double)amp);}
+	
+	public static synchronized void setLatitude(float lat) {latitude.setWert((double)lat);}
+	public static synchronized void setLongitude(float lon) {longitude.setWert((double)lon);}
 }

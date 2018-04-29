@@ -5,6 +5,9 @@ public class Daten {
 	/*Klasse für alle Sensor und Flugdaten
 	 * */
 	private Daten() {}
+	//Programmdaten
+	private static byte controlWord;
+	
 	//Variablen: 
 	//Fliegen, Fernbediengungersatz
 	private static int cont_throttle; //Wert von 1000-2000 Geschwindigkeit der Motoren/Drohne
@@ -13,10 +16,10 @@ public class Daten {
 	private static int cont_yaw; //Wert von 1000-2000 Links- Rechtsdrehung der Drohne
 	
 	//Sensorwerte Strom
-	private static float voltageMain; //Spannung der Hauptstromversorgung (11V)
-	private static float voltage5v; //Spannung der 5V schiene
-	private static float voltage3v; //Spannung der 3,3V Schiene
-	private static float amperage; //Stromstärke bzw Stromverbrauch
+	private static float voltageMain = 10; //Spannung der Hauptstromversorgung (11V)
+	private static float voltage5v = 5; //Spannung der 5V schiene
+	private static float voltage3v = 3.3f; //Spannung der 3,3V Schiene
+	private static float amperage = 30; //Stromstärke bzw Stromverbrauch
 	
 	//Sensorwerte Position 
 	private static Vector3 tilt; //Item1: roll Item2: pitch Item3: Yaw
@@ -32,6 +35,8 @@ public class Daten {
 	private static boolean gpsAvailable;
 	
 	//Getter
+	public static synchronized byte getContWord() {return controlWord;}
+	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
 	public static synchronized int getCont_roll() {return cont_roll;}
 	public static synchronized int getCont_pitch() {return cont_pitch;}
@@ -39,7 +44,7 @@ public class Daten {
 	
 	public static synchronized float getVoltageMain() {return voltageMain;}
 	public static synchronized float getVoltage5v() {return voltage5v;}
-	public static synchronized float getvoltage3v() {return voltage3v;}
+	public static synchronized float getVoltage3v() {return voltage3v;}
 	public static synchronized float getAmperage() {return amperage;}
 	
 	public static synchronized Vector3 getTilt() {return tilt;}
@@ -53,6 +58,8 @@ public class Daten {
 	public static synchronized boolean getGpsAvailable() {return gpsAvailable;}
 	
 	//Setter
+	public static synchronized void setControlWord(byte cw) {controlWord = cw;}
+	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
 	public static synchronized void setCont_roll(int rl) {cont_roll = rl;}
 	public static synchronized void setCont_pitch(int pt) {cont_pitch = pt;}

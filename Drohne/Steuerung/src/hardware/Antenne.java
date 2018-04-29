@@ -27,6 +27,7 @@ public class Antenne {
 	private SpiDevice spi;
 	
 	private boolean running = true;
+	private long timeout = 1000000000l; //1s
 	
 	private final byte transmitCommand = 0b00100000; //W_TX_PAYLOAD
 	private byte[] transmitBuffer = new byte[33]; //transmitBuffer[0] = Write TX-Buffer Command
@@ -104,8 +105,12 @@ public class Antenne {
 	}
 	
 	public void setTransmitBuffer(byte[] toSend) {
-		for (int i = 0; i < toSend.length; i++) {
-			transmitBuffer[i+1] = toSend[i];
+		for (int i = 0; i < 32; i++) {
+			if (i < toSend.length)
+				transmitBuffer[i+1] = toSend[i];
+			else
+				transmitBuffer[i+1] = 0;
+			
 		}
 	}
 	
@@ -117,9 +122,15 @@ public class Antenne {
 		
 		try {Thread.sleep(1);
 		} catch (InterruptedException e1) {e1.printStackTrace();}
+		long startTime = System.nanoTime();
 		
 		System.out.println("Waiting for data");
-		while(DR.isLow());
+		while(DR.isLow()) {
+			 if ((System.nanoTime()-startTime) > timeout) {
+				 System.out.println("Receiving TIMED OUT:" +(System.nanoTime()-startTime));
+				 return;
+			 }
+		}
 		getRxData();
 	}
 	

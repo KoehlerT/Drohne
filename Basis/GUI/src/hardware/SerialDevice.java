@@ -55,20 +55,40 @@ public class SerialDevice implements SerialPortDataListener{
 		return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
 	}
 
-
+	
+	byte[] receivedData = new byte[17];
+	int countReceived = 0;
+	byte lastByte = 0;
+	
 	@Override
 	public void serialEvent(SerialPortEvent event) {
 		// TODO Auto-generated method stub
 		if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 	         return;
 		
-		System.out.println("Daten Empfangen:");
+		//System.out.println("Daten Empfangen:");
 		byte[] data = new byte[comPort.bytesAvailable()];
 		int numRead = comPort.readBytes(data, data.length);
-		System.out.println("Read: "+numRead+" bytes: ");
+		
+		//System.out.println("Read: "+numRead+" bytes: ");
 		for (int i = 0; i < data.length; i++) {
-			System.out.print(data[i]+", ");
+			byte thisByte = data[i];
+			if (countReceived < receivedData.length) {
+				receivedData[countReceived] = thisByte;
+				countReceived++;
+			}
+			if (lastByte == 55 && thisByte == 77) {
+				packageReady();
+			}else {
+				lastByte = thisByte;
+			}
+			
 		}
-		System.out.println();
+		//System.out.println();
+	}
+	
+	private void packageReady() {
+		Datapackager.untangleReceivedPackage(receivedData);
+		countReceived = 0;
 	}
 }

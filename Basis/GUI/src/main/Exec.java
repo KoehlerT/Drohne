@@ -35,8 +35,9 @@ public class Exec {
 		while (true) {
 			frame.update();
 			communicator.PrepareAndSend();
+			ProgramState.getInstance().evaluateWord();
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

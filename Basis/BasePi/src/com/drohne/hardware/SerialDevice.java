@@ -28,7 +28,13 @@ public class SerialDevice implements SerialDataEventListener{
 	
 	public void write (byte[] data) {
 		try {
-			serial.write(data);
+			
+			for (int i = 0; i < data.length; i++) {
+				serial.write(new byte[] {data[i]});
+				Thread.sleep(10);
+			}
+			//StopBytes
+			serial.write(new byte[] {(byte)55,(byte)77});
 			
 			System.out.println("Data written");
 		} catch (IllegalStateException e) {
@@ -36,6 +42,8 @@ public class SerialDevice implements SerialDataEventListener{
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -46,21 +54,21 @@ public class SerialDevice implements SerialDataEventListener{
 	public void dataReceived(SerialDataEvent event) {
 		try {
 			byte[] empf = event.getBytes();
-			System.out.println("Empfangen: "+empf.length+" count "+countRecvComp);
+			//System.out.println("Empfangen: "+empf.length+" count "+countRecvComp);
 			for (int i = 0; i < empf.length;i++) {
 				
 				byte thisByte = empf[i];
 				if (countRecvComp < receivedComp.length) {
 					receivedComp[countRecvComp] = thisByte;
-					System.out.println((countRecvComp)+": "+thisByte);
+					//System.out.println((countRecvComp)+": "+thisByte);
 					countRecvComp++;
 				}else {
-					System.out.println("Verworfen: "+thisByte);
+					//System.out.println("Verworfen: "+thisByte);
 				}
 					
 				
 				if (lastByte == (byte)0b01001010 && thisByte == (byte)0b10010110) {
-					System.out.println("STOP");
+					//System.out.println("STOP");
 					packageReady();
 				}else {
 					lastByte = thisByte;
@@ -77,7 +85,7 @@ public class SerialDevice implements SerialDataEventListener{
 	private void packageReady(){
 		StartBase.getAntenna().setTxRegister(receivedComp);
 		System.out.println("Daten Empfangen + in TX Geschrieben "+receivedComp.length);
-		printBinaryArray(receivedComp);
+		//printBinaryArray(receivedComp);
 		countRecvComp = 0;
 	}
 	
@@ -118,7 +126,7 @@ public class SerialDevice implements SerialDataEventListener{
 		}
 		
 		
-		private void printBinaryArray(byte[] bin) {
+		public static void printBinaryArray(byte[] bin) {
 			for (int i = 0; i < bin.length; i++) {
 				byte content = bin[i];
 				String str = String.format("%8s", Integer.toBinaryString(content & 0xFF)).replace(' ', '0');

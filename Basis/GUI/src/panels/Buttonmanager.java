@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
+import main.ProgramState;
+
 public class Buttonmanager {
 	
 	private JButton startB; //Starte die Drohne
@@ -56,7 +58,7 @@ public class Buttonmanager {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.out.println("Wir starten");
-						
+						ProgramState.getInstance().addSendingWord((byte)0x2);
 					}});
 				startB.setText("START");
 				startB.setBackground(Color.GREEN);

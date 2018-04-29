@@ -15,11 +15,10 @@ public class StartBase {
 		computer = new SerialDevice();
 		
 		while (true) {
-			//antenna.receive();
-			//break;
 			antenna.send();
-			
-			//computer.write();
+			antenna.receive();
+			byte[] received = antenna.getReceivedArray();
+			computer.write(received);
 			
 			try {
 				Thread.sleep(500);

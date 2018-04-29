@@ -64,13 +64,17 @@ class HwThread extends Thread{
 			//Automatisch / Event driven
 			GPS.printGps();
 			
+			//Beeper
+			beeper.workBeeps();
+			
 			//Antenne
-			//ant.setTransmitBuffer(toSend);
-			//ant.send();
 			ant.receive();
+			byte[] toSend = Datapackager.packageTransmit();
+			ant.setTransmitBuffer(toSend);
+			ant.send();
 			
 			//Warte ein wenig
-			try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+			//try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}
