@@ -46,10 +46,12 @@ class HwThread extends Thread{
 			//Nehme Variablen
 			if (Info.sensorAttached) {
 				//SPI
+				System.out.println("Arduino?");
 				arduinoMng.sendControllerInputs();
 				
 				//Ultraschall
 				try {
+					System.out.println("Ultraschall?");
 					 ultrasonic.measureDistanceDm();
 					System.out.println("nächster Gegenstand "+Daten.getDistanceUltrasonic()
 						+" dm entfernt");
@@ -60,9 +62,11 @@ class HwThread extends Thread{
 			}
 			//GPS
 			//Automatisch / Event driven
+			System.out.println("GPS?");
 			GPS.printGps();
 			
 			//Beeper
+			System.out.println("Beeper?");
 			beeper.workBeeps();
 			
 			//Antenne
@@ -71,6 +75,7 @@ class HwThread extends Thread{
 			//ant.setTransmitBuffer(toSend);
 			//ant.send();
 			
+			System.out.println("Wlan?");
 			wlanServer.receive();
 			wlanServer.sendPackage();
 			

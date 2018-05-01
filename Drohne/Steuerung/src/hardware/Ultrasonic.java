@@ -29,18 +29,41 @@ public class Ultrasonic {
 		Thread.sleep((long) 0.01);
 		trigPin.low();
 		
+		long timoutTime = System.nanoTime();
 		//Wait until the ECHO Pin gets High
-		while(echoPin.isLow());
+		//System.out.println("34");
+		while(echoPin.isLow()) {
+			//Echo kommt nie zurück
+			if ((System.nanoTime() -timoutTime) > Info.ultrasonicTimeout) {
+				System.out.println("Timeout 1");
+				return;
+			}
+		}
+		//System.out.println("42");
 		long startTime = System.nanoTime();
 		//Wait until the ECHO Pin gets Low
-		while(echoPin.isHigh());
+		while(echoPin.isHigh()) {
+			if ((System.nanoTime() -startTime) > Info.ultrasonicTimeout) {
+				//Zu lange, Objekt wird als weiter als s.u. angenommen
+				filterNoise(330); //100ms => 330dm
+				return;
+			}
+		}
 		long endTime = System.nanoTime();
 		
 		//Distance
 		float newDistance = (float)(endTime - startTime) * Info.SoundSpeed;
 		
 		//Noise Filter
-		float distance = (newDistance);
+		filterNoise(newDistance);
+		
+	}
+	
+	private void timeout() {
+		filterNoise(330); //100ms => 330dm
+	}
+	
+	private void filterNoise(float distance) {
 		if (oldDistance > 0)
 			distance = distance * 0.5f + oldDistance*0.5f;
 		oldDistance = distance;

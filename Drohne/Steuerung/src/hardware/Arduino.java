@@ -11,7 +11,7 @@ public class Arduino {
 	
 	//Variablen---------------------------------------
 	
-	private byte[] toSend = new byte[8]; //Controller input bytes
+	private byte[] toSend = new byte[10]; //Controller input bytes
 	private SpiDevice device;
 	
 	//Kosntruktor
@@ -31,6 +31,9 @@ public class Arduino {
 		writeToArray(toSend,pitch,2);
 		writeToArray(toSend,roll,4);
 		writeToArray(toSend,yaw,6);
+		
+		toSend[8] = (byte) 0;
+		toSend[9] = (byte) 0;
 		
 		sendAndReceive(toSend);
 	}
@@ -55,13 +58,14 @@ public class Arduino {
 	
 	private byte[] sendAndReceive(byte[] send) {
 		byte[] recv = new byte[send.length];
-		
+		System.out.println("Shaking");
 		shakeHands();
-		
+		System.out.println("Shook");
 		for (int i = 0; i < send.length; i++) {
 			recv[i] = sendPackage(send[i]);
 		}
 		
+		Datapackager.untangleArduinoReceived(recv);
 		return recv;
 	}
 	

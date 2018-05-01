@@ -1,51 +1,66 @@
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
-double Hoehe = 0;
-double Temperatur = 0;
-double HoeheMittelwert = 0;
-int Druck;
+
+/***************************************************
+  This is an example for the BMP085 Barometric Pressure & Temp Sensor
+
+  Designed specifically to work with the Adafruit BMP085 Breakout
+  ----> https://www.adafruit.com/products/391
+
+  These displays use I2C to communicate, 2 pins are required to
+  interface
+  Adafruit invests time and resources providing this open source code,
+  please support Adafruit and open-source hardware by purchasing
+  products from Adafruit!
+
+  Written by Limor Fried/Ladyada for Adafruit Industries.
+  BSD license, all text above must be included in any redistribution
+ ****************************************************/
+
+// Connect VCC of the BMP085 sensor to 3.3V (NOT 5.0V!)
+// Connect GND to Ground
+// Connect SCL to i2c clock - on '168/'328 Arduino Uno/Duemilanove/etc thats Analog 5
+// Connect SDA to i2c data - on '168/'328 Arduino Uno/Duemilanove/etc thats Analog 4
+// EOC is not used, it signifies an end of conversion
+// XCLR is a reset pin, also not used here
+
 Adafruit_BMP085 bmp;
- 
-void setup() 
-{
-  Serial.begin(9600);
-  if (!bmp.begin()) 
-  {
-  Serial.println("BMP180 sensor not found");
-  while (1) {}
+
+void setup() {
+  Serial.begin(57600);
+  if (!bmp.begin()) {
+	Serial.println("Could not find a valid BMP085 sensor, check wiring!");
+	while (1) {}
   }
 }
- 
-void loop() {
-  HoeheMittelwert = 0;
-    for(int x = 0; x<5; x++){
-    HoeheMittelwert = HoeheMittelwert + bmp.readAltitude(bmp.readSealevelPressure());
-    }
-    HoeheMittelwert = HoeheMittelwert/5;
-    Temperatur = bmp.readTemperature();
-    Hoehe = bmp.readAltitude(bmp.readPressure());
-    Druck = bmp.readPressure();
-    Serial.print("Luftdruck = ");
-    Serial.print(Druck);
-    Serial.println(" p");
 
-    Serial.print("Luftdruck bei NN = ");
-    Serial.print(bmp.readSealevelPressure());
-    Serial.println(" p");
-    
-    Serial.print("Temperatur = ");
-    Serial.print(Temperatur);
+void loop() {
+    Serial.print("Temperature = ");
+    Serial.print(bmp.readTemperature());
     Serial.println(" *C");
 
-    Serial.print("Höhe = ");
-    Serial.print(Hoehe);
-    Serial.println(" Meter");
-    
-    Serial.print("Höhe im Durchschnitt = ");
-    Serial.print(HoeheMittelwert);
-    Serial.println(" Meter");
+    Serial.print("Pressure = ");
+    Serial.print(bmp.readPressure());
+    Serial.println(" Pa");
+
+    // Calculate altitude assuming 'standard' barometric
+    // pressure of 1013.25 millibar = 101325 Pascal
+    Serial.print("Altitude = ");
+    Serial.print(bmp.readAltitude());
+    Serial.println(" meters");
+
+    Serial.print("Pressure at sealevel (calculated) = ");
+    Serial.print(bmp.readSealevelPressure());
+    Serial.println(" Pa");
+
+  // you can get a more precise measurement of altitude
+  // if you know the current sea level pressure which will
+  // vary with weather and such. If it is 1015 millibars
+  // that is equal to 101500 Pascals.
+    Serial.print("Real altitude = ");
+    Serial.print(bmp.readAltitude(101500));
+    Serial.println(" meters");
+
     Serial.println();
-    
-    
-    delay(5000);
+    delay(500);
 }

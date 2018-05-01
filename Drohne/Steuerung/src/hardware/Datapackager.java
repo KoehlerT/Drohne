@@ -10,12 +10,17 @@ public class Datapackager {
 	}
 	
 	public static byte[] packageTransmit() {
-		byte[] toTransmit = new byte[15];
+		byte[] toTransmit = new byte[17];
 		toTransmit[0] = Daten.getContWord();
 		//GPS
 		writeGPS(toTransmit);
 		//Powers
 		writePower(toTransmit);
+		//Altitude
+		int alt = (int)(Daten.getPrsAltitude() * 100);
+		toTransmit[15] = (byte)alt;
+		toTransmit[16] = (byte)(alt >> 8);
+		
 		return toTransmit;
 	}
 	
@@ -55,15 +60,15 @@ public class Datapackager {
 		
 		System.out.println("CW: "+controlWord);
 		ProgramState.getInstance().addControlWord(controlWord);
-		int throttle = received[2] & 0x00000FF;
+		int throttle = received[2] & 0x000000FF;
 		throttle |= ((received[6]&0b11000000)<<2);
 		throttle+=1000;
 		
-		int roll = received[3] & 0x00000FF;
+		int roll = received[3] & 0x000000FF;
 		roll |= ((received[6]&0b0011_0000)<<4);
 		roll += 1000;
 		
-		int pitch = received[4] & 0x00000FF;
+		int pitch = received[4] & 0x000000FF;
 		pitch |= ((received[6]&0b0000_1100)<<6);
 		pitch += 1000;
 		
@@ -76,6 +81,25 @@ public class Datapackager {
 		Daten.setCont_roll(roll);
 		Daten.setCont_pitch(pitch);
 		Daten.setCont_yaw(yaw);
+	}
+	
+	public static void untangleArduinoReceived(byte[] buffer) {
+		int[] powers = new int[4];
+		for (int i = 0; i < 4; i++) {
+			int p = buffer[i*2+1] & 0x000000FF;
+			p = (p<<8)|(buffer[i*2]&0x000000FF);
+			powers[i] = p;
+		}
+		
+		int height = buffer[9] & 0x000000FF;
+		height = (height << 8) | (buffer[8] & 0x000000FF);
+		
+		Daten.setVoltage5v((float)powers[3]/1000f);
+		Daten.setVoltage3v((float)powers[2]/1000f);
+		Daten.setVoltageMain((float)powers[1] * 5000f); //Die Spannung liegt im 5-fachen der Versorgungsspannung?!
+		Daten.setAmperage(((float)powers[0] / 185f)-15f); //185 mV/A
+		Daten.setPrsAltitude((float)height/100f);
+		System.out.println("Height: "+(height/100f));
 	}
 	
 	

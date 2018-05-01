@@ -19,7 +19,11 @@
 #include <EEPROM.h>                        //Include the EEPROM.h library so we can store information onto the EEPROM
 #include <Adafruit_ADS1015.h>              //Read Voltage Sensor
 #include <MPU9250.h>
+#include <Adafruit_BMP085.h>
 MPU9250 IMU(Wire,0x68);
+ Adafruit_ADS1115 ads;
+Adafruit_BMP085 bmp;
+#define adcScale 0.1875f
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -61,10 +65,14 @@ float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_l
 float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;
 float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;
 //SPI Kommunikation
-byte datenplatzhalter[] = {1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
+byte datenplatzhalter[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
 byte controllerInputs[8]; //Inputs vom Controller
+
+//Flugdaten
+int startLuftdruck;
+
 //ADS read
-Adafruit_ADS1115 ads1115(0x49);
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
@@ -77,7 +85,9 @@ void setup(){
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
 
   Wire.begin();                                                //Start the I2C as master.
-  ads1115.begin();                                             //Start I2C ADS
+  ads.begin();                                             //Start I2C ADS
+  Serial.println(IMU.begin());
+  bmp.begin();
 
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
@@ -90,7 +100,7 @@ void setup(){
   //Check the EEPROM signature to make sure that the setup program is executed
   //while(eeprom_data[33] != 'J' || eeprom_data[34] != 'M' || eeprom_data[35] != 'B')delay(10);
 
-  set_gyro_registers();                                        //Set the specific gyro registers.
+  set_gyro_registers();                                        //Set the specific gyro registers. + Konfiguriere I2C Geräte
   //Was tut die Forschleife? Kalibrieren!?
   for (cal_int = 0; cal_int < 1250 ; cal_int ++){              //Wait 5 seconds before continuing.
     PORTD |= B01101000;                                        //Set digital poort 3,5,6 HIGH
@@ -155,7 +165,6 @@ void setup(){
 //Main program loop
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop(){
-
   /*receiver_input_channel_1 = convert_receiver_channel(1);      //Convert the actual receiver signals for pitch to the standard 1000 - 2000us.
   receiver_input_channel_2 = convert_receiver_channel(2);      //Convert the actual receiver signals for roll to the standard 1000 - 2000us.
   receiver_input_channel_3 = convert_receiver_channel(3);      //Convert the actual receiver signals for throttle to the standard 1000 - 2000us.
@@ -167,12 +176,6 @@ void loop(){
   receiver_input_channel_3 = convert_integer(0);
   receiver_input_channel_4 = convert_integer(6);
 
-  //Print inputs
-  Serial.print("CH1: "); Serial.print(receiver_input_channel_1);
-  Serial.print(" CH2: "); Serial.print(receiver_input_channel_2);
-  Serial.print(" CH3: "); Serial.print(receiver_input_channel_3);
-  Serial.print(" CH4: "); Serial.print(receiver_input_channel_4); Serial.println();
-  
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
 
@@ -263,9 +266,15 @@ void loop(){
     esc_4 = 1000;                                                           //If start is not 2 keep a 1000us pulse for ess-4.
   }
 
+  //Clear serial
+  Serial.write(27);       // ESC command
+    Serial.print("[2J");    // clear screen command
+    Serial.write(27);
+    Serial.print("[H");     // cursor to home command
+
   //Send times
-  Serial.println(start);
-  Serial.print("Sende ESC Signale: OP3: ");
+  Serial.print(start);
+  Serial.print(" Sende ESC Signale: OP3: ");
   Serial.print(esc_1);
   Serial.print(" OP6: ");
   Serial.print(esc_2);
@@ -274,7 +283,7 @@ void loop(){
   Serial.print(" OP5: ");
   Serial.print(esc_4);
   Serial.println();
-  
+
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
@@ -286,7 +295,7 @@ void loop(){
   timer_channel_2 = esc_2 + loop_timer;                                     //Calculate the time of the faling edge of the esc-2 pulse.
   timer_channel_3 = esc_3 + loop_timer;                                     //Calculate the time of the faling edge of the esc-3 pulse.
   timer_channel_4 = esc_4 + loop_timer;                                     //Calculate the time of the faling edge of the esc-4 pulse.
-  
+
   while(PORTD >= 16){                                                       //Stay in this loop until output 4,5,6 and 7 are low.
     esc_loop_timer = micros();                                              //Read the current time.
     if(timer_channel_1 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired. Vorne Rechts
@@ -299,89 +308,16 @@ void loop(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*ISR(PCINT0_vect){
-  current_time = micros();
-  //Channel 1=========================================
-  if(PINB & B00000001){                                        //Is input 8 high?
-    if(last_channel_1 == 0){                                   //Input 8 changed from 0 to 1
-      last_channel_1 = 1;                                      //Remember current input state
-      timer_1 = current_time;                                  //Set timer_1 to current_time
-    }
-  }
-  else if(last_channel_1 == 1){                                //Input 8 is not high and changed from 1 to 0
-    last_channel_1 = 0;                                        //Remember current input state
-    receiver_input[1] = current_time - timer_1;                //Channel 1 is current_time - timer_1
-  }
-  //Channel 2=========================================
-  if(PINB & B00000010 ){                                       //Is input 9 high?
-    if(last_channel_2 == 0){                                   //Input 9 changed from 0 to 1
-      last_channel_2 = 1;                                      //Remember current input state
-      timer_2 = current_time;                                  //Set timer_2 to current_time
-    }
-  }
-  else if(last_channel_2 == 1){                                //Input 9 is not high and changed from 1 to 0
-    last_channel_2 = 0;                                        //Remember current input state
-    receiver_input[2] = current_time - timer_2;                //Channel 2 is current_time - timer_2
-  }
-  //Channel 3=========================================
-  if(PINB & B00000100 ){                                       //Is input 10 high?
-    if(last_channel_3 == 0){                                   //Input 10 changed from 0 to 1
-      last_channel_3 = 1;                                      //Remember current input state
-      timer_3 = current_time;                                  //Set timer_3 to current_time
-    }
-  }
-  else if(last_channel_3 == 1){                                //Input 10 is not high and changed from 1 to 0
-    last_channel_3 = 0;                                        //Remember current input state
-    receiver_input[3] = current_time - timer_3;                //Channel 3 is current_time - timer_3
 
-  }
-  //Channel 4=========================================
-  if(PINB & B00001000 ){                                       //Is input 11 high?
-    if(last_channel_4 == 0){                                   //Input 11 changed from 0 to 1
-      last_channel_4 = 1;                                      //Remember current input state
-      timer_4 = current_time;                                  //Set timer_4 to current_time
-    }
-  }
-  else if(last_channel_4 == 1){                                //Input 11 is not high and changed from 1 to 0
-    last_channel_4 = 0;                                        //Remember current input state
-    receiver_input[4] = current_time - timer_4;                //Channel 4 is current_time - timer_4
-  }
-}*/
+//Hier stand der Code für seinen Receiver
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Subroutine for reading the gyro
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gyro_signalen(){
-  /*//Read the L3G4200D or L3GD20H
-  if(eeprom_data[31] == 2 || eeprom_data[31] == 3){
-    Wire.beginTransmission(gyro_address);                        //Start communication with the gyro (adress 1101001)
-    Wire.write(168);                                             //Start reading @ register 28h and auto increment with every read
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(gyro_address, 6);                           //Request 6 bytes from the gyro
-    while(Wire.available() < 6);                                 //Wait until the 6 bytes are received
-    lowByte = Wire.read();                                       //First received byte is the low part of the angular data
-    highByte = Wire.read();                                      //Second received byte is the high part of the angular data
-    gyro_axis[1] = ((highByte<<8)|lowByte);                      //Multiply highByte by 256 (shift left by 8) and ad lowByte
-    lowByte = Wire.read();                                       //First received byte is the low part of the angular data
-    highByte = Wire.read();                                      //Second received byte is the high part of the angular data
-    gyro_axis[2] = ((highByte<<8)|lowByte);                      //Multiply highByte by 256 (shift left by 8) and ad lowByte
-    lowByte = Wire.read();                                       //First received byte is the low part of the angular data
-    highByte = Wire.read();                                      //Second received byte is the high part of the angular data
-    gyro_axis[3] = ((highByte<<8)|lowByte);                      //Multiply highByte by 256 (shift left by 8) and ad lowByte
-  }
+  //Read the L3G4200D or L3GD20H
 
   //Read the MPU-6050
-  if(eeprom_data[31] == 1){
-    Wire.beginTransmission(gyro_address);                        //Start communication with the gyro
-    Wire.write(0x43);                                            //Start reading @ register 43h and auto increment with every read
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(gyro_address,6);                            //Request 6 bytes from the gyro
-    while(Wire.available() < 6);                                 //Wait until the 6 bytes are received
-    gyro_axis[1] = Wire.read()<<8|Wire.read();                   //Read high and low part of the angular data
-    gyro_axis[2] = Wire.read()<<8|Wire.read();                   //Read high and low part of the angular data
-    gyro_axis[3] = Wire.read()<<8|Wire.read();                   //Read high and low part of the angular data
-  }
-  */
 
 IMU.readSensor();                                                // Reads Sensorinformations of the MPU9250
 gyro_roll = IMU.getGyroY_rads();                                 // Takes the Informations and gives it as rad/s
@@ -395,6 +331,24 @@ gyro_pitch = -gyro_pitch;
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
     gyro_axis[2] -= gyro_axis_cal[2];                            //Only compensate after the calibration
     gyro_axis[3] -= gyro_axis_cal[3];                            //Only compensate after the calibration
+  }
+
+  if (cal_int == 2000){ //Only calculate if not calibrating
+      //datenplatzhalter 10 Elemente!
+      //Read Voltages
+      for (int v = 0; v < 4; v++) {
+          int voltage = (ads.readADC_SingleEnded(v) * adcScale);
+          datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
+          datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
+      }
+      //Bis index 7
+      //float altitude = bmp.readAltitude(startLuftdruck);
+      float altitude = bmp.readAltitude();
+      int alt = (int)(altitude * 100);
+      datenplatzhalter[8] = (byte)alt;
+      datenplatzhalter[9] = (byte)(alt >> 8);
+
+
   }
   /*
   gyro_roll = gyro_axis[eeprom_data[28] & 0b00000011];
@@ -452,40 +406,15 @@ void calculate_pid(){
 
 //This part converts the actual receiver signals to a standardized 1000 – 1500 – 2000 microsecond value.
 //The stored data in the EEPROM is used.
-/*int convert_receiver_channel(byte function){
-  byte channel, reverse;                                                       //First we declare some local variables
-  int low, center, high, actual;
-  int difference;
 
-  channel = eeprom_data[function + 23] & 0b00000111;                           //What channel corresponds with the specific function
-  if(eeprom_data[function + 23] & 0b10000000)reverse = 1;                      //Reverse channel when most significant bit is set
-  else reverse = 0;                                                            //If the most significant is not set there is no reverse
-
-  actual = receiver_input[channel];                                            //Read the actual receiver value for the corresponding function
-  low = (eeprom_data[channel * 2 + 15] << 8) | eeprom_data[channel * 2 + 14];  //Store the low value for the specific receiver input channel
-  center = (eeprom_data[channel * 2 - 1] << 8) | eeprom_data[channel * 2 - 2]; //Store the center value for the specific receiver input channel
-  high = (eeprom_data[channel * 2 + 7] << 8) | eeprom_data[channel * 2 + 6];   //Store the high value for the specific receiver input channel
-
-  if(actual < center){                                                         //The actual receiver value is lower than the center value
-    if(actual < low)actual = low;                                              //Limit the lowest value to the value that was detected during setup
-    difference = ((long)(center - actual) * (long)500) / (center - low);       //Calculate and scale the actual value to a 1000 - 2000us value
-    if(reverse == 1)return 1500 + difference;                                  //If the channel is reversed
-    else return 1500 - difference;                                             //If the channel is not reversed
-  }
-  else if(actual > center){                                                                        //The actual receiver value is higher than the center value
-    if(actual > high)actual = high;                                            //Limit the lowest value to the value that was detected during setup
-    difference = ((long)(actual - center) * (long)500) / (high - center);      //Calculate and scale the actual value to a 1000 - 2000us value
-    if(reverse == 1)return 1500 - difference;                                  //If the channel is reversed
-    else return 1500 + difference;                                             //If the channel is not reversed
-  }
-  else return 1500;
-}*/
+//Hier stand Code zum Umwandeln von Inputs in Integer
 
 //Instead: Receive Controller Inputs via SPI
 void receive(){
-  Serial.println("Versuche zu Empfangen");
+  //Serial.println("Versuche zu Empfangen");
     int s = 0;
     if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
+        Serial.println("Received");
       if (SPDR == (byte)'R'){
         SPDR = (byte)'A';
         s = 0;
@@ -538,86 +467,24 @@ void pulse(int delay){
 
 void set_gyro_registers(){
   //Setup the MPU-6050
- /* if(eeprom_data[31] == 1){
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
-    Wire.write(0x6B);                                            //We want to write to the PWR_MGMT_1 register (6B hex)
-    Wire.write(0x00);                                            //Set the register bits as 00000000 to activate the gyro
-    Wire.endTransmission();                                      //End the transmission with the gyro.
 
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
-    Wire.write(0x1B);                                            //We want to write to the GYRO_CONFIG register (1B hex)
-    Wire.write(0x08);                                            //Set the register bits as 00001000 (500dps full scale)
-    Wire.endTransmission();                                      //End the transmission with the gyro
-
-    //Let's perform a random register check to see if the values are written correct
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search
-    Wire.write(0x1B);                                            //Start reading @ register 0x1B
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(gyro_address, 1);                           //Request 1 bytes from the gyro
-    while(Wire.available() < 1);                                 //Wait until the 6 bytes are received
-    if(Wire.read() != 0x08){                                     //Check if the value is 0x08
-      digitalWrite(8,HIGH);                                     //Turn on the warning led
-      while(1)delay(10);                                         //Stay in this loop for ever
-    }
-
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search
-    Wire.write(0x1A);                                            //We want to write to the GYRO_CONFIG register (1B hex)
-    Wire.write(0x03);                                            //Set the register bits as 00001000 (500dps full scale)
-    Wire.endTransmission();                                      //End the transmission with the gyro
-  }
+  //Let's perform a random register check to see if the values are written correct
   //Setup the L3G4200D
-  if(eeprom_data[31] == 2){
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
-    Wire.write(0x20);                                            //We want to write to register 1 (20 hex).
-    Wire.write(0x0F);                                            //Set the register bits as 00001111 (Turn on the gyro and enable all axis).
-    Wire.endTransmission();                                      //End the transmission with the gyro.
 
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
-    Wire.write(0x23);                                            //We want to write to register 4 (23 hex).
-    Wire.write(0x90);                                            //Set the register bits as 10010000 (Block Data Update active & 500dps full scale).
-    Wire.endTransmission();                                      //End the transmission with the gyro.
+  //Let's perform a random register check to see if the values are written correct
 
-    //Let's perform a random register check to see if the values are written correct
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search
-    Wire.write(0x23);                                            //Start reading @ register 0x23
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(gyro_address, 1);                           //Request 1 bytes from the gyro
-    while(Wire.available() < 1);                                 //Wait until the 6 bytes are received
-    if(Wire.read() != 0x90){                                     //Check if the value is 0x90
-      digitalWrite(8,HIGH);                                     //Turn on the warning led
-      while(1)delay(10);                                         //Stay in this loop for ever
-    }
-
-  }
   //Setup the L3GD20H
-  if(eeprom_data[31] == 3){
-    Wire.beginTransmission(gyro_address);                        //Start communicationwith the address found during search.
-    Wire.write(0x20);                                            //We want to write to register 1 (20 hex).
-    Wire.write(0x0F);                                            //Set the register bits as 00001111 (Turn on the gyro and enable all axis).
-    Wire.endTransmission();                                      //End the transmission with the gyro.
 
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search.
-    Wire.write(0x23);                                            //We want to write to register 4 (23 hex).
-    Wire.write(0x90);                                            //Set the register bits as 10010000 (Block Data Update active & 500dps full scale).
-    Wire.endTransmission();                                      //End the transmission with the gyro.
+  //Set registers BMP085
+  Serial.print("Reading Preassure");
+  startLuftdruck = bmp.readPressure();
 
-    //Let's perform a random register check to see if the values are written correct
-    Wire.beginTransmission(gyro_address);                        //Start communication with the address found during search
-    Wire.write(0x23);                                            //Start reading @ register 0x23
-    Wire.endTransmission();                                      //End the transmission
-    Wire.requestFrom(gyro_address, 1);                           //Request 1 bytes from the gyro
-    while(Wire.available() < 1);                                 //Wait until the 6 bytes are received
-    if(Wire.read() != 0x90){                                     //Check if the value is 0x90
-      digitalWrite(8,HIGH);                                     //Turn on the warning led
-      while(1)delay(10);                                         //Stay in this loop for ever
-    }
-    }*/
 }
 
 
 
 int getBatteryVoltage(){
-    int input = ads1115.readADC_SingleEnded(1);
+    int input = ads.readADC_SingleEnded(1);
     return 1100;
     //return input*500; // Input * 5 = Volt, Input*500 = centivolt
 }

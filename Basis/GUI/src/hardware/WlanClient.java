@@ -34,6 +34,7 @@ public class WlanClient {
 		try {
 			server.getOutputStream().write(Datapackager.getTransmitPackage());
 			server.getOutputStream().flush();
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -41,10 +42,10 @@ public class WlanClient {
 	}
 	
 	public void receive() {
-		byte[] buffer = new byte[16];
+		byte[] buffer = new byte[18];
 		try {
-			int read = server.getInputStream().read(buffer, 1, 15);
-			if (read >= 15) {
+			int read = server.getInputStream().read(buffer, 1, 17);
+			if (read >= 16) {
 				packageReady(buffer);
 			}
 				

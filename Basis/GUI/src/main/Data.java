@@ -7,7 +7,7 @@ public class Data {
 	private Data() {}
 	
 	//ProgrammKonstanten
-	public static final int numCrit = 6; //Kritisch: 6
+	public static final int numCrit = 7; //Kritisch: 7
 	public static final int numUnCrit = 7; //Unkritisch: 7
 	public static final String port = "COM3";
 	
@@ -17,9 +17,9 @@ public class Data {
 	
 	//Flugdaten
 	private static intWert cont_throttle= new intWert("Throttle",false,1000,2000,1000);
-	private static intWert cont_pitch = new intWert("Pitch",false,1000,2000,1000);
-	private static intWert cont_roll = new intWert("Roll",false,1000,2000,1000);
-	private static intWert cont_yaw = new intWert("Yaw",false,1000,2000,1000);
+	private static intWert cont_pitch = new intWert("Pitch",false,1000,2000,1500);
+	private static intWert cont_roll = new intWert("Roll",false,1000,2000,1500);
+	private static intWert cont_yaw = new intWert("Yaw",false,1000,2000,1500);
 	
 	private static doubleWert voltageMain = new doubleWert("Hauptspannung",true,10.0,14.0,11.0);
 	private static doubleWert voltage5v = new doubleWert("5V",true,2.5,7.5,5);
@@ -29,6 +29,7 @@ public class Data {
 	private static vektorenWert tilt = new vektorenWert("Rotation",false,-5,-5,-5,5,5,5,0,0,0);
 	private static doubleWert latitude = new doubleWert("Latutide",true,0,0,0);
 	private static doubleWert longitude = new doubleWert("Longitude",true,0,0,0);
+	private static doubleWert altitude = new doubleWert("Altitude",true,-5,15,0);
 	
 	private static doubleWert distUltrasonic = new doubleWert("Frei",false,3.0,50.0,10.0);
 	
@@ -53,6 +54,7 @@ public class Data {
 	public static synchronized vektorenWert getTilt() {return tilt;}
 	public static synchronized doubleWert getLatitude() {return latitude;}
 	public static synchronized doubleWert getLongitude() {return longitude;}
+	public static synchronized doubleWert getAltitude() {return altitude;}
 	
 	public static doubleWert getDistUltrasonic() {return distUltrasonic;}
 	
@@ -75,4 +77,5 @@ public class Data {
 	
 	public static synchronized void setLatitude(float lat) {latitude.setWert((double)lat);}
 	public static synchronized void setLongitude(float lon) {longitude.setWert((double)lon);}
+	public static synchronized void setAltitude(float alt) {altitude.setWert((double)alt);};
 }

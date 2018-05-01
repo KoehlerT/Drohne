@@ -48,8 +48,9 @@ public class WlanServer {
 		if (client == null)
 			return;
 		try {
-			buffer = new byte[8];
-			int read = client.getInputStream().read(buffer, 0, 8);
+			buffer = new byte[32];
+			//int read = client.getInputStream().read(buffer, 0, 8);
+			int read = client.getInputStream().read(buffer);
 			System.out.println("Read "+read);
 			if (read == -1)
 				return;
@@ -74,7 +75,6 @@ public class WlanServer {
 	}
 	
 	private void packageReady() {
-		System.out.println("Package Ready");
 		Datapackager.untangleReceived(receiveBuffer);
 	}
 	

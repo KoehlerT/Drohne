@@ -11,6 +11,11 @@ public class Datapackager {
 		//printBinaryArray(received);
 		getGPSData(received);
 		getPowerData(received);
+		//Altitude
+		int altitude = received[17]&0x000000FF;
+		altitude = (altitude << 8) | (received[16]&0x000000FF);
+		Data.setAltitude((float)altitude/100f);
+		
 	}
 	
 	private static void getGPSData(byte[] buffer) {

@@ -17,7 +17,7 @@ public class ProgramState {
 		incoming.add(controlWord);
 	}
 	
-	public void evaluateControlWord() {
+	public synchronized void evaluateControlWord() {
 		//System.out.println("incm: "+incoming.peek()+" lw: "+lastWord);
 		if (!incoming.isEmpty()) {
 			byte cw = incoming.poll();

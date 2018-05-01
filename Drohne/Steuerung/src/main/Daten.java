@@ -26,6 +26,7 @@ public class Daten {
 	private static float latitude;
 	private static float longitude;
 	private static float gpsAltitude;
+	private static float prsAltitude;
 	
 	//Sensorwerte Umgebung
 	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
@@ -51,6 +52,7 @@ public class Daten {
 	public static synchronized float getLatitude() {return latitude;}
 	public static synchronized float getLongitude() {return longitude;}
 	public static synchronized float getGpsAltitude() {return gpsAltitude;}
+	public static synchronized float getPrsAltitude() {return prsAltitude;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
 	
@@ -74,6 +76,7 @@ public class Daten {
 	public static synchronized void setLatitude(float lt) {latitude = lt;}
 	public static synchronized void setLongitude(float lt) {longitude = lt;}
 	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
+	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;}
 	

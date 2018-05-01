@@ -1,7 +1,7 @@
 //#include <Wire.h>
 #include "MPU9250.h"
 
-// an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
+// an IMU object with the MPU-9250 sensor on I2C bus 0 with address 0x68
 MPU9250 IMU(Wire,0x68);
 int status;
 
@@ -17,8 +17,47 @@ void setup() {
     Serial.println("Check IMU wiring or try cycling power");
     Serial.print("Status: ");
     Serial.println(status);
-    while(1) {}
+    //while(1) {}
   }
+  getAccelBiases();
+  getMagBiases();
+}
+
+void getAccelBiases(){
+    Serial.println("Accelerometer");
+    status = IMU.calibrateAccel();
+    Serial.print("Bias X: ");
+    Serial.println(IMU.getAccelBiasX_mss());
+    Serial.print("Bias Y: ");
+    Serial.println(IMU.getAccelBiasY_mss());
+    Serial.print("Bias Z: ");
+    Serial.println(IMU.getAccelBiasZ_mss());
+
+    Serial.print("SclFac X: ");
+    Serial.println(IMU.getAccelScaleFactorX());
+    Serial.print("SclFac Y: ");
+    Serial.println(IMU.getAccelScaleFactorY());
+    Serial.print("SclFac Z: ");
+    Serial.println(IMU.getAccelScaleFactorZ());
+
+}
+
+void getMagBiases(){
+    Serial.println("Magnetometer");
+    status = IMU.calibrateMag();
+    Serial.print("Bias X: ");
+    Serial.println(IMU.getMagBiasX_uT());
+    Serial.print("Bias Y: ");
+    Serial.println(IMU.getMagBiasY_uT());
+    Serial.print("Bias Z: ");
+    Serial.println(IMU.getMagBiasZ_uT());
+
+    Serial.print("SclFac X: ");
+    Serial.println(IMU.getMagScaleFactorX());
+    Serial.print("SclFac Y: ");
+    Serial.println(IMU.getMagScaleFactorY());
+    Serial.print("SclFac Z: ");
+    Serial.println(IMU.getMagScaleFactorZ());
 }
 
 void loop() {

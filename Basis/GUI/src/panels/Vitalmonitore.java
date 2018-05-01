@@ -66,7 +66,7 @@ public class Vitalmonitore {
 		//GPS
 		updateLabel(Data.getLatitude(), criticLabels[4]);
 		updateLabel(Data.getLongitude(),criticLabels[5]);
-		
+		updateLabel(Data.getAltitude(),criticLabels[6]);
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {
