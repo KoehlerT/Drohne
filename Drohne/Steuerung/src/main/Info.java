@@ -23,5 +23,5 @@ public class Info {
 	
 	/**Ist die untere Plattform angeschlossen
 	 * **/
-	public static final boolean sensorAttached = false;
+	public static final boolean sensorAttached = true;
 }

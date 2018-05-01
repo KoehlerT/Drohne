@@ -167,6 +167,12 @@ void loop(){
   receiver_input_channel_3 = convert_integer(0);
   receiver_input_channel_4 = convert_integer(6);
 
+  //Print inputs
+  Serial.print("CH1: "); Serial.print(receiver_input_channel_1);
+  Serial.print(" CH2: "); Serial.print(receiver_input_channel_2);
+  Serial.print(" CH3: "); Serial.print(receiver_input_channel_3);
+  Serial.print(" CH4: "); Serial.print(receiver_input_channel_4); Serial.println();
+  
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
 

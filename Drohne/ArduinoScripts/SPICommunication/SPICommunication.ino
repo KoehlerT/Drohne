@@ -16,7 +16,7 @@ void setup() {
   pinMode(MISO,OUTPUT);
   SPCR |= _BV(SPE);
   //Set up Serial Connection
-  Serial.begin(9600);
+  Serial.begin(57600);
   Serial.println("Gestartet");
   Serial.print("Größen: "); Serial.print(sizeof(char)); Serial.print(", "), Serial.println(sizeof(int));
 }

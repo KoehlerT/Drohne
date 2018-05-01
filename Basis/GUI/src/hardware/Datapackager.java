@@ -36,7 +36,7 @@ public class Datapackager {
 		Data.setAmperage((float)powers[3]/1000f);
 	}
 	
-	public byte[] getTransmitPackage() {
+	public static byte[] getTransmitPackage() {
 		byte[] toSend = new byte[8];
 		
 		toSend[0] = Data.getControlWord(); //1. Kontrol-Word
@@ -51,10 +51,10 @@ public class Datapackager {
 		return toSend;
 	}
 	
-	private void setContollerInputs(byte[] buffer) {
+	private static void setContollerInputs(byte[] buffer) {
 		int throttle = Data.getCont_throttle().getWert();
-		int pitch = Data.getCont_pitch().getWert();
 		int roll = Data.getCont_roll().getWert();
+		int pitch = Data.getCont_pitch().getWert();
 		int yaw = Data.getCont_yaw().getWert();
 		//10bits Pro Control
 		buffer[1] = (byte) (throttle-1000);

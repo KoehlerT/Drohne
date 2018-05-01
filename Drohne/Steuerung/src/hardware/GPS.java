@@ -40,7 +40,7 @@ public class GPS implements SerialDataEventListener{
 			String recv = arg0.getAsciiString();
 			buffer += recv; //Empfangenes wird gespeichert
 			
-			if(buffer.contains("$GPGSA")) {//Interessante Stelle wurde übermittelt
+			if(buffer.contains("$GPGSA") && Daten.getGpsAvailable()) {//Interessante Stelle wurde übermittelt
 				String interesting = buffer.split("GPGSA")[0].split("GPGGA")[1];
 				splitData(interesting);
 				buffer = "";

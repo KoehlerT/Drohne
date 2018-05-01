@@ -37,7 +37,7 @@ public class Exec {
 			communicator.PrepareAndSend();
 			ProgramState.getInstance().evaluateWord();
 			try {
-				Thread.sleep(100);
+				Thread.sleep(200);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -12,11 +12,10 @@ class HwThread extends Thread{
 	private Ultrasonic ultrasonic;
 	private GPS gps;
 	private Antenne ant;
-	
+	private WlanServer wlanServer;
 	
 	private Boolean running = true;
 	
-	private byte[] toSend = new byte[32];
 	
 	public HwThread() {
 		if (Info.sensorAttached) {
@@ -32,12 +31,11 @@ class HwThread extends Thread{
 		beeper = new Beeper();
 		
 		gps = new GPS();
-		ant = new Antenne();
+		//ant = new Antenne();
+		wlanServer = new WlanServer();
 		
-		//Fill ToSend
-		for (int i = 0; i < toSend.length; i++) {
-			toSend[i] = (byte)i;
-		}
+		
+		wlanServer.acceptClients();
 	}
 	
 	@Override
@@ -68,13 +66,16 @@ class HwThread extends Thread{
 			beeper.workBeeps();
 			
 			//Antenne
-			ant.receive();
-			byte[] toSend = Datapackager.packageTransmit();
-			ant.setTransmitBuffer(toSend);
-			ant.send();
+			//ant.receive();
+			//byte[] toSend = Datapackager.packageTransmit();
+			//ant.setTransmitBuffer(toSend);
+			//ant.send();
+			
+			wlanServer.receive();
+			wlanServer.sendPackage();
 			
 			//Warte ein wenig
-			//try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}

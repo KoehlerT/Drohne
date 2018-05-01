@@ -195,13 +195,14 @@ public class Antenne {
 		
 		
 		try {
-			//Frequenz: 100 (Dec) 0x64 (Hex)
-			writeConfRegister((byte)0x0,(byte)0x64);
+			//Frequenz: 100 (Dec) 0x64 (Hex) => 8..MHz
+			//Freq: 116 0x74 => 434MHz
+			writeConfRegister((byte)0x0,(byte)0x74);
 			
 			//HFREQ_PLL: 1
 			//Output Power: -10dBm PA_PWR: 00
-			//Config byte 1: [7:6] none, RX_RED_PWR, PA_PWR[1:0] (10dBm), FREQ_PLL, 8th bit CH_NO 
-			byte b1 = 0b00011010;
+			//Config byte 1: [7:6] none, RX_RED_PWR, PA_PWR[1:0] (10dBm), FREQ_PLL (=0: 434MHz), 8th bit CH_NO 
+			byte b1 = 0b00011000;
 			writeConfRegister((byte)0x1,b1);
 			
 			//RX-address width: 100 (4 bytes) RX_AFW: 100

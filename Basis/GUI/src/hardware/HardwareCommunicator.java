@@ -2,17 +2,18 @@ package hardware;
 
 public class HardwareCommunicator {
 	
-	private SerialDevice baseStation;
-	private Datapackager packager;
-	
+	//private SerialDevice baseStation;
+	private WlanClient wlanClient;
 	
 	public HardwareCommunicator() {
-		baseStation = new SerialDevice();
-		packager = new Datapackager();
+		//baseStation = new SerialDevice();
+		wlanClient = new WlanClient();
 	}
 	
 	public void PrepareAndSend() {
-		byte[] toSend = packager.getTransmitPackage();
-		baseStation.sendData(toSend);
+		//byte[] toSend = Datapackager.getTransmitPackage();
+		//baseStation.sendData(toSend);
+		wlanClient.sendControls();
+		wlanClient.receive();
 	}
 }

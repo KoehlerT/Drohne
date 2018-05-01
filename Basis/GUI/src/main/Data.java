@@ -9,7 +9,7 @@ public class Data {
 	//ProgrammKonstanten
 	public static final int numCrit = 6; //Kritisch: 6
 	public static final int numUnCrit = 7; //Unkritisch: 7
-	public static final String port = "COM6";
+	public static final String port = "COM3";
 	
 	//Programmdaten
 	private static boolean manuMode = false;

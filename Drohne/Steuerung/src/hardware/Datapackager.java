@@ -55,12 +55,27 @@ public class Datapackager {
 		
 		System.out.println("CW: "+controlWord);
 		ProgramState.getInstance().addControlWord(controlWord);
-		int throttle = 0;
-		throttle = received[2];
-		throttle &= 0x00000FF;
+		int throttle = received[2] & 0x00000FF;
 		throttle |= ((received[6]&0b11000000)<<2);
 		throttle+=1000;
-		System.out.println(throttle);
+		
+		int roll = received[3] & 0x00000FF;
+		roll |= ((received[6]&0b0011_0000)<<4);
+		roll += 1000;
+		
+		int pitch = received[4] & 0x00000FF;
+		pitch |= ((received[6]&0b0000_1100)<<6);
+		pitch += 1000;
+		
+		int yaw = received[5] & 0x00000FF;
+		yaw |= ((received[6]&0b0000_0011)<<8);
+		yaw += 1000;
+		
+		//System.out.println("Thr: "+throttle+" RLL: "+roll+" PTH: "+pitch+" YAW: "+yaw);
+		Daten.setCont_throttle(throttle);
+		Daten.setCont_roll(roll);
+		Daten.setCont_pitch(pitch);
+		Daten.setCont_yaw(yaw);
 	}
 	
 	
