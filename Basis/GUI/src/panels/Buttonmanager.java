@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
+import main.Data;
 import main.ProgramState;
 
 public class Buttonmanager {
@@ -78,6 +79,7 @@ public class Buttonmanager {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.out.println("Alle Motoren sofort STOPP");
+						Data.setCont_throttle(1000);
 						
 					}});
 				stopB.setText("Not aus");
@@ -88,6 +90,8 @@ public class Buttonmanager {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.out.println("NOTLANDEN");
+						Data.setCont_throttle(1000);
+						Data.setCont_yaw(1000);
 						
 					}});
 				landB.setText("<html>Not-<br>landung</html>");

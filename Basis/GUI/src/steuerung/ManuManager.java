@@ -8,9 +8,9 @@ import main.Data;
 public class ManuManager implements KeyListener{
 
 	private int throttle = 1000;
-	private int roll = 1000;
-	private int pitch = 1000;
-	private int yaw = 1000;
+	private int roll = 1500;
+	private int pitch = 1500;
+	private int yaw = 1500;
 	
 	public static final int thrInt = 50;
 	public static final int tiltInt = 20;
