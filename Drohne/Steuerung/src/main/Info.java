@@ -15,7 +15,7 @@ public class Info {
 	public static final int SpiSpeed = 200000;
 	/**SpiWait, die anzahl an ms, die nach jedem übermittelten Byte per SPI pause gemacht werden muss
 	 * **/
-	public static final int SpiWait = 4;
+	public static final int SpiWait = 0;
 	
 	/**Geschwindigkeit des Tons in dm/ns (Dezimeter pro Nanosekunde)
 	 * **/

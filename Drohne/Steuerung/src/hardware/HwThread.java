@@ -83,7 +83,7 @@ class HwThread extends Thread{
 			
 			System.out.println("Looptime: "+((System.nanoTime()-startTime)/1000)+"us");
 			//Warte ein wenig
-			try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+			//try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}

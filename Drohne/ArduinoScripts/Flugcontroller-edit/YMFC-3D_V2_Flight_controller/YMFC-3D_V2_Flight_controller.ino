@@ -427,6 +427,9 @@ void receive(){
       }
       //Alle Daten werden verschickt
       //50 bytes ca. 200ms
+      unsigned long duration = micros()-startTime;
+      Serial.print("Shook after: ");Serial.print(duration);Serial.println("us");
+      int loops = 0;
       while (s < sizeof(datenplatzhalter)){
         if ((SPSR & (1<<SPIF)) != 0){
           SPDR = datenplatzhalter[s];
@@ -437,7 +440,9 @@ void receive(){
           s++;
           //Empfangen = SPDR
         }
+        loops++;
       }
+      Serial.print("Ready after: ");Serial.print(loops);Serial.println(" loops");
       //Fertig mit übermittlung
       receiver_input_channel_1 = convert_integer(4);
       receiver_input_channel_2 = convert_integer(2);
