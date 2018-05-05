@@ -48,8 +48,9 @@ public class Arduino {
 		byte res = 0;
 		try{
 			res = device.write(send)[0];
-			Thread.sleep(Info.SpiWait);//Warte an Übermittlung
-		}catch (InterruptedException | IOException e){
+			delayMicros(100);
+			//Thread.sleep(Info.SpiWait);//Warte an Übermittlung
+		}catch (IOException e){
 			System.out.println("Problem bim Senden");
 			e.printStackTrace();
 		}
@@ -60,7 +61,6 @@ public class Arduino {
 		byte[] recv = new byte[send.length];
 		System.out.println("Shaking");
 		shakeHands();
-		System.out.println("Shook");
 		for (int i = 0; i < send.length; i++) {
 			recv[i] = sendPackage(send[i]);
 		}
@@ -74,6 +74,11 @@ public class Arduino {
 		byte hb = (byte)((val >> 8)& 0xFF); //Higher Byte value
 		arr[ind] = lb;
 		arr[ind+1] = hb;
+	}
+	
+	private void delayMicros(int delay) {
+		long startTime = System.nanoTime();
+		while(System.nanoTime()-startTime < (long)(delay*1000L));
 	}
 
 }
