@@ -267,13 +267,13 @@ void loop(){
   }
 
   //Clear serial
-  Serial.write(27);       // ESC command
+  /*Serial.write(27);       // ESC command
     Serial.print("[2J");    // clear screen command
     Serial.write(27);
-    Serial.print("[H");     // cursor to home command
+    Serial.print("[H");     // cursor to home command*/
 
   //Send times
-  Serial.print(start);
+  /*Serial.print(start);
   Serial.print(" Sende ESC Signale: OP3: ");
   Serial.print(esc_1);
   Serial.print(" OP6: ");
@@ -282,10 +282,11 @@ void loop(){
   Serial.print(esc_3);
   Serial.print(" OP5: ");
   Serial.print(esc_4);
-  Serial.println();
+  Serial.println();*/
 
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
+  Serial.print("Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
@@ -316,7 +317,7 @@ void loop(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gyro_signalen(){
   //Read the L3G4200D or L3GD20H
-
+  unsigned long startTime = micros();
   //Read the MPU-6050
 
 IMU.readSensor();                                                // Reads Sensorinformations of the MPU9250
@@ -358,6 +359,8 @@ gyro_pitch = -gyro_pitch;
   gyro_yaw = gyro_axis[eeprom_data[30] & 0b00000011];
   if(eeprom_data[30] & 0b10000000)gyro_yaw *= -1;
 */
+    unsigned long duration = (micros()-startTime);
+  Serial.print("Sensor Data: ");Serial.print(duration);Serial.println("us");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -412,9 +415,10 @@ void calculate_pid(){
 //Instead: Receive Controller Inputs via SPI
 void receive(){
   //Serial.println("Versuche zu Empfangen");
+  unsigned long startTime = micros();
     int s = 0;
     if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
-        Serial.println("Received");
+        //Serial.println("Received");
       if (SPDR == (byte)'R'){
         SPDR = (byte)'A';
         s = 0;
@@ -440,15 +444,17 @@ void receive(){
       receiver_input_channel_3 = convert_integer(0);
       receiver_input_channel_4 = convert_integer(6);
 
-      Serial.print("Throttle: ");
+      /*Serial.print("Throttle: ");
       Serial.println(receiver_input_channel_3);
       Serial.print("Roll: ");
       Serial.println(receiver_input_channel_2);
       Serial.print("Pitch: ");
       Serial.println(receiver_input_channel_1);
       Serial.print("Yaw: ");
-      Serial.println(receiver_input_channel_4);
+      Serial.println(receiver_input_channel_4);*/
     }
+    unsigned long duration = micros()-startTime;
+    Serial.print("SPI Receive: ");Serial.print(duration);Serial.println("us");
 }
 
 int convert_integer(int startInd){

@@ -40,9 +40,11 @@ class HwThread extends Thread{
 	
 	@Override
 	public void run() {
+		
 		System.out.println("SPI Run "+running);
 		beeper.beep(200);
 		while(running) {
+			long startTime = System.nanoTime();
 			//Nehme Variablen
 			if (Info.sensorAttached) {
 				//SPI
@@ -79,6 +81,7 @@ class HwThread extends Thread{
 			wlanServer.receive();
 			wlanServer.sendPackage();
 			
+			System.out.println("Looptime: "+((System.nanoTime()-startTime)/1000)+"us");
 			//Warte ein wenig
 			try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
 			
