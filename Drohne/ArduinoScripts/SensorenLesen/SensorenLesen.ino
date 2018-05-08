@@ -26,7 +26,7 @@ void setup() {
   byte c = myIMU.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
   Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX);
   Serial.print(" I should be "); Serial.println(0x71, HEX);
-  
+
   set_gyro_registers(c);
 }
 
@@ -110,9 +110,9 @@ void gyro_signalen(){
   acc_x = (float)myIMU.accelCount[0]*myIMU.aRes; // - accelBias[0];
   acc_y = (float)myIMU.accelCount[1]*myIMU.aRes; // - accelBias[1];
   acc_z = (float)myIMU.accelCount[2]*myIMU.aRes; // - accelBias[2];
-  
+
   myIMU.readGyroData(myIMU.gyroCount);
-  gyro_roll = (float)myIMU.gyroCount[0]*myIMU.gRes;                                 // Takes the Informations and gives it as rad/s
+  gyro_roll = (float)myIMU.gyroCount[0]*myIMU.gRes;                                 // Takes the Informations and gives it as deg/s
   gyro_pitch = (float)myIMU.gyroCount[1]*myIMU.gRes;                                // X and Y are switched, because of the mounting on the board
   gyro_yaw = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
@@ -139,7 +139,7 @@ void gyro_signalen(){
              myIMU.magbias[1];
   mag_z = (float)myIMU.magCount[2]*myIMU.mRes*myIMU.magCalibration[2] -
             myIMU.magbias[2];
-  
+
   mpuRead = (micros()-startTime);
 
   if(cal_int == 2000){

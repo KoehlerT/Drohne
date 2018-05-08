@@ -17,13 +17,10 @@
 
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
 #include <EEPROM.h>                        //Include the EEPROM.h library so we can store information onto the EEPROM
-#include <Adafruit_ADS1015.h>              //Read Voltage Sensor
-#include <MPU9250.h>
-#include <Adafruit_BMP085.h>
-MPU9250 IMU(Wire,0x68);
- Adafruit_ADS1115 ads;
-Adafruit_BMP085 bmp;
-#define adcScale 0.1875f
+#include <MPU9250.h>                       //Library Gyro
+
+MPU9250 myIMU;
+#define adcScale 4.88758f
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -85,9 +82,7 @@ void setup(){
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
 
   Wire.begin();                                                //Start the I2C as master.
-  ads.begin();                                             //Start I2C ADS
-  Serial.println(IMU.begin());
-  bmp.begin();
+  myIMU.initMPU9250();
 
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
@@ -171,17 +166,17 @@ void loop(){
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
   //Get Controller Inputs via SPI#
   receive();
-  receiver_input_channel_1 = convert_integer(4);
-  receiver_input_channel_2 = convert_integer(2);
-  receiver_input_channel_3 = convert_integer(0);
-  receiver_input_channel_4 = convert_integer(6);
+  receiver_input_channel_1 = (receiver_input_channel_1 * 0.9) + (convert_integer(4) * 0.1);
+  receiver_input_channel_2 = (receiver_input_channel_2 * 0.9) + (convert_integer(2) * 0.1);
+  receiver_input_channel_3 = (receiver_input_channel_3 * 0.9) + (convert_integer(0) * 0.1);
+  receiver_input_channel_4 = (receiver_input_channel_4 * 0.9) + (convert_integer(6) * 0.1);
 
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
 
-  gyro_roll_input = (gyro_roll_input * 0.8) + ((gyro_roll * 57.14286) * 0.2);            //Gyro pid input is deg/sec.
-  gyro_pitch_input = (gyro_pitch_input * 0.8) + ((gyro_pitch * 57.14286) * 0.2);         //Gyro pid input is deg/sec.
-  gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw * 57.14286) * 0.2);               //Gyro pid input is deg/sec.
+  gyro_roll_input = (gyro_roll_input * 0.8) + ((gyro_roll) * 0.2);            //Gyro pid input is deg/sec.
+  gyro_pitch_input = (gyro_pitch_input * 0.8) + ((gyro_pitch) * 0.2);         //Gyro pid input is deg/sec.
+  gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw) * 0.2);               //Gyro pid input is deg/sec.
 
   //For starting the motors: throttle low and yaw left (step 1).
   if(receiver_input_channel_3 < 1050 && receiver_input_channel_4 < 1050)start = 1;
@@ -272,21 +267,12 @@ void loop(){
     Serial.write(27);
     Serial.print("[H");     // cursor to home command*/
 
-  //Send times
-  /*Serial.print(start);
-  Serial.print(" Sende ESC Signale: OP3: ");
-  Serial.print(esc_1);
-  Serial.print(" OP6: ");
-  Serial.print(esc_2);
-  Serial.print(" OP9: ");
-  Serial.print(esc_3);
-  Serial.print(" OP5: ");
-  Serial.print(esc_4);
-  Serial.println();*/
 
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
-  Serial.print("Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
+  Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
+  Serial.print(esc_1); Serial.print(" ");Serial.print(esc_2);Serial.print(" ");Serial.print(esc_3);Serial.print(" ");Serial.println(esc_4);
+  Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.println(receiver_input_channel_4);
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
@@ -320,10 +306,10 @@ void gyro_signalen(){
   unsigned long startTime = micros();
   //Read the MPU-6050
 
-IMU.readSensor();                                                // Reads Sensorinformations of the MPU9250
-gyro_roll = IMU.getGyroY_rads();                                 // Takes the Informations and gives it as rad/s
-gyro_pitch = IMU.getGyroY_rads();                                // X and Y are switched, because of the mounting on the board
-gyro_yaw = IMU.getGyroZ_rads();
+myIMU.readGyroData(myIMU.gyroCount);
+gyro_roll = (float)myIMU.gyroCount[0]*myIMU.gRes;                                 // Takes the Informations and gives it as deg/s
+gyro_pitch = (float)myIMU.gyroCount[1]*myIMU.gRes;                                // X and Y are switched, because of the mounting on the board
+gyro_yaw = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
 gyro_roll = -gyro_roll;
 gyro_pitch = -gyro_pitch;
@@ -338,14 +324,14 @@ gyro_pitch = -gyro_pitch;
       //datenplatzhalter 10 Elemente!
       //Read Voltages
       for (int v = 0; v < 4; v++) {
-          int voltage = (ads.readADC_SingleEnded(v) * adcScale);
+          int voltage = analogRead(v)*adcScale;
           datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
           datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
       }
       //Bis index 7
-      //float altitude = bmp.readAltitude(startLuftdruck);
-      float altitude = bmp.readAltitude();
-      int alt = (int)(altitude * 100);
+      //float altitude RasPI
+      unsigned long duration = (micros()-startTime);
+      int alt = (int)(duration * 0.1);
       datenplatzhalter[8] = (byte)alt;
       datenplatzhalter[9] = (byte)(alt >> 8);
 
@@ -359,8 +345,6 @@ gyro_pitch = -gyro_pitch;
   gyro_yaw = gyro_axis[eeprom_data[30] & 0b00000011];
   if(eeprom_data[30] & 0b10000000)gyro_yaw *= -1;
 */
-    unsigned long duration = (micros()-startTime);
-  Serial.print("Sensor Data: ");Serial.print(duration);Serial.println("us");
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,7 +399,6 @@ void calculate_pid(){
 //Instead: Receive Controller Inputs via SPI
 void receive(){
   //Serial.println("Versuche zu Empfangen");
-  unsigned long startTime = micros();
     int s = 0;
     if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
         //Serial.println("Received");
@@ -427,8 +410,6 @@ void receive(){
       }
       //Alle Daten werden verschickt
       //50 bytes ca. 200ms
-      unsigned long duration = micros()-startTime;
-      Serial.print("Shook after: ");Serial.print(duration);Serial.println("us");
       int loops = 0;
       while (s < sizeof(datenplatzhalter)){
         if ((SPSR & (1<<SPIF)) != 0){
@@ -442,30 +423,29 @@ void receive(){
         }
         loops++;
       }
-      Serial.print("Ready after: ");Serial.print(loops);Serial.println(" loops");
+      //Serial.print("Ready after: ");Serial.print(loops);Serial.println(" loops");
       //Fertig mit übermittlung
-      receiver_input_channel_1 = convert_integer(4);
-      receiver_input_channel_2 = convert_integer(2);
-      receiver_input_channel_3 = convert_integer(0);
-      receiver_input_channel_4 = convert_integer(6);
-
-      /*Serial.print("Throttle: ");
-      Serial.println(receiver_input_channel_3);
-      Serial.print("Roll: ");
-      Serial.println(receiver_input_channel_2);
-      Serial.print("Pitch: ");
-      Serial.println(receiver_input_channel_1);
-      Serial.print("Yaw: ");
-      Serial.println(receiver_input_channel_4);*/
+      /*receiver_input_channel_1 = (receiver_input_channel_1 * 0.7) + (convert_integer(4) * 0.3);
+      receiver_input_channel_2 = (receiver_input_channel_2 * 0.7) + (convert_integer(2) * 0.3);
+      receiver_input_channel_3 = (receiver_input_channel_3 * 0.7) + (convert_integer(0) * 0.3);
+      receiver_input_channel_4 = (receiver_input_channel_4 * 0.7) + (convert_integer(6) * 0.3);*/
     }
-    unsigned long duration = micros()-startTime;
-    Serial.print("SPI Receive: ");Serial.print(duration);Serial.println("us");
 }
+
 
 int convert_integer(int startInd){
     int res = controllerInputs[startInd+1];
     res = (res << 8) | controllerInputs[startInd];
-    return res;
+    return clamp(res);
+}
+
+int clamp(int c){
+    if (c < 1000)
+        return 1000;
+    if (c > 2000)
+        return 2000;
+    else
+        return c;
 }
 
 void pulse(int delay){
@@ -486,16 +466,16 @@ void set_gyro_registers(){
 
   //Setup the L3GD20H
 
-  //Set registers BMP085
-  Serial.print("Reading Preassure");
-  startLuftdruck = bmp.readPressure();
+  //Setup MPU9250
+  myIMU.getGres();
+  myIMU.getAres();
 
 }
 
 
 
 int getBatteryVoltage(){
-    int input = ads.readADC_SingleEnded(1);
+    //int input = ads.readADC_SingleEnded(1);
     return 1100;
     //return input*500; // Input * 5 = Volt, Input*500 = centivolt
 }
