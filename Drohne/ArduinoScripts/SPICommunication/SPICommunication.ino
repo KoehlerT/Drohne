@@ -26,19 +26,21 @@ void loop() {
   //TEURER CODE, z.B. Sensoren auslesen
   delay(500);
   receive();
-  constructInputs();
+  /*constructInputs();
   Serial.print("Throttle: "); Serial.println(throttle);
   Serial.print("Pitch: "); Serial.println(pitch);
   Serial.print("Roll: "); Serial.println(roll);
-  Serial.print("Yaw: "); Serial.println(yaw);
+  Serial.print("Yaw: "); Serial.println(yaw);*/
 }
 
 void receive(){
   if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
+
     if (SPDR == (byte)'R'){
       SPDR = (byte)'A';
       s = 0;
     }else{
+        Serial.println(SPDR);
       return;//Sollte nicht eintreffen, aber ohne Handshake keine Datenübermittlung
     }
     //Alle Daten werden verschickt
@@ -55,7 +57,9 @@ void receive(){
       }
     }
     //Fertig mit übermittlung
-  }
+}else{
+    Serial.println("Keine Uebertragung");
+}
 }
 
 void constructInputs(){
@@ -71,5 +75,3 @@ void constructInputs(){
   yaw = ci[7];
   yaw = (yaw << 8) | ci[6];
 }
-
-
