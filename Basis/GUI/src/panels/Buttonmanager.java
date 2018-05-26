@@ -78,8 +78,9 @@ public class Buttonmanager {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						System.out.println("Alle Motoren sofort STOPP");
+						System.out.println("Alle Motoren sofort STOP");
 						Data.setCont_throttle(1000);
+						Data.setCont_yaw(1000);
 						
 					}});
 				stopB.setText("Not aus");
@@ -91,7 +92,6 @@ public class Buttonmanager {
 					public void actionPerformed(ActionEvent e) {
 						System.out.println("NOTLANDEN");
 						Data.setCont_throttle(1000);
-						Data.setCont_yaw(1000);
 						
 					}});
 				landB.setText("<html>Not-<br>landung</html>");

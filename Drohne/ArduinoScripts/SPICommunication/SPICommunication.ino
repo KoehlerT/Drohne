@@ -25,12 +25,15 @@ void loop() {
   // put your main code here, to run repeatedly
   //TEURER CODE, z.B. Sensoren auslesen
   delay(500);
+  unsigned long start = micros();
   receive();
-  /*constructInputs();
+  //constructInputs();
+  constructInput(throttle, 0);
+  Serial.print("Duration: ");Serial.print(micros()-start);Serial.println(" us");
   Serial.print("Throttle: "); Serial.println(throttle);
   Serial.print("Pitch: "); Serial.println(pitch);
   Serial.print("Roll: "); Serial.println(roll);
-  Serial.print("Yaw: "); Serial.println(yaw);*/
+  Serial.print("Yaw: "); Serial.println(yaw);
 }
 
 void receive(){
@@ -62,16 +65,33 @@ void receive(){
 }
 }
 
+void constructInput(int &var, int index){
+    int newThrottle = ci[index +1];
+    newThrottle = (newThrottle << 8) | ci[index];
+
+    if (newThrottle < 2000){
+        var = newThrottle;
+    }
+}
+
 void constructInputs(){
-  throttle = ci[1];
-  throttle = (throttle << 8) | ci[0];
+  int newThrottle = ci[1];
+  newThrottle = (newThrottle << 8) | ci[0];
 
-  pitch = ci[3];
-  pitch = (pitch << 8) | ci[2];
+  int newPitch = ci[3];
+  newPitch = (newPitch << 8) | ci[2];
 
-  roll = ci[5];
-  roll = (roll << 8) | ci[4];
+  int newRoll = ci[5];
+  newRoll = (newRoll << 8) | ci[4];
 
-  yaw = ci[7];
-  yaw = (yaw << 8) | ci[6];
+  int newYaw = ci[7];
+  newYaw = (newYaw << 8) | ci[6];
+
+  if (!(newYaw > 2000 || newPitch > 2000 || newRoll>2000||newYaw>2000)){ //Kontrolle
+      throttle = newThrottle;
+      pitch = newPitch;
+      roll = newRoll;
+      yaw = newYaw;
+  }
+
 }

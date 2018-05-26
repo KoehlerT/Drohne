@@ -131,8 +131,8 @@ void setup(){
   //Wait until the receiver is active and the throttle is set to the lower position.
   while(receiver_input_channel_3 < 990 || receiver_input_channel_3 > 1020 || receiver_input_channel_4 < 1400){
     receive();                                                 //Receive new Controller inputs
-    receiver_input_channel_3 = convert_integer(0);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
-    receiver_input_channel_4 = convert_integer(6);             //Convert the actual receiver signals for yaw to the standard 1000 - 2000us
+    convert_integer(0,receiver_input_channel_3);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
+    convert_integer(6,receiver_input_channel_4);             //Convert the actual receiver signals for yaw to the standard 1000 - 2000us
     start ++;                                                  //While waiting increment start whith every loop.
     //We don't want the esc's to be beeping annoyingly. So let's give them a 1000us puls while waiting for the receiver inputs.
     pulse(1000);
@@ -166,10 +166,10 @@ void loop(){
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
   //Get Controller Inputs via SPI#
   receive();
-  receiver_input_channel_1 = (receiver_input_channel_1 * 0.9) + (convert_integer(4) * 0.1);
-  receiver_input_channel_2 = (receiver_input_channel_2 * 0.9) + (convert_integer(2) * 0.1);
-  receiver_input_channel_3 = (receiver_input_channel_3 * 0.9) + (convert_integer(0) * 0.1);
-  receiver_input_channel_4 = (receiver_input_channel_4 * 0.9) + (convert_integer(6) * 0.1);
+  convert_integer(4,receiver_input_channel_1);
+  convert_integer(2,receiver_input_channel_2);
+  convert_integer(0,receiver_input_channel_3);
+  convert_integer(6,receiver_input_channel_4);
 
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
@@ -271,8 +271,9 @@ void loop(){
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
   Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
-  Serial.print(esc_1); Serial.print(" ");Serial.print(esc_2);Serial.print(" ");Serial.print(esc_3);Serial.print(" ");Serial.println(esc_4);
-  Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.println(receiver_input_channel_4);
+  printSensors();
+  printESCs();
+
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
@@ -292,6 +293,18 @@ void loop(){
   }
 }
 
+
+void printCIs(){
+    Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.println(receiver_input_channel_4);
+}
+
+void printESCs(){
+    Serial.print(esc_1); Serial.print(" ");Serial.print(esc_2);Serial.print(" ");Serial.print(esc_3);Serial.print(" ");Serial.println(esc_4);
+}
+
+void printSensors(){
+    Serial.print(gyro_pitch_input); Serial.print(" ");Serial.print(gyro_roll_input);Serial.print(" ");Serial.println(gyro_yaw_input);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -433,10 +446,13 @@ void receive(){
 }
 
 
-int convert_integer(int startInd){
+void convert_integer(int startInd, int& var){
     int res = controllerInputs[startInd+1];
     res = (res << 8) | controllerInputs[startInd];
-    return clamp(res);
+
+    if (res < 2000){
+        var = clamp(res);
+    }
 }
 
 int clamp(int c){
