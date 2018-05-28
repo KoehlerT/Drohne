@@ -22,12 +22,13 @@
 MPU9250 myIMU;
 #define adcScale 4.88758f
 
+//#define debug;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 1.4;               //Gain setting for the roll P-controller (1.3)
-float pid_i_gain_roll = 0.05;              //Gain setting for the roll I-controller (0.05)
-float pid_d_gain_roll = 15;                //Gain setting for the roll D-controller (15)
+float pid_p_gain_roll = 1;               //Gain setting for the roll P-controller (1.3)
+float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
+float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
@@ -35,9 +36,9 @@ float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 4.0;                //Gain setting for the pitch P-controller. //4.0
-float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller. //0.02
-float pid_d_gain_yaw = 0.0;                //Gain setting for the pitch D-controller.
+float pid_p_gain_yaw = 1;                //Gain setting for the pitch P-controller. //4.0
+float pid_i_gain_yaw = 0;               //Gain setting for the pitch I-controller. //0.02
+float pid_d_gain_yaw = 0;                //Gain setting for the pitch D-controller.
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,8 +76,10 @@ int startLuftdruck;
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup(){
+#ifdef debug
   Serial.begin(57600);
   Serial.println("HI");
+#endif
   //Read EEPROM for fast access data.
   /*for(start = 0; start <= 35; start++)eeprom_data[start] = EEPROM.read(start);
   gyro_address =  0x68;                           //Store the gyro address in the variable.*/
@@ -120,7 +123,10 @@ void setup(){
   //Now that we have 2000 measures, we need to devide by 2000 to get the average gyro offset.
   gyro_axis_cal[1] /= 2000;                                    //Divide the roll total by 2000.
   gyro_axis_cal[2] /= 2000;                                    //Divide the pitch total by 2000.
-  gyro_axis_cal[3] /= 2000;                                    //Divide the yaw total by 2000.
+  gyro_axis_cal[3] /= 2000;                                   //Divide the yaw total by 2000.
+#ifdef debug
+  printCal();
+#endif
   //Keine Interrupts
   /*PCICR |= (1 << PCIE0);                                       //Set PCIE0 to enable PCMSK0 scan.
   PCMSK0 |= (1 << PCINT0);                                     //Set PCINT0 (digital input 8) to trigger an interrupt on state change.
@@ -270,10 +276,11 @@ void loop(){
 
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
+#ifdef debug
   Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
   printSensors();
   printESCs();
-
+#endif
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
@@ -305,6 +312,10 @@ void printESCs(){
 void printSensors(){
     Serial.print(gyro_pitch_input); Serial.print(" ");Serial.print(gyro_roll_input);Serial.print(" ");Serial.println(gyro_yaw_input);
 }
+
+void printCal(){
+    Serial.print("Calibration: ");Serial.print(gyro_axis_cal[1]);Serial.print(" ");Serial.print(gyro_axis_cal[2]);Serial.print(" ");Serial.println(gyro_axis_cal[3]);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,12 +331,12 @@ void gyro_signalen(){
   //Read the MPU-6050
 
 myIMU.readGyroData(myIMU.gyroCount);
-gyro_roll = (float)myIMU.gyroCount[0]*myIMU.gRes;                                 // Takes the Informations and gives it as deg/s
-gyro_pitch = (float)myIMU.gyroCount[1]*myIMU.gRes;                                // X and Y are switched, because of the mounting on the board
-gyro_yaw = (float)myIMU.gyroCount[2]*myIMU.gRes;
+gyro_axis[1] = (float)myIMU.gyroCount[0]*myIMU.gRes;                                 // Takes the Informations and gives it as deg/s
+gyro_axis[2] = (float)myIMU.gyroCount[1]*myIMU.gRes;                                // X and Y are switched, because of the mounting on the board
+gyro_axis[3] = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
-gyro_roll = -gyro_roll;
-gyro_pitch = -gyro_pitch;
+gyro_axis[1] = -gyro_axis[1];
+gyro_axis[2] = -gyro_axis[2];
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
@@ -350,14 +361,9 @@ gyro_pitch = -gyro_pitch;
 
 
   }
-  /*
-  gyro_roll = gyro_axis[eeprom_data[28] & 0b00000011];
-  if(eeprom_data[28] & 0b10000000)gyro_roll *= -1;
-  gyro_pitch = gyro_axis[eeprom_data[29] & 0b00000011];
-  if(eeprom_data[29] & 0b10000000)gyro_pitch *= -1;
-  gyro_yaw = gyro_axis[eeprom_data[30] & 0b00000011];
-  if(eeprom_data[30] & 0b10000000)gyro_yaw *= -1;
-*/
+  gyro_pitch = gyro_axis[1];
+  gyro_roll = gyro_axis[2];
+  gyro_yaw = gyro_axis[3];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -411,7 +417,6 @@ void calculate_pid(){
 
 //Instead: Receive Controller Inputs via SPI
 void receive(){
-  //Serial.println("Versuche zu Empfangen");
     int s = 0;
     if ((SPSR & (1<<SPIF)) != 0){ //Hat sich der Register verändert?
         //Serial.println("Received");
