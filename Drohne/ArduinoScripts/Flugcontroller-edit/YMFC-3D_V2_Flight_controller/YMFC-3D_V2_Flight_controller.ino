@@ -22,11 +22,11 @@
 MPU9250 myIMU;
 #define adcScale 4.88758f
 
-//#define debug;
+#define debug;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 1;               //Gain setting for the roll P-controller (1.3)
+float pid_p_gain_roll = 0;               //Gain setting for the roll P-controller (1.3)
 float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
 float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
@@ -36,7 +36,7 @@ float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 1;                //Gain setting for the pitch P-controller. //4.0
+float pid_p_gain_yaw = 0;                //Gain setting for the pitch P-controller. //4.0
 float pid_i_gain_yaw = 0;               //Gain setting for the pitch I-controller. //0.02
 float pid_d_gain_yaw = 0;                //Gain setting for the pitch D-controller.
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-)
@@ -277,9 +277,9 @@ void loop(){
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
 #ifdef debug
-  Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
   printSensors();
   printESCs();
+  Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
 #endif
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
