@@ -13,6 +13,7 @@ class HwThread extends Thread{
 	private GPS gps;
 	private Antenne ant;
 	private WlanServer wlanServer;
+	private Altitude alt;
 	
 	private Boolean running = true;
 	
@@ -29,6 +30,7 @@ class HwThread extends Thread{
 			}
 		}
 		beeper = new Beeper();
+		alt = new Altitude(Altitude.MODE_STANDARD);
 		
 		gps = new GPS();
 		//ant = new Antenne();
@@ -70,6 +72,9 @@ class HwThread extends Thread{
 			//Beeper
 			System.out.println("Beeper?");
 			beeper.workBeeps();
+			
+			//Altitude
+			alt.readAllSensorData();
 			
 			//Antenne
 			//ant.receive();

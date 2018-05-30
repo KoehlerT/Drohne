@@ -30,6 +30,8 @@ public class Daten {
 	
 	//Sensorwerte Umgebung
 	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
+	private static float temperature;
+	private static float pressure;
 	
 	//Statusinformationen
 	private static int numGpsSatellites;
@@ -55,6 +57,8 @@ public class Daten {
 	public static synchronized float getPrsAltitude() {return prsAltitude;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
+	public static synchronized float getTemperature() {return temperature;}
+	public static synchronized float getPressure() {return pressure;}
 	
 	public static synchronized int getNumGpsSatellites() {return numGpsSatellites;}
 	public static synchronized boolean getGpsAvailable() {return gpsAvailable;}
@@ -79,6 +83,8 @@ public class Daten {
 	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;}
+	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}
+	public static synchronized void setPressure(float newPrs) {pressure = newPrs;}
 	
 	public static synchronized void setNumGpsSatellites(int sat) {numGpsSatellites = sat;}
 	public static synchronized void setGpsAvailable(boolean available) {gpsAvailable = available;}
