@@ -89,8 +89,8 @@ void setup(){
 
   //Arduino (Atmega) pins default to inputs, so they don't need to be explicitly declared as inputs.
   SPCR |= _BV(SPE);                                            //Configure SPI Slave
-  DDRD |= B01101000;                                           //Configure digital poort 3,5,6 Output
-  DDRB |= B00010011;                                           //Configure digital port 12 (MISO) Output. 13 Input! 9, 8 Output
+  DDRD |= B11101000;                                           //Configure digital poort 3,5,6 Output
+  DDRB |= B00010001;                                           //Configure digital port 12 (MISO) Output. 13 Input! 8 Output
 
   //Use the led on the Arduino for startup indication.
   digitalWrite(8,HIGH);                                       //Turn on the warning led.
@@ -101,11 +101,9 @@ void setup(){
   set_gyro_registers();                                        //Set the specific gyro registers. + Konfiguriere I2C Geräte
   //Was tut die Forschleife? Kalibrieren!?
   for (cal_int = 0; cal_int < 1250 ; cal_int ++){              //Wait 5 seconds before continuing.
-    PORTD |= B01101000;                                        //Set digital poort 3,5,6 HIGH
-    PORTB |= B00000010;                                        //Set digital port 9 High
+    PORTD |= B11101000;                                        //Set digital poort 3,5,6,7 HIGH
     delayMicroseconds(1000);                                   //Wait 1000us.
-    PORTD &= B10010111;                                        //Set digital poort 3,5,6 low.
-    PORTB &= B11111101;                                        // Set digital port 9 low.
+    PORTD &= B00010111;                                        //Set digital poort 3,5,6,7 low.
     delayMicroseconds(3000);                                   //Wait 3000us.
   }
 
@@ -284,8 +282,7 @@ void loop(){
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
-  PORTD |= B01101000;                                        //Set digital poort 3,5,6 HIGH
-  PORTB |= B00000010;                                        //Set digital port 9 High
+  PORTD |= B11101000;                                        //Set digital poort 3,5,6,7 HIGH
   timer_channel_1 = esc_1 + loop_timer;                                     //Calculate the time of the faling edge of the esc-1 pulse.
   timer_channel_2 = esc_2 + loop_timer;                                     //Calculate the time of the faling edge of the esc-2 pulse.
   timer_channel_3 = esc_3 + loop_timer;                                     //Calculate the time of the faling edge of the esc-3 pulse.
@@ -295,7 +292,7 @@ void loop(){
     esc_loop_timer = micros();                                              //Read the current time.
     if(timer_channel_1 <= esc_loop_timer)PORTD &= B11110111;                //Set digital output 3 to low if the time is expired. Vorne Rechts
     if(timer_channel_2 <= esc_loop_timer)PORTD &= B10111111;                //Set digital output 6 to low if the time is expired. Hinten Rechts
-    if(timer_channel_3 <= esc_loop_timer)PORTB &= B11111101;                //Set digital output 9 to low if the time is expired. Hinten Links
+    if(timer_channel_3 <= esc_loop_timer)PORTD &= B01111111;                //Set digital output 7 to low if the time is expired. Hinten Links
     if(timer_channel_4 <= esc_loop_timer)PORTD &= B11011111;                //Set digital output 5 to low if the time is expired. Vorne Links
   }
 }
@@ -428,7 +425,6 @@ void receive(){
       }
       //Alle Daten werden verschickt
       //50 bytes ca. 200ms
-      int loops = 0;
       while (s < sizeof(datenplatzhalter)){
         if ((SPSR & (1<<SPIF)) != 0){
           SPDR = datenplatzhalter[s];
@@ -439,14 +435,7 @@ void receive(){
           s++;
           //Empfangen = SPDR
         }
-        loops++;
       }
-      //Serial.print("Ready after: ");Serial.print(loops);Serial.println(" loops");
-      //Fertig mit übermittlung
-      /*receiver_input_channel_1 = (receiver_input_channel_1 * 0.7) + (convert_integer(4) * 0.3);
-      receiver_input_channel_2 = (receiver_input_channel_2 * 0.7) + (convert_integer(2) * 0.3);
-      receiver_input_channel_3 = (receiver_input_channel_3 * 0.7) + (convert_integer(0) * 0.3);
-      receiver_input_channel_4 = (receiver_input_channel_4 * 0.7) + (convert_integer(6) * 0.3);*/
     }
 }
 
@@ -470,11 +459,9 @@ int clamp(int c){
 }
 
 void pulse(int delay){
-    PORTD |= B01101000;                                        //Set digital poort 3,5,6 HIGH
-    PORTB |= B00000010;                                        //Set digital port 9 High
+    PORTD |= B11101000;                                        //Set digital poort 3,5,6,7 HIGH
     delayMicroseconds(delay);                                   //Wait 1000us.
-    PORTD &= B10010111;                                        //Set digital poort 3,5,6 low.
-    PORTB &= B11111101;                                        //Set dugutl port 9 low.
+    PORTD &= B00010111;                                        //Set digital poort 3,5,6,7 low.
 }
 
 void set_gyro_registers(){
