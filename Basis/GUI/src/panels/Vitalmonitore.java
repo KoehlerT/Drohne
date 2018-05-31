@@ -57,6 +57,9 @@ public class Vitalmonitore {
 		updateLabel(Data.getDistUltrasonic(),uncriticLabels[5]);
 		updateLabel(Data.getNumGpsSatellites(),uncriticLabels[6]);
 		
+		updateLabel(Data.getCommunicatorRefresh(),uncriticLabels[7]);
+		updateLabel(Data.getHardwareRefresh(),uncriticLabels[8]);
+		
 		//Kritische Informationen
 		updateLabel(Data.getVoltageMain(), criticLabels[0]);
 		updateLabel(Data.getVoltage5v(), criticLabels[1]);
@@ -67,6 +70,9 @@ public class Vitalmonitore {
 		updateLabel(Data.getLatitude(), criticLabels[4]);
 		updateLabel(Data.getLongitude(),criticLabels[5]);
 		updateLabel(Data.getAltitude(),criticLabels[6]);
+		
+		updateLabel(Data.getArduinoRefresh(), criticLabels[7]);
+		
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {

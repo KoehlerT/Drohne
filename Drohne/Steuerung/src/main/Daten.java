@@ -7,6 +7,9 @@ public class Daten {
 	private Daten() {}
 	//Programmdaten
 	private static byte controlWord;
+	private static int refreshArduino;
+	private static int refreshCommunicator;
+	private static int refreshSensorread;
 	
 	//Variablen: 
 	//Fliegen, Fernbediengungersatz
@@ -39,6 +42,9 @@ public class Daten {
 	
 	//Getter
 	public static synchronized byte getContWord() {return controlWord;}
+	public static synchronized int getArduinoRefresh() {return refreshArduino;}
+	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
+	public static synchronized int getSensorRefresh() {return refreshSensorread;}
 	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
 	public static synchronized int getCont_roll() {return cont_roll;}
@@ -65,6 +71,9 @@ public class Daten {
 	
 	//Setter
 	public static synchronized void setControlWord(byte cw) {controlWord = cw;}
+	public static synchronized void setArduinoRefresh(int lt) {refreshArduino = lt;}
+	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}
+	public static synchronized void setSensorRefresh(int rf) { refreshSensorread = rf;}
 	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
 	public static synchronized void setCont_roll(int rl) {cont_roll = rl;}
@@ -82,7 +91,7 @@ public class Daten {
 	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
 	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
 	
-	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;}
+	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
 	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}
 	public static synchronized void setPressure(float newPrs) {pressure = newPrs;}
 	

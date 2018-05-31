@@ -15,7 +15,7 @@ public class Datapackager {
 		int altitude = received[17]&0x000000FF;
 		altitude = (altitude << 8) | (received[16]&0x000000FF);
 		Data.setAltitude((float)altitude/100f);
-		
+		getStatusInfo(received);
 	}
 	
 	private static void getGPSData(byte[] buffer) {
@@ -40,6 +40,23 @@ public class Datapackager {
 		Data.setVoltage3v((float)powers[2]/1000f);
 		Data.setAmperage((float)powers[3]/1000f);
 	}
+	
+	public static void getStatusInfo(byte[] buffer) {
+		
+		//Ultraschall  18:lsb 19:msb
+		int ulr = ((buffer[19] & 0x000000FF)<<8)|buffer[18];
+		Data.setDistUltrasonic((double)ulr/100.0);
+		
+		//Arduino: 20: lsb 21:msb
+		int ard = ((buffer[21] & 0x000000FF)<<8)|buffer[20];
+		Data.setArduinoRefresh(ard);
+		//Sensor: 22
+		Data.setHardwareRefresh(buffer[22]);
+		//Comm: 23 (in 10Hz)
+		Data.setCommunicatorRefresh(buffer[23]);
+		
+	}
+	
 	
 	public static byte[] getTransmitPackage() {
 		byte[] toSend = new byte[8];

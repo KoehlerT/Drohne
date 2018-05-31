@@ -1,4 +1,4 @@
-package hardware;
+package hardware.communication;
 
 import main.Daten;
 import main.ProgramState;
@@ -9,8 +9,10 @@ public class Datapackager {
 		
 	}
 	
+	//-------------------------------------------BASIS------------------------------------------------------
+	
 	public static byte[] packageTransmit() {
-		byte[] toTransmit = new byte[17];
+		byte[] toTransmit = new byte[23];
 		toTransmit[0] = Daten.getContWord();
 		//GPS
 		writeGPS(toTransmit);
@@ -20,6 +22,8 @@ public class Datapackager {
 		int alt = (int)(Daten.getPrsAltitude() * 100);
 		toTransmit[15] = (byte)alt;
 		toTransmit[16] = (byte)(alt >> 8);
+		
+		writeStatusInfo(toTransmit);
 		
 		return toTransmit;
 	}
@@ -48,12 +52,35 @@ public class Datapackager {
 			buffer[7+(i*2)] = (byte)(toWrite[i]);
 			buffer[7+(i*2)+1] = (byte)(toWrite[i]>>8);
 		}
+		//buffer[14];
 		/*for (int i = 0; i < toWrite.length; i++) {
 			System.out.println("toWrite "+i+": "+toWrite[i]);
 		}*/
 		
 		//Bis index 14
 	}
+	
+	private static void writeStatusInfo(byte[] buffer) {
+		//2 bytes max: 65536
+		
+		//Ultraschall (3 Stellen vor Komma!) bis 655,36 dm
+		float dist = Daten.getDistanceUltrasonic();
+		int distTrans = (int)(dist * 100);
+		if (distTrans > 65536)
+			distTrans = 65536;
+		buffer[17] = (byte)distTrans;
+		buffer[18] = (byte)(distTrans >> 8);
+		
+		//Arduino UPS (4 Stellen vor Komma)
+		int ard = Daten.getArduinoRefresh();
+		buffer[19] = (byte)ard;
+		buffer[20] = (byte)(ard >> 8);
+		//Hardwarethread UPS (2 Stellen vor Komma)
+		buffer[21] = (byte)Daten.getSensorRefresh();
+		//Communication UPS (2 Stellen vor Komma)
+		buffer[22] = (byte)Daten.getCommunicatorRefresh();
+	}
+	
 	
 	public static void untangleReceived(byte[] received) {
 		byte controlWord = received[1];
@@ -83,6 +110,12 @@ public class Datapackager {
 		Daten.setCont_yaw(yaw);
 	}
 	
+	
+	
+	
+	
+	
+	 //----------------------------------------------------- ARDUINO ------------------------------------------------------------------
 	public static void untangleArduinoReceived(byte[] buffer) {
 		int[] powers = new int[4];
 		for (int i = 0; i < 4; i++) {
@@ -91,15 +124,14 @@ public class Datapackager {
 			powers[i] = p;
 		}
 		
-		int height = buffer[9] & 0x000000FF;
-		height = (height << 8) | (buffer[8] & 0x000000FF);
+		int looptime = buffer[9] & 0x000000FF;
+		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
 		Daten.setVoltage3v((float)powers[2]/1000f);
 		Daten.setVoltageMain((float)powers[1] * 5000f); //Die Spannung liegt im 5-fachen der Versorgungsspannung?!
-		Daten.setAmperage(((float)powers[0] / 185f)-15f); //185 mV/A
-		Daten.setPrsAltitude((float)height/100f);
-		System.out.println("Height: "+(height/100f));
+		Daten.setAmperage(((float)powers[0] / 185f) -15f ); //185 mV/A
+		Daten.setArduinoRefresh((int)(1f/((float)looptime/1000_000f)));
 	}
 	
 	

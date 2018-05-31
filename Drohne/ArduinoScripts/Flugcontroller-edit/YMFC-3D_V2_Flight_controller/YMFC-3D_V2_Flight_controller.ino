@@ -65,6 +65,7 @@ float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_
 //SPI Kommunikation
 byte datenplatzhalter[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
 byte controllerInputs[8]; //Inputs vom Controller
+int looptime = 1;
 
 //Flugdaten
 int startLuftdruck;
@@ -279,6 +280,7 @@ void loop(){
   printESCs();
   Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
 #endif
+  looptime = micros()-loop_timer;
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
   loop_timer = micros();                                                    //Set the timer for the next loop.
 
@@ -324,7 +326,6 @@ void printCal(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void gyro_signalen(){
   //Read the L3G4200D or L3GD20H
-  unsigned long startTime = micros();
   //Read the MPU-6050
 
 myIMU.readGyroData(myIMU.gyroCount);
@@ -351,10 +352,8 @@ gyro_axis[2] = -gyro_axis[2];
       }
       //Bis index 7
       //float altitude RasPI
-      unsigned long duration = (micros()-startTime);
-      int alt = (int)(duration * 0.1);
-      datenplatzhalter[8] = (byte)alt;
-      datenplatzhalter[9] = (byte)(alt >> 8);
+      datenplatzhalter[8] = (byte)looptime;
+      datenplatzhalter[9] = (byte)(looptime >> 8);
 
 
   }

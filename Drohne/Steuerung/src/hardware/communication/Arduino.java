@@ -1,4 +1,4 @@
-package hardware;
+package hardware.communication;
 
 import java.io.IOException;
 
