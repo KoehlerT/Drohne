@@ -1,22 +1,39 @@
 package hardware.communication;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.pi4j.io.spi.*;
 
 import main.Daten;
 import main.Info;
 
+
 public class Arduino {
+	
+	public native int init();
+	public native byte[] spi(byte[] data);
+	
+	//Native Library
+	static {
+		String path = "/lib/drohne/libarduinocom.so";
+		Path inputPath = Paths.get(path);
+		System.out.println(inputPath.isAbsolute());
+		System.out.println(inputPath.toFile().exists());
+		
+		System.load(inputPath.toAbsolutePath().toString());
+	}
 	
 	//Variablen---------------------------------------
 	
-	private byte[] toSend = new byte[10]; //Controller input bytes
+	private byte[] toSend = new byte[9]; //Controller input bytes
 	private SpiDevice device;
 	
 	//Kosntruktor
 	Arduino() throws IOException{
 		device = SpiFactory.getInstance(SpiChannel.CS1,Info.SpiSpeed,SpiDevice.DEFAULT_SPI_MODE);
+		init();
 	}
 	
 	//Public Methoden --------------------------------------
@@ -33,9 +50,11 @@ public class Arduino {
 		writeToArray(toSend,yaw,6);
 		
 		toSend[8] = (byte) 0;
-		toSend[9] = (byte) 0;
+		//toSend[9] = (byte) 0;
 		
-		sendAndReceive(toSend);
+		spi(toSend);
+		
+		//sendAndReceive(toSend);
 	}
 	
 	

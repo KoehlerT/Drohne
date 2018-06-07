@@ -11,5 +11,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/pi4j-device.jar"/>
 	<classpathentry kind="lib" path="libs/pi4j-gpio-extension.jar"/>
+	<classpathentry kind="lib" path="libs/lib.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

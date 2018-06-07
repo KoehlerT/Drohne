@@ -5,6 +5,7 @@
 int s = 0;
 byte datenplatzhalter[] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 byte ci[8];
+byte validation = 0;
 int throttle;
 int pitch;
 int roll;
@@ -24,16 +25,19 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly
   //TEURER CODE, z.B. Sensoren auslesen
+  Serial.println("----------------------------------------------------------------");
   delay(500);
   unsigned long start = micros();
   receive();
-  //constructInputs();
-  constructInput(throttle, 0);
+
   Serial.print("Duration: ");Serial.print(micros()-start);Serial.println(" us");
-  Serial.print("Throttle: "); Serial.println(throttle);
+  printData();
+  //constructInputs();
+  //constructInput(throttle, 0);
+  /*Serial.print("Throttle: "); Serial.println(throttle);
   Serial.print("Pitch: "); Serial.println(pitch);
   Serial.print("Roll: "); Serial.println(roll);
-  Serial.print("Yaw: "); Serial.println(yaw);
+  Serial.print("Yaw: "); Serial.println(yaw);*/
 }
 
 void receive(){
@@ -63,6 +67,25 @@ void receive(){
 }else{
     Serial.println("Keine Uebertragung");
 }
+}
+
+void printData(){
+    if (ci[0] != 82){
+        Serial.println("VALID");
+    }else {
+        Serial.println("!!!!!!INVALID!!!!!!");
+    }
+
+    for (int i = 0; i < 8; i++){
+        Serial.print("Received[");
+        Serial.print(i);
+        Serial.print("]: ");
+        Serial.print(ci[i]);
+        Serial.print(", ");
+        Serial.print(ci[i],HEX);
+        Serial.println("");
+
+    }
 }
 
 void constructInput(int &var, int index){
