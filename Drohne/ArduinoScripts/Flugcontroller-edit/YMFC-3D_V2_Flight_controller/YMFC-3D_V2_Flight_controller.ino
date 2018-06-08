@@ -443,6 +443,14 @@ void convert_integer(int startInd, int& var){
     int res = controllerInputs[startInd+1];
     res = (res << 8) | controllerInputs[startInd];
 
+    if (res == 21074){
+        //82 82 wurde übermittelt -> 'RR'
+        #ifdef debug
+            Serial.println("!!!INVALID!!!");
+        #endif
+        return;
+    }
+
     if (res < 2000){
         var = clamp(res);
     }
