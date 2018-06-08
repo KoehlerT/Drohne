@@ -58,7 +58,7 @@ public class RFModule {
 		try {
 			spi = SpiFactory.getInstance(SpiChannel.CS0, SpiSpeed, SpiDevice.DEFAULT_SPI_MODE);
 		} catch (IOException e) {
-			System.out.println("SPI Antenne Fehler");
+			System.out.println("SPI FEHLER");
 			running = false;
 			e.printStackTrace();
 		}

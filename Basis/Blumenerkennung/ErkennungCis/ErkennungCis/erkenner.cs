@@ -70,7 +70,6 @@ namespace ErkennungCis
             DateTime startkompl = DateTime.Now;
             erkannt[] erg= raster();
             Debug.WriteLine("{0} Ergebnisse in {1}ms", erg.Length, DateTime.Now.Subtract(start).TotalMilliseconds);
-            return;
             Point[] mittelpunkte = cluster(erg);
             Blume[] blumen = Radius.blume(pixel, mittelpunkte);
             Debug.WriteLine("Blumenerkennung ausgeführt in {0} ms", DateTime.Now.Subtract(startkompl).TotalMilliseconds);

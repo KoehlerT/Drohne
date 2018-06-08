@@ -85,7 +85,7 @@ public class Datapackager {
 	public static void untangleReceived(byte[] received) {
 		byte controlWord = received[1];
 		
-		System.out.println("CW: "+controlWord);
+		//System.out.println("CW: "+controlWord);
 		ProgramState.getInstance().addControlWord(controlWord);
 		int throttle = received[2] & 0x000000FF;
 		throttle |= ((received[6]&0b11000000)<<2);

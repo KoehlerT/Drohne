@@ -26,7 +26,9 @@ public class Radiuserkennung {
 			
 			erg.add(new Blume(p.x,p.y,rad,entf));
 		}
-		return (Blume[]) erg.toArray();
+		Blume[] ret = new Blume[erg.size()];
+		erg.toArray(ret);
+		return ret;
 	}
 	
 	static UPunkt[] Umriss(byte[][] bild, Point mp) {
@@ -34,8 +36,10 @@ public class Radiuserkennung {
 		UPunkt[] erg = new UPunkt[Einstellungen.anzTest];
 		for (int i = 0; i < Einstellungen.anzTest; i++) {
 			erg[i] = ende(bild, mp, i);
-			if (iorC > 3) //Invalide Blume, zu viele Arrayüberschreitungen
+			if (iorC > 3) {//Invalide Blume, zu viele Arrayüberschreitungen
+				System.out.println("Range Exc");
 				return null;
+			}
 		}
 		
 		return erg;
@@ -85,8 +89,11 @@ public class Radiuserkennung {
 			maxAbw = Math.max(maxAbw, abw);
 		}
 		
-		if (maxAbw >= Einstellungen.maxAbw)
+		if (maxAbw >= Einstellungen.maxAbw) {
+			System.out.println("Abweichung "+maxAbw);
 			return 0;
+		}
+			
 		
 		return dRad;
 		

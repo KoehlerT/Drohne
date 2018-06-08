@@ -3,17 +3,42 @@ package bilderkennung;
 import java.awt.Point;
 import java.util.LinkedList;
 
+import utility.Blume;
+
 final class Blumenfinder {
 	private Blumenfinder() {} //Privater konstruktor -> keine Instanzen
 	
 	static void processPicture(byte[][] img) {
 		Point[] ergs = raster(img);
-		System.out.println("Ergebnisse: "+ergs.length);
+		printPoints(ergs);
+		ergs = Cluster.cluster(ergs);
+		printPoints(ergs);
+		Blume[] blumen = Radiuserkennung.erkennen(img, ergs);
+		printBlumen(blumen);
+	}
+	
+	private static void printPoints(Point[] arr) {
+		System.out.print(arr.length);
+		System.out.print(" Ergebnisse: ");
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print("("+arr[i].x+"|"+arr[i].y+"), ");
+		}
+		System.out.println("");
+	}
+	
+	private static void printBlumen(Blume[] arr) {
+		System.out.print(arr.length);
+		System.out.print(" Blumen: ");
+		for (int i = 0; i < arr.length; i++) {
+			System.out.print("("+arr[i].getX()+"|"+arr[i].getY()+"|"+arr[i].getDist()+"), ");
+		}
+		System.out.println("");
 	}
 	
 	private static Point[] raster(byte[][] img) {
 		/*Diese Methode legt ein Raster ¸ber das Bild um Stichprobenartig Pixel auf ihr Blumigkeit zu ¸berpr¸fen
 		 * */
+		System.out.println("Raster breite: "+img.length+" hˆhe: "+img[0].length+" incr: "+Einstellungen.rasterGrˆﬂe * img.length);
 		LinkedList<Point> ergs = new LinkedList<Point>();
 		int width = img.length;
 		int height = img[0].length;
@@ -25,6 +50,7 @@ final class Blumenfinder {
 				}
 			}
 		}
+		System.out.println("Rasterergebnis: "+ergs.size()+ " maxK. "+maxKontr);
 		Point[] arr = new Point[ergs.size()];
 		return ergs.toArray(arr);
 	}
@@ -50,7 +76,7 @@ final class Blumenfinder {
 			int wx = (int)(Einstellungen.cos[i]*weiﬂ+x);
 			int wy = (int)(Einstellungen.sin[i]*weiﬂ+y);
 			//Check ob Index out of range
-			if (wx < 0 || wx >= img.length || wy < 0 || wy <= img[0].length)
+			if (wx < 0 || wx >= img.length || wy < 0 || wy >= img[0].length)
 				return false;
 			//Definiere die Farben der Pixel
 			byte p1 = img[wx][wy]; //Farbe Weiﬂes Pixel
@@ -61,22 +87,36 @@ final class Blumenfinder {
 				erfolge++;
 			}
 		}
+		
+		//maxKontr = Math.max(maxKontr, erfolge);
+		maxKontr = Math.max(maxKontr, (float)erfolge/(float)Einstellungen.schablonenChecks);
 		//Bei genug erfolgreichen Schablonenanwendungen true zur¸ckgeben
-		if (erfolge/Einstellungen.schablonenChecks >= Einstellungen.erfolgreich)
+		if ((float)erfolge/(float)Einstellungen.schablonenChecks >= Einstellungen.erfolgreich) {
 			return true;
+		}		
 		else
 			return false;
+		
 	}
 	private static byte colorAt(int x, int y, int c,float r, byte[][] img) {
 		int px = (int)(Einstellungen.cos[c] * r + x);
 		int py = (int)(Einstellungen.sin[c]*r+y);
-		return img[px][py];
+		
+		byte ret = img[px][py];
+		
+		return (ret > 0)? ret : 1;
 	}
+	
+	static float maxKontr = 0;
+	
 	private static boolean kontrast(byte ps, byte p1, byte p2) {
+		
 		if (((float)p1 / (float)ps >= Einstellungen.kontrast) && ((float)p2 / (float)ps >= Einstellungen.kontrast))
         {
-            return true;
+			return true;
+            
         }
+		
 		return false;
 	}
 }

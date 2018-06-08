@@ -11,4 +11,18 @@ public class Blume {
 		this.rad = radius;
 		this.dist = distanz;
 	}
+	
+	
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	public int getrad() {
+		return rad;
+	}
+	public int getDist() {
+		return dist;
+	}
 }

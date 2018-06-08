@@ -35,7 +35,7 @@ class HwThread extends Thread{
 	public void run() {
 		
 		System.out.println("SPI Run "+running);
-		beeper.beep(200);
+		beeper.beep(50);
 		while(running) {
 			long startTime = System.nanoTime();
 			//Nehme Variablen

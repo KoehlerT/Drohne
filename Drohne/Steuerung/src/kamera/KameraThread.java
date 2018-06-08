@@ -12,23 +12,19 @@ import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
 class KameraThread extends Thread{
 	
-	private int aufnahmezeit;
-	private RPiCamera piCamera;
+	FakeCam c;
 	
 	KameraThread() {
 		this.setName("Bildaufnahme");
+		c = new FakeCam();
 	}
 	
 	@Override
 	public void run() {
-		//Testet, ob Kamera angeschlossen ist und instanziiert objekt
-		if (!kameraAngeschlossen())
-			return;
-		//Kamera wird konfiguruiert
-		kameraKonfigurieren();
+		
 		//Jetzt werden Bilder aufgenommen
 		while (true) {
-			BufferedImage img = bildAufnehmen();
+			BufferedImage img = c.takePicture();
 			
 			if (img == null) {
 				//System.out.println("Fehler Bild == null");
@@ -37,50 +33,11 @@ class KameraThread extends Thread{
 			
 			//Neues Bildobjekt updaten
 			byte[][] bild = grayArray(img);
-			BildPool.addBild(bild, aufnahmezeit);
+			BildPool.addBild(bild, c.getTime());
 		}
 	}
 	
-	private Boolean kameraAngeschlossen() {
-		//Testet, ob Kamera angeschlossen ist
-		try {
-			piCamera = new RPiCamera();
-			System.out.println("Kamera erkannt");
-			return true;
-		}catch(FailedToRunRaspistillException e) {
-			System.out.println("Keine Kamera erkannt. Kamerathread wird beendet");
-			return false;
-		}
-	}
 	
-	private void kameraKonfigurieren() {
-		//Einstellungen. Die Besten müssen noch gefunden werden
-		piCamera.setToDefaults();
-		piCamera.setWidth(500)
-				.setHeight(370)
-				.setExposure(Exposure.SPORTS)
-				.setTimeout(0)
-				.setContrast(100)
-				.setSharpness(100)
-				.setEncoding(Encoding.BMP);
-		piCamera.setFullPreviewOff();
-		piCamera.setPreviewOpacity(0);
-	}
-	
-	private BufferedImage bildAufnehmen() {
-		try {
-			long start = System.nanoTime();
-			BufferedImage buffImg = piCamera.takeBufferedStill();
-			aufnahmezeit = (int)(System.nanoTime()-start);
-			//System.out.println("Bild aufgenommen in "+aufnahmezeit/1000000+" ms");
-			return buffImg;
-		}catch (InterruptedException e) {
-			System.out.println("Bildaufnahme Unterbrochen!");
-		}catch (IOException e) {
-			System.out.println("Bildaufnahme Unterbrochen!");
-		}
-		return null;
-	}
 	
 	private byte[][] grayArray(BufferedImage img){
 		byte[][] res = new byte[img.getWidth()][];

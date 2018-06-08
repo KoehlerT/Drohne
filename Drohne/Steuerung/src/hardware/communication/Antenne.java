@@ -201,8 +201,8 @@ public class Antenne {
 			
 			//HFREQ_PLL: 1
 			//Output Power: -10dBm PA_PWR: 00
-			//Config byte 1: [7:6] none, RX_RED_PWR, PA_PWR[1:0] (10dBm), FREQ_PLL (=0: 434MHz), 8th bit CH_NO 
-			byte b1 = 0b00011000;
+			//Config byte 1: [7:6] none, AUTO_RETR, RX_RED_PWR, PA_PWR[1:0] (10dBm), FREQ_PLL (=0: 434MHz), 8th bit CH_NO 
+			byte b1 = 0b00001100;
 			writeConfRegister((byte)0x1,b1);
 			
 			//RX-address width: 100 (4 bytes) RX_AFW: 100
@@ -224,8 +224,8 @@ public class Antenne {
 			writeConfRegister((byte)0x8,(byte)0x72);
 			
 			//No External Clock UP_CLK_FREQ: 0
-			//CRC_MODE: 1; CRC_EN: 1; XOF: 011; UP_CLK_EN: 0; UP_CLK_FREQ: 11
-			writeConfRegister((byte)0x9,(byte)0b11011011);
+			//CRC_MODE: 1; CRC_EN: 1; XOF: 011; UP_CLK_EN: 0; UP_CLK_FREQ: 00
+			writeConfRegister((byte)0x9,(byte)0b11011000);
 			
 			System.out.println("Checking registers");
 			for (int i = 0; i <= 9; i++) {

@@ -26,15 +26,15 @@ public class BildPool {
 		}
 	}
 	
-	public static void addBild(byte[][] bildInfo, int aufnZeit) {
+	public static synchronized void addBild(byte[][] bildInfo, int aufnZeit) {
 		Date d = new Date();
-		if (pool[aktuelles+1].locked()) { //Nächstes Bild ist reserviert
+		aktuelles = (aktuelles+1)%pool.length; //Aktuelles wird geupdatet
+		if (pool[aktuelles].locked()) { //Nächstes Bild ist reserviert
 			System.out.println("Das zu überschreibende Bild wird noch gebraucht\n"
 					+ "Die Aufnahme ist schneller als die Bearbeitung");
 			return;
 		}
 		
-		aktuelles = (aktuelles+1)%pool.length; //Aktuelles wird geupdatet
 		pool[aktuelles].changeData(bildInfo, aufnZeit, d); //Bild wird gupdatet
 		
 		benachrichtigen();

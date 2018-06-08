@@ -27,14 +27,14 @@ public class ComThread extends Thread{
 		}
 		
 		wlanServer = new WlanServer();
-		wlanServer.acceptClients();
+		
 		//ant = new Antenne();
 		
 	}
 	
 	@Override
 	public void run() {
-		
+		wlanServer.acceptClients();
 		while (running) {
 			startTime = System.nanoTime();
 			
@@ -48,7 +48,6 @@ public class ComThread extends Thread{
 			//ant.setTransmitBuffer(toSend);
 			//ant.send();
 			
-			System.out.println("Wlan?");
 			wlanServer.receive();
 			wlanServer.sendPackage();
 			

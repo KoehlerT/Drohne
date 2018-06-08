@@ -51,7 +51,7 @@ public class WlanServer {
 			buffer = new byte[32];
 			//int read = client.getInputStream().read(buffer, 0, 8);
 			int read = client.getInputStream().read(buffer);
-			System.out.println("Read "+read);
+			//System.out.println("Read "+read);
 			if (read == -1)
 				return;
 			for (int i = 0; i<read; i++) {
