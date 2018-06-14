@@ -1,7 +1,12 @@
 package bilderkennung;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
+
+import javax.imageio.ImageIO;
 
 import utility.Blume;
 
@@ -9,6 +14,7 @@ final class Blumenfinder {
 	private Blumenfinder() {} //Privater konstruktor -> keine Instanzen
 	
 	static void processPicture(byte[][] img) {
+		//generateDebugImage(img);
 		Point[] ergs = raster(img);
 		printPoints(ergs);
 		ergs = Cluster.cluster(ergs);
@@ -16,6 +22,7 @@ final class Blumenfinder {
 		Blume[] blumen = Radiuserkennung.erkennen(img, ergs);
 		printBlumen(blumen);
 	}
+	
 	
 	private static void printPoints(Point[] arr) {
 		System.out.print(arr.length);
@@ -50,6 +57,7 @@ final class Blumenfinder {
 				}
 			}
 		}
+		
 		System.out.println("Rasterergebnis: "+ergs.size()+ " maxK. "+maxKontr);
 		Point[] arr = new Point[ergs.size()];
 		return ergs.toArray(arr);
@@ -76,7 +84,7 @@ final class Blumenfinder {
 			int wx = (int)(Einstellungen.cos[i]*weiﬂ+x);
 			int wy = (int)(Einstellungen.sin[i]*weiﬂ+y);
 			//Check ob Index out of range
-			if (wx < 0 || wx >= img.length || wy < 0 || wy >= img[0].length)
+			if (wx < 0 || wx >= img.length || wy >= img[0].length || wy < 0)
 				return false;
 			//Definiere die Farben der Pixel
 			byte p1 = img[wx][wy]; //Farbe Weiﬂes Pixel
@@ -88,10 +96,11 @@ final class Blumenfinder {
 			}
 		}
 		
-		//maxKontr = Math.max(maxKontr, erfolge);
-		maxKontr = Math.max(maxKontr, (float)erfolge/(float)Einstellungen.schablonenChecks);
+		float blumigkeit = (float)erfolge/(float)Einstellungen.schablonenChecks;
+		maxKontr = Math.max(maxKontr, blumigkeit);
 		//Bei genug erfolgreichen Schablonenanwendungen true zur¸ckgeben
-		if ((float)erfolge/(float)Einstellungen.schablonenChecks >= Einstellungen.erfolgreich) {
+		//System.out.println("K("+x+"|"+y+") Blumigkeit= "+blumigkeit+" f¸r r= "+r);
+		if (blumigkeit >= Einstellungen.erfolgreich) {
 			return true;
 		}		
 		else
@@ -104,19 +113,47 @@ final class Blumenfinder {
 		
 		byte ret = img[px][py];
 		
-		return (ret > 0)? ret : 1;
+		return (ret != 0)? ret : 1;
 	}
 	
 	static float maxKontr = 0;
 	
 	private static boolean kontrast(byte ps, byte p1, byte p2) {
-		
-		if (((float)p1 / (float)ps >= Einstellungen.kontrast) && ((float)p2 / (float)ps >= Einstellungen.kontrast))
+		//System.out.println("Weiﬂ auﬂen: "+p1+" Weiﬂ innen: "+p2+" schwarz: "+p2);
+		float wa = (float)((int)p1&0x000000FF);
+		float wi = (float)((int)p2&0x000000FF);
+		float sw = (float)((int)ps&0x000000FF);
+		if ((wa/sw >= Einstellungen.kontrast) && (wi/sw >= Einstellungen.kontrast))
         {
 			return true;
             
         }
 		
 		return false;
+	}
+	
+	static int pictureNum = 0;
+	
+	private static void generateDebugImage(byte[][] image) {
+		BufferedImage img = new BufferedImage(image.length, image[0].length, BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < image.length; x++) {
+			for (int y = 0; y < image[0].length;y++) {
+				int gray = image[x][y];
+				int rgb = gray;
+				rgb = (rgb<<8)+gray;
+				rgb = (rgb<<8)+gray;
+				img.setRGB(x, y, rgb);
+			}
+		}
+		File output = new File("picture#"+pictureNum+".png");
+		try {
+			ImageIO.write(img, "png", output);
+			System.out.println("Saved Image# "+pictureNum);
+			pictureNum++;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			System.out.println("Bildfehler");
+			e.printStackTrace();
+		}
 	}
 }

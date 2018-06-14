@@ -71,7 +71,7 @@ class Cluster {
 	}
 	
 	private static double dist(Point m, Point p) {
-		return Math.sqrt(Math.pow(p.x-m.x, 2)+Math.pow(p.y+m.y, 2));
+		return Math.sqrt(Math.pow(p.x-m.x, 2)+Math.pow(p.y-m.y, 2));
 	}
 	
 	private static void mergeLists(LinkedList<Point> s, LinkedList<Point> d) {

@@ -106,6 +106,7 @@ namespace ErkennungCis
         byte gray(Color c) {
             //Für mehr kontrast, wird das ganze mit einer sigmoid funktion gestreckt.
             byte gray = (byte)((c.R + c.G + c.B) / 3f); //- Linear, wenn direkt returnt
+            //return gray;
             //Schlechter (Grün-) Filter
             if (c.R < 100)
                 gray = 0;

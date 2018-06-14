@@ -57,7 +57,11 @@ class KameraThread extends Thread{
 		int red = (rgb >> 16) & 0x000000FF;
 		int green = (rgb >>8 ) & 0x000000FF;
 		int blue = (rgb) & 0x000000FF;
-		return (byte)((red+green+blue)/3);
+		
+		int res = (int)((float)(red+green+blue)/3f);
+		
+		//return (byte)(res); //Linear
+		return (byte)(255*(1/(1+Math.pow(Math.E,-0.025*(res-127)))));//Sigmoid
 	}
 
 }

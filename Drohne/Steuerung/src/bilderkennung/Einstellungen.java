@@ -28,12 +28,21 @@ final class Einstellungen {
 	//Sinus und Cosinus vorberechnen
 	static float[] sin = new float[schablonenChecks];
 	static float[] cos = new float[schablonenChecks];
+	
+	static float[] sinUmr = new float[anzTest];
+	static float[] cosUmr = new float[anzTest];
 
 	static {
 		for (int i = 0; i < schablonenChecks; i++) {
 			double a = (2*Math.PI*i)/schablonenChecks;
 			sin[i] = (float)Math.sin(a);
 			cos[i] = (float)Math.cos(a);
+		}
+		
+		for (int i = 0; i < anzTest; i++) {
+			double a = (2*Math.PI*i)/anzTest;
+			sinUmr[i] = (float)Math.sin(a);
+			cosUmr[i] = (float)Math.cos(a);
 		}
 	}
 }

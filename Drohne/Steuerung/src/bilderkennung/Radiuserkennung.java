@@ -22,8 +22,9 @@ public class Radiuserkennung {
 			int rad = radius(umriss);
 			if (rad == 0)
 				continue;
-			int entf = entfernung(rad);
 			
+			int entf = entfernung(rad);
+			System.out.println("Radius Blume: "+rad+" entfernugn: "+entf);
 			erg.add(new Blume(p.x,p.y,rad,entf));
 		}
 		Blume[] ret = new Blume[erg.size()];
@@ -53,8 +54,8 @@ public class Radiuserkennung {
 		
 		int x = mp.x;
 		int y = mp.y;
-		int dx = (int)(Einstellungen.incr * Einstellungen.cos[check]);
-		int dy = (int)(Einstellungen.incr * Einstellungen.sin[check]);
+		int dx = (int)(Einstellungen.incr * Einstellungen.cosUmr[check]);
+		int dy = (int)(Einstellungen.incr * Einstellungen.sinUmr[check]);
 		boolean schwarz = true;
 		while (schwarz) {
 			x += dx;
@@ -63,11 +64,15 @@ public class Radiuserkennung {
 				iorC ++;
 				return new UPunkt(false);
 			}
-				
-			if (bild[x][y] >= Einstellungen.weiß)
+			
+			if (unsigne(bild[x][y]) >= Einstellungen.weiß)
 				return new UPunkt(x,y);
 		}
 		return new UPunkt(false);
+	}
+	
+	static int unsigne(byte b) {
+		return (int)b&0x000000FF;
 	}
 	
 	static int radius(UPunkt[] umr) {
