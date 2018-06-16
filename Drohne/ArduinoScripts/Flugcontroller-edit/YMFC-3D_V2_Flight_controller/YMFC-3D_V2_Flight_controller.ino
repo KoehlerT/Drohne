@@ -27,8 +27,8 @@ MPU9250 myIMU;
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 float pid_p_gain_roll = 0;               //Gain setting for the roll P-controller (1.3)
-float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
-float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
+float pid_i_gain_roll = 0.02;              //Gain setting for the roll I-controller (0.05)
+float pid_d_gain_roll = 5;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
@@ -165,6 +165,9 @@ void setup(){
 //Main program loop
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop(){
+  //if(start == 2){ Serial.print(gyro_roll,0); Serial.print(";"); Serial.print(gyro_pitch,0); Serial.print(";"); Serial.println(gyro_yaw,0); }
+
+  
   /*receiver_input_channel_1 = convert_receiver_channel(1);      //Convert the actual receiver signals for pitch to the standard 1000 - 2000us.
   receiver_input_channel_2 = convert_receiver_channel(2);      //Convert the actual receiver signals for roll to the standard 1000 - 2000us.
   receiver_input_channel_3 = convert_receiver_channel(3);      //Convert the actual receiver signals for throttle to the standard 1000 - 2000us.
@@ -277,8 +280,9 @@ void loop(){
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
 #ifdef debug
   printSensors();
-  printESCs();
-  Serial.print(start);Serial.print(" Loop: ");Serial.print(micros()-loop_timer);Serial.println("us");
+  //printESCs();
+  Serial.print(";");Serial.print(micros()-loop_timer);
+  Serial.println();
 #endif
   looptime = micros()-loop_timer;
   while(micros() - loop_timer < 4000);                                      //We wait until 4000us are passed.
@@ -309,7 +313,7 @@ void printESCs(){
 }
 
 void printSensors(){
-    Serial.print(gyro_pitch_input); Serial.print(" ");Serial.print(gyro_roll_input);Serial.print(" ");Serial.println(gyro_yaw_input);
+    Serial.print(gyro_pitch_input); Serial.print(";");Serial.print(gyro_roll_input);Serial.print(";");Serial.print(gyro_yaw_input);
 }
 
 void printCal(){
