@@ -26,9 +26,9 @@ MPU9250 myIMU;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 0;               //Gain setting for the roll P-controller (1.3)
-float pid_i_gain_roll = 0.02;              //Gain setting for the roll I-controller (0.05)
-float pid_d_gain_roll = 5;                //Gain setting for the roll D-controller (15)
+float pid_p_gain_roll = 1;               //Gain setting for the roll P-controller (1.3)
+float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
+float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
@@ -36,7 +36,7 @@ float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 0;                //Gain setting for the pitch P-controller. //4.0
+float pid_p_gain_yaw = 1;                //Gain setting for the pitch P-controller. //4.0
 float pid_i_gain_yaw = 0;               //Gain setting for the pitch I-controller. //0.02
 float pid_d_gain_yaw = 0;                //Gain setting for the pitch D-controller.
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-)
@@ -147,6 +147,7 @@ void setup(){
       digitalWrite(8, !digitalRead(8));                      //Change the led status.
       start = 0;                                               //Start again at 0.
     }
+    //break;
   }
   start = 0;                                                   //Set start back to 0.
 
@@ -339,6 +340,7 @@ gyro_axis[3] = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
 gyro_axis[1] = -gyro_axis[1];
 gyro_axis[2] = -gyro_axis[2];
+gyro_axis[3] = -gyro_axis[3];
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
