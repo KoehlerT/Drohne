@@ -126,6 +126,7 @@ public class Datapackager {
 		
 		int looptime = buffer[9] & 0x000000FF;
 		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
+		System.out.println("Arduino Loop: "+looptime);
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
 		Daten.setVoltage3v((float)powers[2]/1000f);

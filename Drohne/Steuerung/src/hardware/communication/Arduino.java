@@ -12,17 +12,23 @@ import com.koehlert.arduinonative.*;
 
 public class Arduino {
 	
+	private native byte[] spi(byte[] send);
+	private native int init();
 	
+	static{
+		System.load("/lib/drohne/libarduinocom.so");
+	}
 	
 	//Variablen---------------------------------------
 	
 	private byte[] toSend = new byte[9]; //Controller input bytes
-	private Spi arduino;
+	private byte[] received = new byte[9];
+	//private Spi arduino;
 	
 	//Kosntruktor
 	Arduino() throws IOException{
-		arduino = new Spi();
-		arduino.init();
+		//arduino = new Spi();
+		init();
 	}
 	
 	//Public Methoden --------------------------------------
@@ -33,6 +39,8 @@ public class Arduino {
 		int roll = Daten.getCont_roll();
 		int yaw = Daten.getCont_yaw();
 		
+		System.out.println(throttle+" "+pitch+" "+roll+" "+yaw);
+		
 		writeToArray(toSend,throttle,0);
 		writeToArray(toSend,pitch,2);
 		writeToArray(toSend,roll,4);
@@ -41,7 +49,8 @@ public class Arduino {
 		toSend[8] = (byte) 0;
 		//toSend[9] = (byte) 0;
 		
-		arduino.spi(toSend,toSend.length);
+		received = spi(toSend);
+		Datapackager.untangleArduinoReceived(received);
 	}
 	
 	

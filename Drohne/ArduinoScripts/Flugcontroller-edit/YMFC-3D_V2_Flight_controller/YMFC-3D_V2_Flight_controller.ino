@@ -48,6 +48,7 @@ byte last_channel_1, last_channel_2, last_channel_3, last_channel_4;
 //byte eeprom_data[36];   //Keine EEProm Data in unserem Fall
 byte highByte, lowByte;
 int receiver_input_channel_1, receiver_input_channel_2, receiver_input_channel_3, receiver_input_channel_4;
+int last_received_1, last_received_2, last_received_3, last_received_4;
 int counter_channel_1, counter_channel_2, counter_channel_3, counter_channel_4, loop_counter;
 int esc_1, esc_2, esc_3, esc_4;
 int throttle, battery_voltage;
@@ -136,8 +137,8 @@ void setup(){
   //Wait until the receiver is active and the throttle is set to the lower position.
   while(receiver_input_channel_3 < 990 || receiver_input_channel_3 > 1020 || receiver_input_channel_4 < 1400){
     receive();                                                 //Receive new Controller inputs
-    convert_integer(0,receiver_input_channel_3);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
-    convert_integer(6,receiver_input_channel_4);             //Convert the actual receiver signals for yaw to the standard 1000 - 2000us
+    convert_integer(0,receiver_input_channel_3,last_received_3);             //Convert the actual receiver signals for throttle to the standard 1000 - 2000us
+    convert_integer(6,receiver_input_channel_4,last_received_4);             //Convert the actual receiver signals for yaw to the standard 1000 - 2000us
     start ++;                                                  //While waiting increment start whith every loop.
     //We don't want the esc's to be beeping annoyingly. So let's give them a 1000us puls while waiting for the receiver inputs.
     pulse(1000);
@@ -175,10 +176,10 @@ void loop(){
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
   //Get Controller Inputs via SPI#
   receive();
-  convert_integer(4,receiver_input_channel_1);
-  convert_integer(2,receiver_input_channel_2);
-  convert_integer(0,receiver_input_channel_3);
-  convert_integer(6,receiver_input_channel_4);
+  convert_integer(4,receiver_input_channel_1,last_received_1);
+  convert_integer(2,receiver_input_channel_2,last_received_2);
+  convert_integer(0,receiver_input_channel_3,last_received_3);
+  convert_integer(6,receiver_input_channel_4,last_received_4);
 
   //Let's get the current gyro data and scale it to degrees per second for the pid calculations.
   gyro_signalen();
@@ -188,10 +189,11 @@ void loop(){
   gyro_yaw_input = (gyro_yaw_input * 0.8) + ((gyro_yaw) * 0.2);               //Gyro pid input is deg/sec.
 
   //For starting the motors: throttle low and yaw left (step 1).
-  if(receiver_input_channel_3 < 1050 && receiver_input_channel_4 < 1050)start = 1;
+  if(receiver_input_channel_3 < 1050 && receiver_input_channel_4 < 1050){start = 1;digitalWrite(8,HIGH);}
   //When yaw stick is back in the center position start the motors (step 2).
   if(start == 1 && receiver_input_channel_3 < 1050 && receiver_input_channel_4 > 1450){
     start = 2;
+    digitalWrite(8,LOW);
     //Reset the pid controllers for a bumpless start.
     pid_i_mem_roll = 0;
     pid_last_roll_d_error = 0;
@@ -280,9 +282,11 @@ void loop(){
   //All the information for controlling the motor's is available.
   //The refresh rate is 250Hz. That means the esc's need there pulse every 4ms.
 #ifdef debug
-  printSensors();
+  //printSensors();
   //printESCs();
+  printCIs();
   Serial.print(";");Serial.print(micros()-loop_timer);
+  Serial.print(";");Serial.print(start);
   Serial.println();
 #endif
   looptime = micros()-loop_timer;
@@ -306,11 +310,11 @@ void loop(){
 
 
 void printCIs(){
-    Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.println(receiver_input_channel_4);
+    Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.print(receiver_input_channel_4);
 }
 
 void printESCs(){
-    Serial.print(esc_1); Serial.print(" ");Serial.print(esc_2);Serial.print(" ");Serial.print(esc_3);Serial.print(" ");Serial.println(esc_4);
+    Serial.print(esc_1); Serial.print(" ");Serial.print(esc_2);Serial.print(" ");Serial.print(esc_3);Serial.print(" ");Serial.print(esc_4);
 }
 
 void printSensors(){
@@ -445,7 +449,8 @@ void receive(){
 }
 
 
-void convert_integer(int startInd, int& var){
+void convert_integer(int startInd, int& var, int& last){
+  //Daten müssen doppelt gesendet werden. Sonst ungültig!
     int res = controllerInputs[startInd+1];
     res = (res << 8) | controllerInputs[startInd];
 
@@ -457,8 +462,10 @@ void convert_integer(int startInd, int& var){
         return;
     }
 
-    if (res < 2000){
-        var = clamp(res);
+    if (res == last){
+      var = clamp(res);
+    }else{
+      last = res;
     }
 }
 
