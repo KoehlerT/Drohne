@@ -7,6 +7,7 @@ import javax.swing.*;
 import hardware.HardwareCommunicator;
 import panels.*;
 import panels.KonsolenFenster;
+import steuerung.ControllerInfo;
 import wert.doubleWert;
 import wert.intWert;
 import wert.vektorenWert;
@@ -15,11 +16,14 @@ public class Exec {
 	
 	static Frame frame;
 	static HardwareCommunicator communicator;
+	static ControllerInfo controller;
 	
 	public static void main(String[] args) {
 		System.out.println("RUN");
 		frame = new Frame();
+		controller = new ControllerInfo();
 		communicator = new HardwareCommunicator();
+		
 		
 		KonsolenFenster.addText("Halol, 1&1", Color.red);
 		KonsolenFenster.addText("Ich bin ein echter Gangster", Color.orange);
@@ -34,6 +38,7 @@ public class Exec {
 	public static void loop() {
 		while (true) {
 			frame.update();
+			controller.Update();
 			communicator.PrepareAndSend();
 			ProgramState.getInstance().evaluateWord();
 			try {

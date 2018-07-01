@@ -13,6 +13,7 @@ public class HardwareCommunicator {
 		new Thread() {
 			@Override
 			public void run() {
+				wlanClient.connect();
 				while (true) {
 					wlanClient.sendControls();
 					try {Thread.sleep(100);}catch(InterruptedException e) {e.printStackTrace();}

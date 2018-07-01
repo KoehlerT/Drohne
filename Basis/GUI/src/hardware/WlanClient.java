@@ -15,12 +15,19 @@ public class WlanClient {
 	PrintStream outToServer;
 	Scanner inFromServer;
 	
+	boolean connected = false;
+	
 	public WlanClient() {
+		
+	}
+	
+	public void connect() {
 		try {
 			server = new Socket("192.168.1.2", 1213);
 			System.out.println("Verbunden");
 			inFromServer = new Scanner(server.getInputStream());
 			outToServer = new PrintStream(server.getOutputStream());
+			connected = true;
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,6 +49,8 @@ public class WlanClient {
 	}
 	
 	public void receive() {
+		while(!connected);
+		
 		byte[] buffer = new byte[24];
 		try {
 			int read = server.getInputStream().read(buffer, 1, 23);
