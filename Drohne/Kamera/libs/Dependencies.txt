@@ -1,0 +1,2 @@
+to install:
+http://stefanshacks.blogspot.com/2015/05/build-opencv-with-java-bindings-on_6.html
