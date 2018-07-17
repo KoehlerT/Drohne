@@ -78,6 +78,13 @@ public class Datapackager {
 		int roll = Data.getCont_roll().getWert();
 		int pitch = Data.getCont_pitch().getWert();
 		int yaw = Data.getCont_yaw().getWert();
+		//Force Stop/Down
+		if (Data.getForceDown() || Data.getForceStop())
+			throttle = 1000;
+		if (Data.getForceStop())
+			yaw = 1000;
+		
+		
 		//10bits Pro Control
 		buffer[1] = (byte) (throttle-1000);
 		buffer[2] = (byte) (roll-1000);

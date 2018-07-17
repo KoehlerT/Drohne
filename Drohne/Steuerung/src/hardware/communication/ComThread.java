@@ -28,7 +28,7 @@ public class ComThread extends Thread{
 		
 		wlanServer = new WlanServer();
 		
-		//ant = new Antenne();
+		//ant = new Antenne(); Timeout
 		
 	}
 	

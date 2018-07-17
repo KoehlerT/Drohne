@@ -23,7 +23,7 @@ public class WlanClient {
 	
 	public void connect() {
 		try {
-			server = new Socket("192.168.1.2", 1213);
+			server = new Socket("192.168.1.1", 1213);
 			System.out.println("Verbunden");
 			inFromServer = new Scanner(server.getInputStream());
 			outToServer = new PrintStream(server.getOutputStream());

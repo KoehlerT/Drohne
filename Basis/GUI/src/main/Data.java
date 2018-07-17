@@ -7,12 +7,14 @@ public class Data {
 	private Data() {}
 	
 	//ProgrammKonstanten
-	public static final int numCrit = 8; //Kritisch: 7
+	public static final int numCrit = 9; //Kritisch: 7
 	public static final int numUnCrit = 9; //Unkritisch: 7
 	public static final String port = "COM3";
 	
 	//Programmdaten
 	private static boolean manuMode = false;
+	private static boolean forceStop = false; //Sind throttle& pitch = 1000
+	private static boolean forceDown = false; //Ist throttle = 1000;
 	private static byte controlWord;
 	
 	//Statusinformationen
@@ -44,6 +46,8 @@ public class Data {
 	//Getter
 	
 	public static synchronized boolean getManuMode() {return manuMode;}
+	public static synchronized boolean getForceStop() {return forceStop;}
+	public static synchronized boolean getForceDown() {return forceDown;}
 	public static synchronized byte getControlWord() {return controlWord;}
 	
 	//Statusinformationen
@@ -74,6 +78,8 @@ public class Data {
 	
 	//Setter
 	public static synchronized void setManuMode(boolean mm) {manuMode = mm;}
+	public static synchronized void setForceStop(boolean newforceStop) {forceStop=newforceStop;}
+	public static synchronized void setForceDown(boolean newforceDown) {forceDown=newforceDown;}
 	public static synchronized void setContrWord(byte cw) {controlWord = cw;}
 	
 	//Stausinformatioenen

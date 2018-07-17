@@ -72,7 +72,8 @@ public class Vitalmonitore {
 		updateLabel(Data.getAltitude(),criticLabels[6]);
 		
 		updateLabel(Data.getArduinoRefresh(), criticLabels[7]);
-		
+		//Status
+		criticLabels[8].setText("Mode: "+((Data.getForceStop())?"Force Stop":((Data.getForceDown())?"Force Down": "Normal")));
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {

@@ -51,10 +51,6 @@ public class ControllerInfo {
 		System.out.println("Controller Init: "+res);
 	}
 	
-	//TODO: Einheitliches Statussystem
-	boolean down = false;
-	boolean off = false;
-	
 	public void Update() {
 		//B: Not Aus
 		//A: Throttle = 0
@@ -62,30 +58,43 @@ public class ControllerInfo {
 		//Linkes Pad Y - -> Throttle Down
 		
 		if (isConnected()) {
+			boolean forceStop = Data.getForceStop();
+			boolean forceDown = Data.getForceDown();
+			
+			
 			//Controls
 			if (getGamepad_B()) {
-				off = !off;
+				forceStop = !forceStop;
+				Data.setForceStop(forceStop);
 			}
 			if (getGamepad_A()) {
-				down = !down;
+				forceDown = !forceDown;
+				Data.setForceDown(forceDown);
 			}
 			//Rotationen
-			Data.setCont_yaw(mapValueAxes(getThumb_LX()));
-			Data.setCont_pitch(mapValueAxes(getThumb_RY()));
-			Data.setCont_roll(mapValueAxes(getThumb_RX()));
+			int yaw = (mapValueAxes(getThumb_LX()));
+			int pitch= (mapValueAxes(getThumb_RY()));
+			int roll = (mapValueAxes(getThumb_RX()));
 			
 			//Throttle
 			int old = Data.getCont_throttle().getWert();
-			Data.setCont_throttle(getThrottle(old,getThumb_LY()));
+			int throttle = (getThrottle(old,getThumb_LY()));
 			
 			//Set Exordinary Status
 			//TODO: Nur einmal Wert setzen!
-			if (off) {
-				Data.setCont_throttle(1000);
-				Data.setCont_pitch(1000);
-			}if (down) {
-				Data.setCont_throttle(1000);
+			if (forceStop) {
+				throttle = (1000);
+				pitch = (1000);
+			}if (forceDown) {
+				throttle = (1000);
 			}
+			
+			
+			//Setze neue Werte
+			Data.setCont_throttle(throttle);
+			Data.setCont_roll(roll);
+			Data.setCont_pitch(pitch);
+			Data.setCont_yaw(yaw);
 			
 		}else {
 			System.out.println("Controller Fehler! Nicht Verbunden!");
