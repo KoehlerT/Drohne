@@ -9,19 +9,20 @@ public class HardwareCommunicator {
 		//baseStation = new SerialDevice();
 		wlanClient = new WlanClient();
 		
-		//Sender
+		//Sender & Receiver
 		new Thread() {
 			@Override
 			public void run() {
 				wlanClient.connect();
 				while (true) {
 					wlanClient.sendControls();
+					wlanClient.receive();
 					try {Thread.sleep(100);}catch(InterruptedException e) {e.printStackTrace();}
 				}
 			}
-		}.start();;
+		}.start();
 		
-		//Receivder
+		/*//Receivder
 		new Thread() {
 			@Override
 			public void run() {
@@ -30,7 +31,7 @@ public class HardwareCommunicator {
 				}
 				
 			}
-		}.start();
+		}.start();*/
 		
 		
 	}

@@ -49,7 +49,7 @@ public class WlanClient {
 	}
 	
 	public void receive() {
-		while(!connected);
+		//while(!connected);
 		
 		byte[] buffer = new byte[24];
 		try {

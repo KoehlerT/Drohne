@@ -67,6 +67,7 @@ float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_
 byte datenplatzhalter[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
 byte controllerInputs[8]; //Inputs vom Controller
 int looptime = 1;
+int timeout = 0;
 
 //Flugdaten
 int startLuftdruck;
@@ -169,7 +170,7 @@ void setup(){
 void loop(){
   //if(start == 2){ Serial.print(gyro_roll,0); Serial.print(";"); Serial.print(gyro_pitch,0); Serial.print(";"); Serial.println(gyro_yaw,0); }
 
-  
+
   /*receiver_input_channel_1 = convert_receiver_channel(1);      //Convert the actual receiver signals for pitch to the standard 1000 - 2000us.
   receiver_input_channel_2 = convert_receiver_channel(2);      //Convert the actual receiver signals for roll to the standard 1000 - 2000us.
   receiver_input_channel_3 = convert_receiver_channel(3);      //Convert the actual receiver signals for throttle to the standard 1000 - 2000us.
@@ -204,6 +205,8 @@ void loop(){
   }
   //Stopping the motors: throttle low and yaw right.
   if(start == 2 && receiver_input_channel_3 < 1050 && receiver_input_channel_4 > 1950)start = 0;
+  //Stopping the motors at timeout
+  if (start == 2 && timeout > 500){start = 0;} //500: 2s
 
   //The PID set point in degrees per second is determined by the roll receiver input.
   //In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
@@ -429,6 +432,7 @@ void receive(){
       if (SPDR == (byte)'R'){
         SPDR = (byte)'A';
         s = 0;
+        timeout = 0; //Wieder Daten angekommen
       }else{
         return;//Sollte nicht eintreffen, aber ohne Handshake keine Datenübermittlung
       }
@@ -445,7 +449,11 @@ void receive(){
           //Empfangen = SPDR
         }
       }
-    }
+  }else{
+      //Keine Daten wurden verschickt/ Empfangen
+      timeout ++;
+
+  }
 }
 
 
