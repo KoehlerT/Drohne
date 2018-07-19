@@ -128,9 +128,9 @@ public class Datapackager {
 		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
-		Daten.setVoltage3v((float)powers[2]/1000f);
-		Daten.setVoltageMain(((float)powers[1] / 1000f)*4.6f); //Die Spannung liegt im 5-fachen der Versorgungsspannung?!
-		Daten.setAmperage((((float)powers[0] / 1000)*12)-30); //?!
+		Daten.setVoltage3v((float)powers[0]/1000f);
+		Daten.setVoltageMain(((float)powers[2] / 1000f)*4.7f); //Die Spannung liegt im 5-fachen der Versorgungsspannung?!
+		Daten.setAmperage((((float)powers[1] / 1000)*12)-30); //?!
 		Daten.setArduinoRefresh((int)(1f/((float)looptime/1000_000f)));
 	}
 	

@@ -12,14 +12,14 @@ void loop() {
   Serial.write(27);
   Serial.print("[H");     // cursor to home command
 
-  for (int i = 1; i <=7; i++){
+  for (int i = 0; i <=7; i++){
     Serial.print("A");
     Serial.print(i);
     Serial.print(": ");
     Serial.print(analogRead(i)*con);
     Serial.println(" V");
   }
-  
+
 
   delay(100);
 }
