@@ -26,9 +26,9 @@ MPU9250 myIMU;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 1;               //Gain setting for the roll P-controller (1.3)
+float pid_p_gain_roll = 0.9;               //Gain setting for the roll P-controller (1.3)
 float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
-float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
+float pid_d_gain_roll = 30;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
@@ -36,8 +36,8 @@ float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 1;                //Gain setting for the pitch P-controller. //4.0
-float pid_i_gain_yaw = 0;               //Gain setting for the pitch I-controller. //0.02
+float pid_p_gain_yaw = 3;                //Gain setting for the pitch P-controller. //4.0
+float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller. //0.02
 float pid_d_gain_yaw = 0;                //Gain setting for the pitch D-controller.
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-)
 

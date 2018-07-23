@@ -72,8 +72,8 @@ public class ControllerInfo {
 				Data.setForceDown(forceDown);
 			}
 			//Rotationen
-			int yaw = (mapValueAxes(getThumb_LX()));
-			int pitch= (mapValueAxes(getThumb_RY()));
+			int yaw = (mapValueAxesYaw(getThumb_LX()));
+			int pitch= (3000-mapValueAxes(getThumb_RY()));
 			int roll = (mapValueAxes(getThumb_RX()));
 			
 			//Throttle
@@ -106,6 +106,15 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
+		int result = (int)(scale * 500);
+		//Wert von 1000 - 2000
+		return clamp(result + 1250);
+	}
+	
+	private int mapValueAxesYaw(int value) {
+		//Wert von -32768 - 32767
+		value += 32796;
+		float scale = (value/65536f);
 		int result = (int)(scale * 1000);
 		//Wert von 1000 - 2000
 		return clamp(result + 1000);
@@ -121,10 +130,11 @@ public class ControllerInfo {
 	}
 	
 	private int getThrottle(int oldThrottle, int value) {
-		float scale = value/32768f;
-		if (scale < 0.2f && scale > -0.2f)
+		float scale = (value+32796)/65536f;
+		if (scale < 0.52f && scale > 0.48f)
 			scale = 0;
 		int result = (int)(scale * 100);
+		result -=60;
 		return clamp(oldThrottle+result);
 	}
 }
