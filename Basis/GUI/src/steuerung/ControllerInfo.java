@@ -106,11 +106,15 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
+		if (scale < 0.53 && scale > 0.47) {
+			scale = 0.5f;
+		}
 		int result = (int)(scale * 500);
 		//Wert von 1000 - 2000
 		return clamp(result + 1250);
 	}
 	
+
 	private int mapValueAxesYaw(int value) {
 		//Wert von -32768 - 32767
 		value += 32796;
@@ -130,9 +134,9 @@ public class ControllerInfo {
 	}
 	
 	private int getThrottle(int oldThrottle, int value) {
-		float scale = (value+32796)/65536f;
+		float scale = (value+32768)/65536f;
 		if (scale < 0.52f && scale > 0.48f)
-			scale = 0;
+			scale = 0.6f;
 		int result = (int)(scale * 100);
 		result -=60;
 		return clamp(oldThrottle+result);
