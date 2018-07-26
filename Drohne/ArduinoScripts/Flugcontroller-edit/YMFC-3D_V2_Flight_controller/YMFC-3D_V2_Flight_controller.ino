@@ -68,6 +68,8 @@ byte datenplatzhalter[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittl
 byte controllerInputs[8]; //Inputs vom Controller
 int looptime = 1;
 int timeout = 0;
+float Vcc; //Errechnen der Spannungen
+
 
 //Flugdaten
 int startLuftdruck;
@@ -161,6 +163,12 @@ void setup(){
   //The variable battery_voltage holds 1050 if the battery voltage is 10.5V. centiVolt
   battery_voltage = getBatteryVoltage();
 
+
+  //Read Reverence voltage
+  prepeareVoltage();
+  delay(2);
+  readVcc();
+
   //When everything is done, turn off the led.
   digitalWrite(8,LOW);                                        //Turn off the warning led.
 }
@@ -175,6 +183,10 @@ void loop(){
   receiver_input_channel_2 = convert_receiver_channel(2);      //Convert the actual receiver signals for roll to the standard 1000 - 2000us.
   receiver_input_channel_3 = convert_receiver_channel(3);      //Convert the actual receiver signals for throttle to the standard 1000 - 2000us.
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
+
+  //prepeare Voltage readings
+  prepeareVoltage();
+
   //Get Controller Inputs via SPI#
   receive();
   convert_integer(4,receiver_input_channel_1,last_received_1);
@@ -232,6 +244,13 @@ void loop(){
   }
   //PID inputs are known. So we can calculate the pid output.
   calculate_pid();
+
+  //Read Voltages
+
+  if (looptime < 3000){ //nur wenn Zeit ist!
+      readVcc();
+      readVoltages();
+  }
 
   //The battery voltage is needed for compensation.
   //A complementary filter is used to reduce noise.
@@ -333,6 +352,36 @@ void printCal(){
 
 //Hier stand der Code für seinen Receiver
 
+//For Accurate Voltage readings registers are set
+void prepeareVoltage(){
+    // Read 1.1V reference against AVcc
+    ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+    //delay(2); // Wait for Vref to settle
+}
+
+void readVcc(){
+    ADCSRA |= _BV(ADSC); // Convert
+    while (bit_is_set(ADCSRA,ADSC));
+    long vcc = ADCL;
+    vcc |= ADCH<<8;
+    vcc = 1125300L / vcc; // Back-calculate AVcc in mV
+    Vcc = vcc/1000.0f;
+}
+
+float readVoltage(int pin){
+    unsigned int ADCValue = analogRead(pin);
+    return (ADCValue / 1024.0f) * Vcc;
+}
+
+void readVoltages(){
+    //readVcc();
+    for (int v = 0; v < 4; v++) {
+        int voltage = (readVoltage(v)*1000);
+        datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
+        datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Subroutine for reading the gyro
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,11 +407,6 @@ gyro_axis[3] = -gyro_axis[3];
   if (cal_int == 2000){ //Only calculate if not calibrating
       //datenplatzhalter 10 Elemente!
       //Read Voltages
-      for (int v = 0; v < 4; v++) {
-          int voltage = analogRead(v)*adcScale;
-          datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
-          datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
-      }
       //Bis index 7
       //float altitude RasPI
       datenplatzhalter[8] = (byte)looptime;
@@ -437,7 +481,6 @@ void receive(){
         return;//Sollte nicht eintreffen, aber ohne Handshake keine Datenübermittlung
       }
       //Alle Daten werden verschickt
-      //50 bytes ca. 200ms
       while (s < sizeof(datenplatzhalter)){
         if ((SPSR & (1<<SPIF)) != 0){
           SPDR = datenplatzhalter[s];
