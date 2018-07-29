@@ -1,6 +1,8 @@
 package steuerung;
 
+import main.ControlWordHandler;
 import main.Data;
+import utillity.FlyingMode;
 
 public class ControllerInfo {
 	//Dank an: https://www.codeproject.com/Articles/26949/Xbox-Controller-Input-in-C-with-XInput
@@ -58,19 +60,33 @@ public class ControllerInfo {
 		//Linkes Pad Y - -> Throttle Down
 		
 		if (isConnected()) {
-			boolean forceStop = Data.getForceStop();
-			boolean forceDown = Data.getForceDown();
+			boolean änderung = false;
 			
 			
 			//Controls
-			if (getGamepad_B()) {
-				forceStop = !forceStop;
-				Data.setForceStop(forceStop);
+			if (getGamepad_B()) { //Not Aus
+				Data.setFlyingMode(FlyingMode.FORCESTOP);
+				änderung = true;
 			}
-			if (getGamepad_A()) {
-				forceDown = !forceDown;
-				Data.setForceDown(forceDown);
+			if (getGamepad_A()) { //Landen
+				Data.setFlyingMode(FlyingMode.FORCEDOWN);
+				änderung = true;
 			}
+			
+			if (getGamepad_Y()) {
+				Data.setFlyingMode(FlyingMode.AUTOMATIC);
+				änderung = true;
+			}
+			
+			if (getGamepad_X()) { //Beep
+				Data.setFlyingMode(FlyingMode.MANUAL);
+				änderung = true;
+			}
+			
+			if (getGamepad_SH_RIGHT()) {
+				ControlWordHandler.getInstance().addSendingWord((byte)0x2);
+			}
+			
 			//Rotationen
 			int yaw = (mapValueAxesYaw(getThumb_LX()));
 			int pitch= (3000-mapValueAxes(getThumb_RY()));
@@ -81,11 +97,11 @@ public class ControllerInfo {
 			int throttle = (getThrottle(old,getThumb_LY()));
 			
 			//Set Exordinary Status
-			//TODO: Nur einmal Wert setzen!
-			if (forceStop) {
+			FlyingMode mode = Data.getFlyingMode();
+			if (mode == FlyingMode.FORCESTOP) {
 				throttle = (1000);
 				pitch = (1000);
-			}if (forceDown) {
+			}if (mode == FlyingMode.FORCEDOWN) {
 				throttle = (1000);
 			}
 			
@@ -95,6 +111,20 @@ public class ControllerInfo {
 			Data.setCont_roll(roll);
 			Data.setCont_pitch(pitch);
 			Data.setCont_yaw(yaw);
+			
+			//Control Word
+			if (änderung) {
+				byte cw = (byte)0x15;
+				if (mode == FlyingMode.AUTOMATIC)
+					cw = (byte) 0x16;
+				if (mode == FlyingMode.FORCEDOWN)
+					cw = (byte) 0x14;
+				if (mode == FlyingMode.FORCESTOP)
+					cw = (byte) 0x12;
+				
+				ControlWordHandler.getInstance().addSendingWord(cw);
+			}
+			
 			
 		}else {
 			System.out.println("Controller Fehler! Nicht Verbunden!");
@@ -106,7 +136,7 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
-		if (scale < 0.53 && scale > 0.47) {
+		if (scale < 0.55 && scale > 0.45) {
 			scale = 0.5f;
 		}
 		int result = (int)(scale * 500);
@@ -119,6 +149,9 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
+		if (scale < 0.55 && scale > 0.45) {
+			scale = 0.5f;
+		}
 		int result = (int)(scale * 1000);
 		//Wert von 1000 - 2000
 		return clamp(result + 1000);
@@ -135,10 +168,10 @@ public class ControllerInfo {
 	
 	private int getThrottle(int oldThrottle, int value) {
 		float scale = (value+32768)/65536f;
-		if (scale < 0.52f && scale > 0.48f)
+		if (scale < 0.55f && scale > 0.45f)
 			scale = 0.6f;
-		int result = (int)(scale * 100);
-		result -=60;
+		int result = (int)(scale * 150);
+		result -=90;
 		return clamp(oldThrottle+result);
 	}
 }

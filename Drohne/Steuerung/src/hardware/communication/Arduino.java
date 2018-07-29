@@ -8,6 +8,8 @@ import com.pi4j.io.spi.*;
 
 import main.Daten;
 import main.Info;
+import utility.FlyingMode;
+
 import com.koehlert.arduinonative.*;
 
 public class Arduino {
@@ -38,6 +40,14 @@ public class Arduino {
 		int pitch = Daten.getCont_pitch();
 		int roll = Daten.getCont_roll();
 		int yaw = Daten.getCont_yaw();
+		
+		FlyingMode mode = Daten.getFlyingMode();
+		if (mode == FlyingMode.FORCEDOWN)
+			throttle = 1000;
+		if (mode == FlyingMode.FORCESTOP) {
+			throttle = 1000;
+			yaw = 1000;
+		}
 		
 		System.out.println(throttle+" "+pitch+" "+roll+" "+yaw);
 		

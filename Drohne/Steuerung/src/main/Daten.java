@@ -1,4 +1,5 @@
 package main;
+import utility.FlyingMode;
 import utility.Vector3;
 
 public class Daten {
@@ -10,6 +11,7 @@ public class Daten {
 	private static int refreshArduino;
 	private static int refreshCommunicator;
 	private static int refreshSensorread;
+	private static FlyingMode mode;
 	
 	//Variablen: 
 	//Fliegen, Fernbediengungersatz
@@ -45,6 +47,7 @@ public class Daten {
 	public static synchronized int getArduinoRefresh() {return refreshArduino;}
 	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
 	public static synchronized int getSensorRefresh() {return refreshSensorread;}
+	public static synchronized FlyingMode getFlyingMode() {return mode;}
 	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
 	public static synchronized int getCont_roll() {return cont_roll;}
@@ -74,6 +77,7 @@ public class Daten {
 	public static synchronized void setArduinoRefresh(int lt) {refreshArduino = lt;}
 	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}
 	public static synchronized void setSensorRefresh(int rf) { refreshSensorread = rf;}
+	public static synchronized void setFlyingMode(FlyingMode newMode) {mode = newMode;}
 	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
 	public static synchronized void setCont_roll(int rl) {cont_roll = rl;}

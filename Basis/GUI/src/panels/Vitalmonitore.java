@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import main.Data;
+import utillity.FlyingMode;
 import wert.Werteverwalter;
 public class Vitalmonitore {
 	JInternalFrame critic = new JInternalFrame("kritisch", true, true, true, true);
@@ -73,7 +74,7 @@ public class Vitalmonitore {
 		
 		updateLabel(Data.getArduinoRefresh(), criticLabels[7]);
 		//Status
-		criticLabels[8].setText("Mode: "+((Data.getForceStop())?"Force Stop":((Data.getForceDown())?"Force Down": "Normal")));
+		criticLabels[8].setText("Mode: "+Data.getFlyingMode().toString());
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {

@@ -1,13 +1,14 @@
 package hardware;
 
 import main.Data;
-import main.ProgramState;
+import utillity.FlyingMode;
+import main.ControlWordHandler;
 
 public class Datapackager {
 	
 	public static void untangleReceivedPackage(byte[] received) {
 		byte receivedControl = received[1];
-		ProgramState.getInstance().addReceivedControlWord(receivedControl);
+		ControlWordHandler.getInstance().addReceivedControlWord(receivedControl);
 		//printBinaryArray(received);
 		getGPSData(received);
 		getPowerData(received);
@@ -61,7 +62,7 @@ public class Datapackager {
 	public static byte[] getTransmitPackage() {
 		byte[] toSend = new byte[8];
 		
-		toSend[0] = Data.getControlWord(); //1. Kontrol-Word
+		toSend[0] = ControlWordHandler.getInstance().getNextSendingWord(); //1. Kontrol-Word
 		//2. Kontroller Inputs
 		setContollerInputs(toSend);
 		
@@ -79,9 +80,10 @@ public class Datapackager {
 		int pitch = Data.getCont_pitch().getWert();
 		int yaw = Data.getCont_yaw().getWert();
 		//Force Stop/Down
-		if (Data.getForceDown() || Data.getForceStop())
+		FlyingMode mode = Data.getFlyingMode();
+		if (mode == FlyingMode.FORCEDOWN || mode == FlyingMode.FORCESTOP)
 			throttle = 1000;
-		if (Data.getForceStop())
+		if (mode == FlyingMode.FORCESTOP)
 			yaw = 1000;
 		
 		

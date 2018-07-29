@@ -40,7 +40,7 @@ public class Exec {
 			frame.update();
 			controller.Update();
 			communicator.PrepareAndSend();
-			ProgramState.getInstance().evaluateWord();
+			ControlWordHandler.getInstance().evaluateWord();
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {

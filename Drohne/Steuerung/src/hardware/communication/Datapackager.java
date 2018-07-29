@@ -13,7 +13,7 @@ public class Datapackager {
 	
 	public static byte[] packageTransmit() {
 		byte[] toTransmit = new byte[23];
-		toTransmit[0] = Daten.getContWord();
+		toTransmit[0] = ProgramState.getInstance().getNextSeningWord();
 		//GPS
 		writeGPS(toTransmit);
 		//Powers
