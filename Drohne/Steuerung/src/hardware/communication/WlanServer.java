@@ -6,6 +6,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+import hardware.Beeper;
+import main.Daten;
+import utility.FlyingMode;
+
 public class WlanServer {
 	private ServerSocket s;
 	private Socket client;
@@ -69,6 +73,9 @@ public class WlanServer {
 			}
 			
 		} catch (IOException e) {
+			System.out.println("CONNECTION ERROR! DRONE FORCESTOP!");
+			Beeper.getInstance().addBeep(10);
+			Daten.setFlyingMode(FlyingMode.FORCESTOP);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

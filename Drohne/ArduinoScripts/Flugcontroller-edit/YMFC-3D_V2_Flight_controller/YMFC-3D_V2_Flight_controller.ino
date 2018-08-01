@@ -26,7 +26,7 @@ MPU9250 myIMU;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 0.9;               //Gain setting for the roll P-controller (1.3)
+float pid_p_gain_roll = 0;               //Gain setting for the roll P-controller (1.3) 0.9
 float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
 float pid_d_gain_roll = 30;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
@@ -306,7 +306,7 @@ void loop(){
 #ifdef debug
   //printSensors();
   //printESCs();
-  printCIs();
+  printDirs();
   Serial.print(";");Serial.print(micros()-loop_timer);
   Serial.print(";");Serial.print(start);
   Serial.println();
@@ -330,7 +330,7 @@ void loop(){
   }
 }
 
-
+#ifdef debug
 void printCIs(){
     Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.print(receiver_input_channel_4);
 }
@@ -343,9 +343,35 @@ void printSensors(){
     Serial.print(gyro_pitch_input); Serial.print(";");Serial.print(gyro_roll_input);Serial.print(";");Serial.print(gyro_yaw_input);
 }
 
+void printDirs(){
+    Serial.print("Right Wing ");
+    if (gyro_roll_input > 0){
+        Serial.print("DOWN");
+    }else{
+        Serial.print("UP");
+    }
+    Serial.print(";");
+    Serial.print("Nose ");
+    if (gyro_pitch_input > 0){
+        Serial.print("UP");
+    }else{
+        Serial.print("DOWN");
+    }
+    Serial.print(";");
+    Serial.print("Nose ");
+    if (gyro_yaw_input > 0){
+        Serial.print("LEFT");
+    }else{
+        Serial.print("RIGHT");
+    }
+    Serial.print(";");
+}
+
 void printCal(){
     Serial.print("Calibration: ");Serial.print(gyro_axis_cal[1]);Serial.print(" ");Serial.print(gyro_axis_cal[2]);Serial.print(" ");Serial.println(gyro_axis_cal[3]);
 }
+
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -396,7 +422,7 @@ gyro_axis[3] = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
 gyro_axis[1] = -gyro_axis[1];
 gyro_axis[2] = -gyro_axis[2];
-gyro_axis[3] = -gyro_axis[3];
+gyro_axis[3] = gyro_axis[3];
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
