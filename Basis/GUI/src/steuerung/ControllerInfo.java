@@ -149,7 +149,7 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
-		if (scale < 0.55 && scale > 0.45) {
+		if (scale < 0.7 && scale > 0.3) {
 			scale = 0.5f;
 		}
 		int result = (int)(scale * 1000);
