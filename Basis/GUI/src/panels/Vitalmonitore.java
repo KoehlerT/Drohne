@@ -75,6 +75,12 @@ public class Vitalmonitore {
 		updateLabel(Data.getArduinoRefresh(), criticLabels[7]);
 		//Status
 		criticLabels[8].setText("Mode: "+Data.getFlyingMode().toString());
+		
+		//Flugcontrols
+		updateLabel(Data.getDrone_throttle(),criticLabels[9]);
+		updateLabel(Data.getDrone_roll(),criticLabels[10]);
+		updateLabel(Data.getDrone_pitch(),criticLabels[11]);
+		updateLabel(Data.getDrone_yaw(),criticLabels[12]);
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {

@@ -36,10 +36,10 @@ public class Arduino {
 	//Public Methoden --------------------------------------
 	
 	public void sendControllerInputs() {
-		int throttle = Daten.getCont_throttle();
-		int pitch = Daten.getCont_pitch();
-		int roll = Daten.getCont_roll();
-		int yaw = Daten.getCont_yaw();
+		int throttle = Daten.getThrottle();
+		int pitch = Daten.getPitch();
+		int roll = Daten.getRoll();
+		int yaw = Daten.getYaw();
 		
 		FlyingMode mode = Daten.getFlyingMode();
 		if (mode == FlyingMode.FORCEDOWN)

@@ -8,7 +8,7 @@ public class Data {
 	private Data() {}
 	
 	//ProgrammKonstanten
-	public static final int numCrit = 9; //Kritisch: 7
+	public static final int numCrit = 13; //Kritisch: 7
 	public static final int numUnCrit = 9; //Unkritisch: 7
 	public static final String port = "COM3";
 	
@@ -27,6 +27,11 @@ public class Data {
 	private static intWert cont_pitch = new intWert("Pitch",false,1000,2000,1500);
 	private static intWert cont_roll = new intWert("Roll",false,1000,2000,1500);
 	private static intWert cont_yaw = new intWert("Yaw",false,1000,2000,1500);
+	
+	private static intWert drone_throttle= new intWert("Throttle",false,1000,2000,1000);
+	private static intWert drone_pitch = new intWert("Pitch",false,1000,2000,1500);
+	private static intWert drone_roll = new intWert("Roll",false,1000,2000,1500);
+	private static intWert drone_yaw = new intWert("Yaw",false,1000,2000,1500);
 	
 	private static doubleWert voltageMain = new doubleWert("Hauptspannung",true,10.0,14.0,11.0);
 	private static doubleWert voltage5v = new doubleWert("5V",true,2.5,7.5,5);
@@ -58,6 +63,11 @@ public class Data {
 	public static synchronized intWert getCont_roll() {return cont_roll;}
 	public static synchronized intWert getCont_yaw() {return cont_yaw;}
 	
+	public static synchronized intWert getDrone_throttle() {return drone_throttle;}
+	public static synchronized intWert getDrone_pitch() {return drone_pitch;}
+	public static synchronized intWert getDrone_roll() {return drone_roll;}
+	public static synchronized intWert getDrone_yaw() {return drone_yaw;}
+	
 	public static synchronized doubleWert getVoltageMain() {return voltageMain;}
 	public static synchronized doubleWert getVoltage5v() {return voltage5v;}
 	public static synchronized doubleWert getVoltage3v() {return voltage3v;}
@@ -86,6 +96,11 @@ public class Data {
 	public static synchronized void setCont_roll(int roll) {cont_roll.setWert(roll);}
 	public static synchronized void setCont_pitch(int pitch) {cont_pitch.setWert(pitch);}
 	public static synchronized void setCont_yaw(int yaw) {cont_yaw.setWert(yaw);}
+	
+	public static synchronized void setDrone_throttle(int thr) {drone_throttle.setWert(thr);}
+	public static synchronized void setDrone_roll(int roll) {drone_roll.setWert(roll);}
+	public static synchronized void setDrone_pitch(int pitch) {drone_pitch.setWert(pitch);}
+	public static synchronized void setDrone_yaw(int yaw) {drone_yaw.setWert(yaw);}
 	
 	public static synchronized void setVoltageMain(float vm) {voltageMain.setWert((float)vm);}
 	public static synchronized void setVoltage5V(float v5) {voltage5v.setWert((double)v5);}

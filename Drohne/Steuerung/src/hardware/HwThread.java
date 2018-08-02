@@ -63,7 +63,7 @@ class HwThread extends Thread{
 			
 			Daten.setSensorRefresh((int)(1f/((float)(System.nanoTime()-startTime)/1000_000_000f)));
 			//Warte ein wenig
-			//try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}

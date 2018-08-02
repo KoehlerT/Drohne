@@ -1,6 +1,7 @@
 package main;
 
 import bilderkennung.BildStart;
+import flightmodes.FlightModeManager;
 import kamera.KameraStart;
 import hardware.HwStart;
 import utility.*;
@@ -20,8 +21,20 @@ public class start {
 		//Beendigungsbedingung. Derzeit, jeder manager returnt running -> false. 
 		//Sobald es "echte" Kommunikation gibt, kann diese Methode wahrscheinlich alleine beenden
 		//Bis zu diesem Zeitpunkt programm einfach zwangsbeenden (Taskmanager/ Stopp-Symbol)
+		long startTime = System.nanoTime();
 		while(running()) {//Warten, bis alle Abschnitte beendet sind
 			ProgramState.getInstance().evaluateControlWord();
+			
+			long diff = System.nanoTime() - startTime;
+			FlightModeManager.getInstance().updateFlightmode((float)diff/1000000000.0f);
+			startTime = System.nanoTime();
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} 
 		System.out.println("Drohnenprogrammm beendet");
 	}

@@ -34,6 +34,13 @@ class KameraThread extends Thread{
 			//Neues Bildobjekt updaten
 			byte[][] bild = grayArray(img);
 			BildPool.addBild(bild, c.getTime());
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	

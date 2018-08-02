@@ -53,6 +53,13 @@ public class ComThread extends Thread{
 			
 			int duration = (int)(System.nanoTime() - startTime);
 			Daten.setCommunicatorRefresh((int)(1f/((float)duration/1000_000_0000f))); //in 10Hz
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 	}

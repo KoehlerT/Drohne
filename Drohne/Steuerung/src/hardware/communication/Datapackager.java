@@ -12,7 +12,7 @@ public class Datapackager {
 	//-------------------------------------------BASIS------------------------------------------------------
 	
 	public static byte[] packageTransmit() {
-		byte[] toTransmit = new byte[23];
+		byte[] toTransmit = new byte[37];
 		toTransmit[0] = ProgramState.getInstance().getNextSeningWord();
 		//GPS
 		writeGPS(toTransmit);
@@ -24,6 +24,8 @@ public class Datapackager {
 		toTransmit[16] = (byte)(alt >> 8);
 		
 		writeStatusInfo(toTransmit);
+		writeControls(toTransmit);
+		writeConsoleChars(toTransmit);
 		
 		return toTransmit;
 	}
@@ -81,6 +83,31 @@ public class Datapackager {
 		buffer[22] = (byte)Daten.getCommunicatorRefresh();
 	}
 	
+	private static void writeControls(byte[] buffer) {
+		int thr = Daten.getThrottle() -1000;
+		int rll = Daten.getRoll()-1000;
+		int pth = Daten.getPitch()-1000;
+		int yaw = Daten.getYaw()-1000;
+		
+		buffer[23] = (byte)thr;
+		buffer[24] = (byte)(thr >> 8);
+		buffer[25] = (byte)rll;
+		buffer[26] = (byte)(rll >> 8);
+		buffer[27] = (byte)pth;
+		buffer[28] = (byte)(pth >> 8);
+		buffer[29] = (byte)yaw;
+		buffer[30] = (byte)(yaw >> 8);
+		
+	}
+	
+	private static void writeConsoleChars(byte[] buffer) {
+		for (int i = 0; i < 3; i++) {
+			char next = Daten.getNextConsole();
+			buffer[31 + (i*2)] = (byte)next;
+			buffer[31 + (i*2) +1] = (byte)(next >> 8);
+		}
+		//bis buffer[36]
+	}
 	
 	public static void untangleReceived(byte[] received) {
 		byte controlWord = received[1];

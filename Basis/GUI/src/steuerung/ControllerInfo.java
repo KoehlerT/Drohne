@@ -100,7 +100,7 @@ public class ControllerInfo {
 			FlyingMode mode = Data.getFlyingMode();
 			if (mode == FlyingMode.FORCESTOP) {
 				throttle = (1000);
-				pitch = (1000);
+				yaw = (1000);
 			}if (mode == FlyingMode.FORCEDOWN) {
 				throttle = (1000);
 			}

@@ -27,6 +27,7 @@ public class Exec {
 		
 		KonsolenFenster.addText("Halol, 1&1", Color.red);
 		KonsolenFenster.addText("Ich bin ein echter Gangster", Color.orange);
+		KonsolenFenster.addText("Ich bin ein echter Gangster1", Color.orange);
 		Bildanzeige.kreiszeichnen(Bildanzeige.getBil(), 100, 100, 30);
 		Bildanzeige.distAnzeige(Bildanzeige.getBil(), 100, 130, 3.5);
 		System.out.println("RUNNING");

@@ -4,6 +4,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import flightmodes.FlightModeManager;
 import hardware.Beeper;
 import utility.FlyingMode;
 
@@ -51,6 +52,9 @@ public class ProgramState {
 		case 0x15: Daten.setFlyingMode(FlyingMode.MANUAL); break;
 		case 0x16: Daten.setFlyingMode(FlyingMode.AUTOMATIC); break;
 		}
+		
+		if (b == 0x12 || (b >= 0x14 && b <= 0x16))
+			FlightModeManager.getInstance().switchFlightmode();
 		
 	}
 	

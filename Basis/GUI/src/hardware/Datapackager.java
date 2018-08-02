@@ -1,10 +1,16 @@
 package hardware;
 
 import main.Data;
+import panels.KonsolenFenster;
 import utillity.FlyingMode;
+
+import java.awt.Color;
+
 import main.ControlWordHandler;
 
 public class Datapackager {
+	
+	private static String nextLine = "";
 	
 	public static void untangleReceivedPackage(byte[] received) {
 		byte receivedControl = received[1];
@@ -17,6 +23,8 @@ public class Datapackager {
 		altitude = (altitude << 8) | (received[16]&0x000000FF);
 		Data.setAltitude((float)altitude/100f);
 		getStatusInfo(received);
+		getControllerData(received);
+		getConsoleData(received);
 	}
 	
 	private static void getGPSData(byte[] buffer) {
@@ -58,6 +66,37 @@ public class Datapackager {
 		
 	}
 	
+	public static void getControllerData(byte[] buffer) {
+		int thr = (buffer[24]&0x000000FF) | ((buffer[25]&0x000000FF) << 8);
+		int rll = (buffer[26]&0x000000FF) | ((buffer[27]&0x000000FF) << 8);
+		int pth = (buffer[28]&0x000000FF) | ((buffer[29]&0x000000FF) << 8);
+		int yaw = (buffer[30]&0x000000FF) | ((buffer[31]&0x000000FF) << 8);
+		
+		Data.setDrone_throttle(thr+1000);
+		Data.setDrone_roll(rll+1000);
+		Data.setDrone_pitch(pth+1000);
+		Data.setDrone_yaw(yaw+1000);
+	}
+	
+	public static void getConsoleData(byte[] buffer) {
+		char[] newChars = new char[3];
+		
+		for (int i = 0; i < 3; i++) {
+			newChars[i] = (char) ((buffer[32 + (i*2)]&0x000000FF) | ((buffer[32 +(i*2)+1]&0x000000FF) << 8));
+		}
+		
+		for (int i = 0; i < 3; i++) {
+			char nextCh = newChars[i];
+			if (nextCh == 0)
+				continue;
+			if (nextCh == '\n') {
+				KonsolenFenster.addText(nextLine, Color.BLACK);
+				nextLine = "";
+				continue;
+			}
+			nextLine += nextCh;
+		}
+	}
 	
 	public static byte[] getTransmitPackage() {
 		byte[] toSend = new byte[8];
