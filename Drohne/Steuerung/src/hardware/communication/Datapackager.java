@@ -1,7 +1,10 @@
 package hardware.communication;
 
+import java.util.List;
+
 import main.Daten;
 import main.ProgramState;
+import utility.Blume;
 
 public class Datapackager {
 	
@@ -12,7 +15,7 @@ public class Datapackager {
 	//-------------------------------------------BASIS------------------------------------------------------
 	
 	public static byte[] packageTransmit() {
-		byte[] toTransmit = new byte[37];
+		byte[] toTransmit = new byte[46];
 		toTransmit[0] = ProgramState.getInstance().getNextSeningWord();
 		//GPS
 		writeGPS(toTransmit);
@@ -26,6 +29,7 @@ public class Datapackager {
 		writeStatusInfo(toTransmit);
 		writeControls(toTransmit);
 		writeConsoleChars(toTransmit);
+		writeBlumen(toTransmit);
 		
 		return toTransmit;
 	}
@@ -107,6 +111,30 @@ public class Datapackager {
 			buffer[31 + (i*2) +1] = (byte)(next >> 8);
 		}
 		//bis buffer[36]
+	}
+	
+	private static void writeBlumen(byte[] buffer) {
+		List<Blume> bl = Daten.getBlumen();
+		//übertrage 3 Blumen
+		//1. Byte relx 2.byte rel y 3.byte dist (cm)
+		for (int i = 0; i < 3; i++) {
+			byte x = 0;
+			byte y = 0;
+			byte dist = 0;
+			
+			if (bl.size() > i) {
+				Blume akt = bl.get(i);
+				x = (byte)(akt.relX() * 100.0f);
+				y = (byte)(akt.relY() * 100.0f);
+				dist = (byte)akt.getDist();
+			}
+			
+			buffer[37+(i*3)+0] = x;
+			buffer[37+(i*3)+1] = y;
+			buffer[37+(i*3)+2] = dist;
+			
+		}
+		//bis buffer[45]
 	}
 	
 	public static void untangleReceived(byte[] received) {

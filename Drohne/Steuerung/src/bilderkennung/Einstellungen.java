@@ -1,6 +1,8 @@
 package bilderkennung;
 
 final class Einstellungen {
+	//
+	
 	//Raster/ Schablonenerkennung
 	static final float rasterGröße = 0.02f; //Vielfaches der Breite, die als Rasterabstand benutzt wird
 	static final int schablonenChecks = 16; //Anzahl der Schablonenprüfungen pro Pixel

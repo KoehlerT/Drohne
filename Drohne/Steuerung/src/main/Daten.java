@@ -1,9 +1,13 @@
 package main;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import utility.FlyingMode;
 import utility.Vector3;
+import utility.Blume;
 
 public class Daten {
 	/*Klasse für alle Sensor und Flugdaten
@@ -15,6 +19,8 @@ public class Daten {
 	private static int refreshCommunicator;
 	private static int refreshSensorread;
 	private static FlyingMode mode;
+	
+	public static boolean running = true;;
 	
 	//Variablen: 
 	//Fliegen, Fernbediengungersatz
@@ -45,6 +51,8 @@ public class Daten {
 	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
 	private static float temperature;
 	private static float pressure;
+	private static List<Blume> blumen = new ArrayList<Blume>(10);
+	
 	
 	//Statusinformationen
 	private static int numGpsSatellites;
@@ -78,6 +86,7 @@ public class Daten {
 	public static synchronized float getLongitude() {return longitude;}
 	public static synchronized float getGpsAltitude() {return gpsAltitude;}
 	public static synchronized float getPrsAltitude() {return prsAltitude;}
+	public static synchronized List<Blume> getBlumen() {return blumen;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
 	public static synchronized float getTemperature() {return temperature;}
@@ -114,6 +123,7 @@ public class Daten {
 	public static synchronized void setLongitude(float lt) {longitude = lt;}
 	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
 	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
+	public static synchronized void setNewBlumen(Blume[] bl) {blumen.clear();blumen.addAll(Arrays.asList(bl));}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
 	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}

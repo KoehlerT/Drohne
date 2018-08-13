@@ -26,7 +26,7 @@ public class BildPool {
 		}
 	}
 	
-	public static synchronized void addBild(byte[][] bildInfo, int aufnZeit) {
+	public static synchronized void addBild(byte[][] bildInfo, float f) {
 		Date d = new Date();
 		aktuelles = (aktuelles+1)%pool.length; //Aktuelles wird geupdatet
 		if (pool[aktuelles].locked()) { //Nächstes Bild ist reserviert
@@ -35,7 +35,7 @@ public class BildPool {
 			return;
 		}
 		
-		pool[aktuelles].changeData(bildInfo, aufnZeit, d); //Bild wird gupdatet
+		pool[aktuelles].changeData(bildInfo, f, d); //Bild wird gupdatet
 		
 		benachrichtigen();
 	}

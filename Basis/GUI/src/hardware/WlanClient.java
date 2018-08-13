@@ -51,10 +51,10 @@ public class WlanClient {
 	public void receive() {
 		//while(!connected);
 		
-		byte[] buffer = new byte[38];
+		byte[] buffer = new byte[47];
 		try {
-			int read = server.getInputStream().read(buffer, 1, 37);
-			if (read >= 37) {
+			int read = server.getInputStream().read(buffer, 1, 46);
+			if (read >= 46) {
 				packageReady(buffer);
 			}
 				

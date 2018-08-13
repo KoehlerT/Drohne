@@ -1,38 +1,47 @@
 package kamera;
 
 import main.BildPool;
+import main.Daten;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
-import com.hopding.jrpicam.*;
-import com.hopding.jrpicam.enums.Encoding;
-import com.hopding.jrpicam.enums.Exposure;
-import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
+import javax.imageio.ImageIO;
+
 
 class KameraThread extends Thread{
 	
-	FakeCam c;
+	Cam c;
 	
 	KameraThread() {
 		this.setName("Bildaufnahme");
-		c = new FakeCam();
+		c = new Cam();
 	}
+	
+	int i = 0;
 	
 	@Override
 	public void run() {
 		
+		try {
+			ImageIO.write(c.bildAufnehmen(), "png", new File("/home/pi/Bilder/debug/pic#"+(i++)+".png"));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		//Jetzt werden Bilder aufgenommen
-		while (true) {
-			BufferedImage img = c.takePicture();
+		while (Daten.running) {
+			/*BufferedImage img = c.takePicture();
 			
 			if (img == null) {
 				//System.out.println("Fehler Bild == null");
 				continue;
-			}
+			}*/
 			
 			//Neues Bildobjekt updaten
-			byte[][] bild = grayArray(img);
+			byte[][] bild = c.getGrayscaleImage();
 			BildPool.addBild(bild, c.getTime());
 			
 			try {
@@ -42,6 +51,8 @@ class KameraThread extends Thread{
 				e.printStackTrace();
 			}
 		}
+		
+		c.Close();
 	}
 	
 	

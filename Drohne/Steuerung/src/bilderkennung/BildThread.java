@@ -1,6 +1,7 @@
 package bilderkennung;
 
 import main.BildPool;
+import main.Daten;
 import utility.Bild;
 import utility.BildNotify;
 
@@ -19,7 +20,7 @@ class BildThread extends Thread implements BildNotify{
 		 * notify wird von Bildpool ausgeführt, wenn ein neues Bild vorhanden ist.
 		 * Dann wird das neue Bild bearbeitet
 		 * */
-		while (true) { //Warte auf Bild
+		while (Daten.running) { //Warte auf Bild
 			synchronized(this) {
 				try {
 					wait();

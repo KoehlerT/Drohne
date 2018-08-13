@@ -1,5 +1,7 @@
 package main;
 
+import java.util.Scanner;
+
 import bilderkennung.BildStart;
 import flightmodes.FlightModeManager;
 import kamera.KameraStart;
@@ -9,6 +11,8 @@ import utility.*;
 public class start {
 	
 	private static Managable[] manag = new Managable[3];
+	
+	private static Scanner inputsc = new Scanner(System.in);
 
 	public static void main(String[] args) {
 		// Start des Programms
@@ -29,6 +33,10 @@ public class start {
 			FlightModeManager.getInstance().updateFlightmode((float)diff/1000000000.0f);
 			startTime = System.nanoTime();
 			
+			//Detect Close
+			if (inputsc.hasNext())
+				Daten.running = false;
+			
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
@@ -36,6 +44,9 @@ public class start {
 				e.printStackTrace();
 			}
 		} 
+		
+		
+		//Kamera Stoppen!!!
 		System.out.println("Drohnenprogrammm beendet");
 	}
 	

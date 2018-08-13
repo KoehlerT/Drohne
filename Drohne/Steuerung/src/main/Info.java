@@ -23,11 +23,14 @@ public class Info {
 	
 	/**Ist die untere Plattform angeschlossen
 	 * **/
-	public static final boolean sensorAttached = true;
+	public static final boolean sensorAttached = false;
 	
 	/**Zeit in Nanosekunden, nach welcher der Ultraschallsensor die Zeit überschreitet
 	 * **/
 	public static final long ultrasonicTimeout = 100000000l; //100 ms
 	
 	public static final boolean CamAttached = false;
+	
+	public static final int pictureWidth = 640;
+	public static final int pictureHeight = 480;
 }

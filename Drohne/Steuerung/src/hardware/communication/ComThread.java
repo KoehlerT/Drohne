@@ -35,7 +35,7 @@ public class ComThread extends Thread{
 	@Override
 	public void run() {
 		wlanServer.acceptClients();
-		while (running) {
+		while (Daten.running) {
 			startTime = System.nanoTime();
 			
 			if (Info.sensorAttached) {

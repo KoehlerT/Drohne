@@ -2,9 +2,12 @@ package hardware;
 
 import main.Data;
 import panels.KonsolenFenster;
+import utillity.Blume;
 import utillity.FlyingMode;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 import main.ControlWordHandler;
 
@@ -25,6 +28,7 @@ public class Datapackager {
 		getStatusInfo(received);
 		getControllerData(received);
 		getConsoleData(received);
+		getBlumen(received);
 	}
 	
 	private static void getGPSData(byte[] buffer) {
@@ -96,6 +100,24 @@ public class Datapackager {
 			}
 			nextLine += nextCh;
 		}
+		//bis [37]
+	}
+	
+	private static List<Blume> bl = new ArrayList<Blume>(3);
+	
+	public static void getBlumen(byte[] buffer) {
+		bl.clear();
+		for (int i = 0; i < 3; i++) {
+			float x = (float)(buffer[38 + (i*3) + 0] / 100.0f);
+			float y = (float)(buffer[38 + (i*3) + 1] / 100.0f);
+			int dist = (int)buffer[38 + (i*3) + 2];
+			
+			if (x != 0 && y != 0 && dist != 0) {
+				System.out.println("Blume "+x+", "+y+", "+dist);
+				bl.add(new Blume(x,y,dist));
+			}
+		}
+		Data.setBlumen(bl);
 	}
 	
 	public static byte[] getTransmitPackage() {

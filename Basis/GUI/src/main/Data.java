@@ -1,5 +1,10 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import utillity.Blume;
 import utillity.FlyingMode;
 import wert.*;
 
@@ -42,6 +47,7 @@ public class Data {
 	private static doubleWert latitude = new doubleWert("Latutide",true,0,0,0);
 	private static doubleWert longitude = new doubleWert("Longitude",true,0,0,0);
 	private static doubleWert altitude = new doubleWert("Altitude",true,-5,15,0);
+	private static List<Blume> blumen = Collections.synchronizedList(new ArrayList<Blume>(3));
 	
 	private static doubleWert distUltrasonic = new doubleWert("Distanz",false,3.0,50.0,10.0);
 	
@@ -77,6 +83,7 @@ public class Data {
 	public static synchronized doubleWert getLatitude() {return latitude;}
 	public static synchronized doubleWert getLongitude() {return longitude;}
 	public static synchronized doubleWert getAltitude() {return altitude;}
+	public static synchronized List<Blume> getBlumen(){return blumen;}
 	
 	public static doubleWert getDistUltrasonic() {return distUltrasonic;}
 	
@@ -106,6 +113,7 @@ public class Data {
 	public static synchronized void setVoltage5V(float v5) {voltage5v.setWert((double)v5);}
 	public static synchronized void setVoltage3v(float v3) {voltage3v.setWert((double)v3);}
 	public static synchronized void setAmperage(float amp) {amperage.setWert((double)amp);}
+	public static synchronized void setBlumen(List<Blume> bl) {blumen.clear();blumen.addAll(bl);}
 	
 	public static synchronized void setLatitude(float lat) {latitude.setWert((double)lat);}
 	public static synchronized void setLongitude(float lon) {longitude.setWert((double)lon);}

@@ -8,21 +8,38 @@ import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 
+import main.Daten;
 import utility.Blume;
 
 final class Blumenfinder {
 	private Blumenfinder() {} //Privater konstruktor -> keine Instanzen
 	
 	static void processPicture(byte[][] img) {
+		contrastImage(img);
 		//generateDebugImage(img);
+		
+		
 		Point[] ergs = raster(img);
 		printPoints(ergs);
 		ergs = Cluster.cluster(ergs);
 		printPoints(ergs);
 		Blume[] blumen = Radiuserkennung.erkennen(img, ergs);
+		
+		//Blumen veröffentlichen!
+		Daten.setNewBlumen(blumen);
+		
 		printBlumen(blumen);
 	}
 	
+	private static void contrastImage(byte[][] img) {
+		for (int x = 0; x < img.length; x++) {
+			for (int y = 0; y < img[x].length;y++) {
+				//img[x][y] = img[x][y]; //Nichts -> Keine veränderung am Konrast
+				//img[x][y] = (byte)(255*(1/(1+Math.pow(Math.E,-0.025*(img[x][y]-127)))));//Sigmoid-funktion verstärkt extreme
+				img[x][y] = (img[x][y] < 70)?0:(byte)255; //nur komplett schwarz oder komplett weiß
+			}
+		}
+	}
 	
 	private static void printPoints(Point[] arr) {
 		System.out.print(arr.length);
@@ -145,7 +162,7 @@ final class Blumenfinder {
 				img.setRGB(x, y, rgb);
 			}
 		}
-		File output = new File("picture#"+pictureNum+".png");
+		File output = new File("/home/pi/Bilder/debug/picture#"+pictureNum+".png");
 		try {
 			ImageIO.write(img, "png", output);
 			System.out.println("Saved Image# "+pictureNum);

@@ -39,6 +39,7 @@ public class Exec {
 	public static void loop() {
 		while (true) {
 			frame.update();
+			Bildanzeige.drawBlumen();
 			controller.Update();
 			communicator.PrepareAndSend();
 			ControlWordHandler.getInstance().evaluateWord();
