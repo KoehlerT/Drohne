@@ -1,3 +1,4 @@
+#define HWire WIRE2
 void i2c_scanner(void) {
   //Let's declare some variables so we can use them in this subroutine.
   data = 0;

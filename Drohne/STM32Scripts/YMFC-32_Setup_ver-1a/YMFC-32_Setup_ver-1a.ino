@@ -28,7 +28,8 @@ int16_t manual_gyro_roll_cal_value = 0;
 int16_t manual_gyro_yaw_cal_value = 0;
 
 
-HardWire HWire(2, I2C_FAST_MODE);
+TwoWire WIRE2(2, I2C_FAST_MODE);
+#define HWire WIRE2
 
 //Let's declare some variables so we can use them in the complete program.
 //int16_t = signed 16 bit integer
