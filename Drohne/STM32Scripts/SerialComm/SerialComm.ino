@@ -1,30 +1,54 @@
-//Serial2
+
+int pointer = 0;
+char receive[10];
+char transmit[10];
+
+unsigned long dur;
 
 void setup() {
   // put your setup code here, to run once:
 
-  Serial.begin(9600);
-  Serial1.begin(9600);
+  Serial.begin(230400);
+  Serial1.begin(230400);
+
+  for (int i = 0; i < 10; i++){
+    transmit[i] = (char)i;
+  }
+  
   delay(200);
   Serial.println("Hallo Welt");
-  Serial1.println("Hallo Raspberry Pi");
 }
-
+char lb = '0';
 void loop() {
   // put your main code here, to run repeatedly:
 
   if (Serial1.available()){
-    char rd = (char)Serial1.read();
-    Serial.print(rd);
-    Serial1.print(rd);
+    unsigned long st = micros();
+    while (pointer < 10){
+      if (Serial1.available()){
+        char rd = (char)Serial1.read();
+        if (rd == 'R'){
+          lb = rd;
+          Serial1.print('A');
+        }else if (rd == 'Q' && lb == 'R'){
+          pointer = 0;
+        }else{
+          receive[(pointer++)] = rd;
+          Serial1.print(transmit[pointer]);
+        }
+      }
+      dur = micros() - st;
+    }
+    pointer = 0;
+    
+    //Anz
+    for (int i = 0; i < 10; i++){
+      Serial.print((int)receive[i]);
+      Serial.print(", ");
+    }
+    Serial.print("Dur: ");
+    Serial.print(dur);
+    Serial.println("us");
   }
-
-  if (Serial.available()){
-    Serial1.print(Serial.read());
-  }
-
-  /*Serial1.println("Hallo Raspberry Pi");
-
-  delay(10);*/
-  
+  delay(4);
 }
