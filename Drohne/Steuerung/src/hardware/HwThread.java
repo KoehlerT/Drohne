@@ -24,7 +24,7 @@ class HwThread extends Thread{
 		
 		if (Info.sensorAttached) {
 			ultrasonic = new Ultrasonic();
-			alt = new Altitude(Altitude.MODE_STANDARD);
+			//alt = new Altitude(Altitude.MODE_STANDARD);
 		}
 			
 		
@@ -53,7 +53,7 @@ class HwThread extends Thread{
 				}
 				
 				//Altitude
-				alt.readAllSensorData();
+				//alt.readAllSensorData();
 			}
 			//GPS
 			//Automatisch / Event driven

@@ -18,12 +18,7 @@ public class ComThread extends Thread{
 		this.setName("Communication");
 		
 		if (Info.sensorAttached) {
-			try {
-				arduinoMng = new Arduino();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			arduinoMng = new Arduino();
 		}
 		
 		wlanServer = new WlanServer();
@@ -61,6 +56,9 @@ public class ComThread extends Thread{
 				e.printStackTrace();
 			}
 		}
+		
+		wlanServer.closeConnection();
+		arduinoMng.closeConnection();
 		
 	}
 	

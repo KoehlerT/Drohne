@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="libs/lib.jar"/>
 	<classpathentry kind="lib" path="libs/ArduinoNativeLibrary.jar"/>
 	<classpathentry kind="lib" path="libs/RPICam.jar"/>
+	<classpathentry kind="lib" path="libs/LibSerialComm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

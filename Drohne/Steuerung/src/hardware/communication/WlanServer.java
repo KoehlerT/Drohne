@@ -98,4 +98,13 @@ public class WlanServer {
 	public void send(int b) {
 		outToClient.println(b);
 	}
+	
+	public void closeConnection() {
+		try {
+			client.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

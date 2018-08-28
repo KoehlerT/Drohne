@@ -2,6 +2,7 @@ package kamera;
 
 import main.BildPool;
 import main.Daten;
+import main.Info;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,15 +16,21 @@ class KameraThread extends Thread{
 	Cam c;
 	
 	KameraThread() {
-		this.setName("Bildaufnahme");
-		c = new Cam();
+		
+		if (Info.CamAttached) {
+			this.setName("Bildaufnahme");
+			c = new Cam();
+		}else {
+			System.out.println("Camera disabled");
+		}
 	}
 	
 	int i = 0;
 	
 	@Override
 	public void run() {
-		
+		if (!Info.CamAttached)
+			return;
 		try {
 			ImageIO.write(c.bildAufnehmen(), "png", new File("/home/pi/Bilder/debug/pic#"+(i++)+".png"));
 		} catch (IOException e1) {

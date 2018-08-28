@@ -3,6 +3,7 @@ package main;
 import java.util.Scanner;
 
 import bilderkennung.BildStart;
+import flightmodes.ControllingStart;
 import flightmodes.FlightModeManager;
 import kamera.KameraStart;
 import hardware.HwStart;
@@ -10,7 +11,7 @@ import utility.*;
 
 public class start {
 	
-	private static Managable[] manag = new Managable[3];
+	private static Managable[] manag = new Managable[4];
 	
 	private static Scanner inputsc = new Scanner(System.in);
 
@@ -20,18 +21,13 @@ public class start {
 		
 		starteProgrammteile();
 		
-		
+		System.out.println("Abschnitte Gestartet");
 		
 		//Beendigungsbedingung. Derzeit, jeder manager returnt running -> false. 
 		//Sobald es "echte" Kommunikation gibt, kann diese Methode wahrscheinlich alleine beenden
 		//Bis zu diesem Zeitpunkt programm einfach zwangsbeenden (Taskmanager/ Stopp-Symbol)
-		long startTime = System.nanoTime();
 		while(running()) {//Warten, bis alle Abschnitte beendet sind
-			ProgramState.getInstance().evaluateControlWord();
 			
-			long diff = System.nanoTime() - startTime;
-			FlightModeManager.getInstance().updateFlightmode((float)diff/1000000000.0f);
-			startTime = System.nanoTime();
 			
 			//Detect Close
 			if (inputsc.hasNext())
@@ -57,6 +53,7 @@ public class start {
 		manag[0] = new BildStart();
 		manag[1] = new HwStart();
 		manag[2] = new KameraStart();
+		manag[3] = new ControllingStart();
 		
 		for (Managable m : manag) {
 			m.start();

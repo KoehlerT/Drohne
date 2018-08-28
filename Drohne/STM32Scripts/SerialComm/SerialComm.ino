@@ -3,6 +3,8 @@ int pointer = 0;
 char receive[10];
 char transmit[10];
 
+int throttle,roll,pitch,yaw;
+
 unsigned long dur;
 
 void setup() {
@@ -31,6 +33,7 @@ void loop() {
           lb = rd;
           Serial1.print('A');
         }else if (rd == 'Q' && lb == 'R'){
+          
           pointer = 0;
         }else{
           receive[(pointer++)] = rd;
@@ -49,6 +52,25 @@ void loop() {
     Serial.print("Dur: ");
     Serial.print(dur);
     Serial.println("us");
+    convertToReceiver();
   }
   delay(4);
 }
+
+
+void convertToReceiver(){
+  throttle = (receive[1] << 8) | receive[0];
+  roll = (receive[5] << 8) | receive[4];
+  pitch = (receive[3] << 8) | receive[2];
+  yaw = (receive[7] << 8) | receive[6];
+
+  Serial.print(throttle);
+  Serial.print(" ");
+  Serial.print(roll);
+  Serial.print(" ");
+  Serial.print(pitch);
+  Serial.print(" ");
+  Serial.print(yaw);
+  Serial.println(" ");
+}
+

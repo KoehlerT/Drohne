@@ -11,26 +11,31 @@ import main.Info;
 import utility.FlyingMode;
 
 import com.koehlert.arduinonative.*;
+import com.koehlert.serialcomm.Communicator;
 
 public class Arduino {
 	
-	private native byte[] spi(byte[] send);
-	private native int init();
+	private Communicator comm;
 	
 	static{
-		System.load("/lib/drohne/libarduinocom.so");
+		System.load("/lib/drohne/libSerialComm.so");
 	}
 	
 	//Variablen---------------------------------------
 	
-	private byte[] toSend = new byte[9]; //Controller input bytes
-	private byte[] received = new byte[9];
+	private byte[] toSend = new byte[10]; //Controller input bytes
+	private byte[] received = new byte[10];
+	private int length = 10;
 	//private Spi arduino;
 	
 	//Kosntruktor
-	Arduino() throws IOException{
+	Arduino(){
 		//arduino = new Spi();
-		init();
+		comm = new Communicator(length, length);
+		
+		for (int i = 0; i < toSend.length; i++) {
+			toSend[i] = (byte)i;
+		}
 	}
 	
 	//Public Methoden --------------------------------------
@@ -59,8 +64,14 @@ public class Arduino {
 		toSend[8] = (byte) 0;
 		//toSend[9] = (byte) 0;
 		
-		received = spi(toSend);
-		Datapackager.untangleArduinoReceived(received);
+		comm.setTransmitBuffer(toSend);
+		System.out.println("COMM");
+		comm.communicate();
+		comm.getReceiveBuffer(received);
+		
+		//Datapackager.printBinaryArray(toSend);
+		
+		//Datapackager.untangleArduinoReceived(received);
 	}
 	
 	
@@ -71,6 +82,10 @@ public class Arduino {
 		byte hb = (byte)((val >> 8)& 0xFF); //Higher Byte value
 		arr[ind] = lb;
 		arr[ind+1] = hb;
+	}
+	
+	public void closeConnection() {
+		comm.close();
 	}
 
 }
