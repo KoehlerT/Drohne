@@ -14,9 +14,11 @@
 //Always remove the propellers and stay away from the motors unless you
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
+#define HWire WIRE2
+#define debug
 
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
-HardWire HWire(2, I2C_FAST_MODE);          //Initiate I2C port 2 at 400kHz.
+TwoWire HWire(2, I2C_FAST_MODE);          //Initiate I2C port 2 at 400kHz.
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -38,23 +40,24 @@ int pid_max_yaw = 400;                     //Maximum output of the PID-controlle
 
 boolean auto_level = true;                 //Auto level on (true) or off (false).
 
-/*manual_acc_pitch_cal_value = -347
-manual_acc_roll_cal_value = -192
+/*manual_acc_pitch_cal_value = 72
+manual_acc_roll_cal_value = -139
 manual_gyro_pitch_cal_value = -89
-manual_gyro_roll_cal_value = -242
-manual_gyro_yaw_cal_value = 24
+manual_gyro_roll_cal_value = -248
+manual_gyro_yaw_cal_value = 16
+
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 0;
-int16_t manual_acc_roll_cal_value = 0;
+int16_t manual_acc_pitch_cal_value = 72;
+int16_t manual_acc_roll_cal_value = -139;
 
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
-uint8_t use_manual_calibration = false;    // Set to false or true;
-int16_t manual_gyro_pitch_cal_value = 0;
-int16_t manual_gyro_roll_cal_value = 0;
-int16_t manual_gyro_yaw_cal_value = 0;
+uint8_t use_manual_calibration = true;
+int16_t manual_gyro_pitch_cal_value = -89;
+int16_t manual_gyro_roll_cal_value = -248;
+int16_t manual_gyro_yaw_cal_value = 16;
 
 uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 0x68 in hexadecimal form.
 
@@ -63,6 +66,7 @@ uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //int16_t = signed 16 bit integer
 //uint16_t = unsigned 16 bit integer
+uint8_t loopDuration = 0;
 
 uint8_t last_channel_1, last_channel_2, last_channel_3, last_channel_4;
 uint8_t highByte, lowByte, flip32, start;
@@ -92,7 +96,7 @@ float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_l
 float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;
 float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;
 float angle_roll_acc, angle_pitch_acc, angle_pitch, angle_roll;
-float battery_voltage;
+float battery_voltage, used_power;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +104,13 @@ float battery_voltage;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
   pinMode(4, INPUT_ANALOG);                                    //This is needed for reading the analog value of port A4.
+  #ifdef debug
+    Serial.begin(230400);
+    delay(200);
+    Serial.println("Hello World");
+  #endif
+  
+  Serial1.begin(230400);  //Serial Communication with RasPI
   //Port PB3 and PB4 are used as JTDO and JNTRST by default.
   //The following function connects PB3 and PB4 to the
   //alternate output function.
@@ -120,18 +131,41 @@ void setup() {
   //Serial.begin(57600);                                        //Set the serial output to 57600 kbps. (for debugging only)
   //delay(250);                                                 //Give the serial port some time to start to prevent data loss.
 
+#ifdef debug
+    Serial.println("Before Timer");
+  #endif
+  
   timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.
   delay(50);                                                    //Give the timers some time to start.
-
+#ifdef debug
+    Serial.println("After Timer");
+  #endif
   HWire.begin();                                                //Start the I2C as master
+  #ifdef debug
+    Serial.println("After HWire begin");
+  #endif
+  
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
+  #ifdef debug
+    Serial.println("After HWire beginTransm");
+  #endif
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
+  #ifdef debug
+    Serial.print(error);
+    Serial.println(" Before Errorloop");
+  #endif
+  
   while (error != 0) {                                          //Stay in this loop because the MPU-6050 did not responde.
+    getRaspberryInfo();
     error = 2;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);
   }
 
+  #ifdef debug
+    Serial.println("Gyro init");
+  #endif
+  
   gyro_setup();                                                 //Initiallize the gyro and set the correct registers.
 
   if (!use_manual_calibration) {
@@ -149,6 +183,7 @@ void setup() {
 
   //Wait until the receiver is active.
   while (channel_1 < 990 || channel_2 < 990 || channel_3 < 990 || channel_4 < 990)  {
+    getRaspberryInfo();
     error = 3;                                                  //Set the error status to 3.
     error_signal();                                             //Show the error via the red LED.
     delay(4);
@@ -157,6 +192,7 @@ void setup() {
 
   //Wait until the throtle is set to the lower position.
   while (channel_3 < 990 || channel_3 > 1050)  {
+    getRaspberryInfo();
     error = 4;                                                  //Set the error status to 4.
     error_signal();                                             //Show the error via the red LED.
     delay(4);
@@ -172,7 +208,8 @@ void setup() {
   //The voltage divider (1k & 10k) is 1:11.
   //analogRead => 0 = 0V ..... 4095 = 36.3V
   //36.3 / 4095 = 112.81.
-  battery_voltage = (float)analogRead(4) / 112.81;
+  battery_voltage = (float)analogRead(6)/112.81 - 0.4;
+  used_power = (((analogRead(5) * (3.3/(float)4095))/1.65)*60-30);
 
   loop_timer = micros();                                        //Set the timer for the first loop.
 
@@ -182,7 +219,8 @@ void setup() {
 //Main program loop
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
-
+  getRaspberryInfo();
+  
   error_signal();                                                                  //Show the errors via the red LED.
   gyro_signalen();                                                                 //Read the gyro and accelerometer data.
 
@@ -289,8 +327,12 @@ void loop() {
   //The battery voltage is needed for compensation.
   //A complementary filter is used to reduce noise.
   //1410.1 = 112.81 / 0.08.
-  battery_voltage = battery_voltage * 0.92 + ((float)analogRead(4) / 1410.1);
+  battery_voltage = battery_voltage * 0.92 + ((float)analogRead(6) / 1410.1);
+  //battery_voltage = 12.00f;
 
+  //The Amperage is read
+  used_power = used_power * 0.90 + (((analogRead(5) * (3.3/(float)4095))/1.65)*60-30) * 0.1;
+  
   //Turn on the led if battery voltage is to low. In this case under 10.0V
   if (battery_voltage < 10.0 && error == 0)error = 1;
   
@@ -340,6 +382,16 @@ void loop() {
   //the Q&A page:
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 
+
+  #ifdef debug
+  if (micros() - loop_timer > 4050){ 
+    Serial.print(micros() -loop_timer);
+    Serial.println("us");
+  }
+  #endif
+
+  loopDuration = micros() - loop_timer;
+  
   if (micros() - loop_timer > 4050)error = 5;                                      //Turn on the LED if the loop time exceeds 4050us.
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.

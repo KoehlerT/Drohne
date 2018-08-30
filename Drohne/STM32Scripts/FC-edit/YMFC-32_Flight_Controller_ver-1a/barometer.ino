@@ -1,0 +1,1 @@
+#define HWire WIRE2

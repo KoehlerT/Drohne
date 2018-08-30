@@ -6,10 +6,10 @@
 //STM32 for Arduino - Electronic Speed Controller (ESC) - STM32F103C8T6: https://youtu.be/Nju9rvZOjVQ
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void timer_setup(void) {
-  Timer2.attachCompare1Interrupt(handler_channel_1);
+  /*Timer2.attachCompare1Interrupt(handler_channel_1);
   Timer2.attachCompare2Interrupt(handler_channel_2);
   Timer2.attachCompare3Interrupt(handler_channel_3);
-  Timer2.attachCompare4Interrupt(handler_channel_4);
+  Timer2.attachCompare4Interrupt(handler_channel_4);*/
   TIMER2_BASE->CR1 = TIMER_CR1_CEN;
   TIMER2_BASE->CR2 = 0;
   TIMER2_BASE->SMCR = 0;
@@ -22,8 +22,8 @@ void timer_setup(void) {
   TIMER2_BASE->ARR = 0xFFFF;
   TIMER2_BASE->DCR = 0;
 
-  Timer3.attachCompare1Interrupt(handler_channel_5);
-  Timer3.attachCompare2Interrupt(handler_channel_6);
+  /*Timer3.attachCompare1Interrupt(handler_channel_5);
+  Timer3.attachCompare2Interrupt(handler_channel_6);*/
   TIMER3_BASE->CR1 = TIMER_CR1_CEN;
   TIMER3_BASE->CR2 = 0;
   TIMER3_BASE->SMCR = 0;
