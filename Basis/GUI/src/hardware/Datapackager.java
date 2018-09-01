@@ -61,7 +61,7 @@ public class Datapackager {
 		Data.setDistUltrasonic((double)ulr/100.0);
 		
 		//Arduino: 20: lsb 21:msb
-		int ard = ((buffer[21] & 0x000000FF)<<8)|buffer[20];
+		int ard = ((buffer[21] & 0x000000FF)<<8)|(buffer[20]&0x000000FF);
 		Data.setArduinoRefresh(ard);
 		//Sensor: 22
 		Data.setHardwareRefresh(buffer[22]);

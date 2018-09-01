@@ -5,12 +5,18 @@ char last_byte = '\0';
 
 unsigned long CommunicationDuration;
 
+void setTransmitUp(){
+  for (int i = 0; i < 10; i++){
+    transmit[i] = (char)i;
+  }
+}
+
 void getRaspberryInfo(){
-  //setLooptime();
+  setLooptime();
   
   if (Serial1.available()){
     unsigned long st = micros();
-    while (dataPointer < 10/* && ((micros() - st) < 2000)*/){
+    while (dataPointer < 10 && ((micros() - st) < 2000)){
       if (Serial1.available()){
         char rd = (char)Serial1.read();
         if (rd == 'R'){ //Handshake inidicator 1
@@ -24,9 +30,12 @@ void getRaspberryInfo(){
           dataPointer++;
         }
       }
-      //if (dataPointer == 9){
+      if (((micros() - st) <= 2000)){
         convertToReceiver();
-      //}
+      }
+      #ifdef debug
+      else { Serial.println("Abbruch");}
+      #endif
     }
     dataPointer = 0;
   }
@@ -53,5 +62,16 @@ void showReceived(void){
 void setLooptime(){
   transmit[8] = (byte)loopDuration;
   transmit[9] = (byte) (loopDuration >> 8);
+}
+
+void setIntegers(){
+  transmit[0] = (char)((int)(battery_voltage*1000) & 0x00FF);
+  transmit[1] = (char)((int)(battery_voltage*1000) >> 8);
+  transmit[2] = (char)((int)(used_power*1000) & 0x00FF);
+  transmit[3] = (char)((int)(used_power*1000) >> 8);
+  /*transmit[4] = (char)(battery_voltage & 0x00FF);
+  transmit[5] = (char)(battery_voltage >> 8);
+  transmit[6] = (char)(battery_voltage & 0x00FF);
+  transmit[7] = (char)(battery_voltage >> 8);*/
 }
 

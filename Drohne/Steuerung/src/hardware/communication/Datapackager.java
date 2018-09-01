@@ -185,19 +185,11 @@ public class Datapackager {
 		System.out.println("ARD: "+looptime);
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
-		Daten.setVoltage3v((float)powers[0]/1000f);
-		Daten.setVoltageMain(((float)powers[2] / 1000f)*((float)powers[3]/1000f)); 
-		Daten.setAmperage(getAmperage(powers[1],powers[3]));
+		Daten.setVoltage3v((float)powers[2]/1000f);
+		Daten.setVoltageMain(((float)powers[0] / 1000f)); 
+		Daten.setAmperage(((float)powers[1]/1000f));
 		Daten.setArduinoRefresh((int)(1f/((float)looptime/1000_000f)));
 	}
-	
-	private static float getAmperage(int amp, int vcc) {
-		if ((vcc/2000) == 0)
-			return 0f;
-		else
-			return (amp/1000f - (vcc/2000)) * (30/(vcc/2000));
-	}
-	
 	public static void printBinaryArray(byte[] bin) {
 		for (int i = 0; i < bin.length; i++) {
 			byte content = bin[i];

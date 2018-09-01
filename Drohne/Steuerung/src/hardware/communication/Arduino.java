@@ -65,13 +65,13 @@ public class Arduino {
 		//toSend[9] = (byte) 0;
 		
 		comm.setTransmitBuffer(toSend);
-		System.out.println("COMM");
+		//System.out.println("COMM");
 		comm.communicate();
 		comm.getReceiveBuffer(received);
 		
-		//Datapackager.printBinaryArray(toSend);
+		//Datapackager.printBinaryArray(received);
 		
-		//Datapackager.untangleArduinoReceived(received);
+		Datapackager.untangleArduinoReceived(received);
 	}
 	
 	

@@ -108,6 +108,7 @@ void setup() {
     Serial.begin(230400);
     delay(200);
     Serial.println("Hello World");
+    setTransmitUp();
   #endif
   
   Serial1.begin(230400);  //Serial Communication with RasPI
