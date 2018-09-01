@@ -17,16 +17,14 @@
 #include <Wire.h>
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 72;
-int16_t manual_acc_roll_cal_value = -139;
-
+int16_t manual_acc_pitch_cal_value = 88;
+int16_t manual_acc_roll_cal_value = -365;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -89;
-int16_t manual_gyro_roll_cal_value = -248;
-int16_t manual_gyro_yaw_cal_value = 16;
-
+int16_t manual_gyro_pitch_cal_value = -86;
+int16_t manual_gyro_roll_cal_value = -246;
+int16_t manual_gyro_yaw_cal_value = 27;
 
 TwoWire WIRE2(2, I2C_FAST_MODE);
 #define HWire WIRE2

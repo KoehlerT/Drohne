@@ -40,16 +40,21 @@ void manual_imu_calibration(void) {
   gyro_axis_cal[3] /= 4000;                                                         //Divide the yaw total by 4000.
 
   //Print the calibration values on the serial monitor.
-  Serial.print("manual_acc_pitch_cal_value = ");
-  Serial.println(acc_axis_cal[1]);
-  Serial.print("manual_acc_roll_cal_value = ");
-  Serial.println(acc_axis_cal[2]);
-  Serial.print("manual_gyro_pitch_cal_value = ");
-  Serial.println(gyro_axis_cal[2]);
-  Serial.print("manual_gyro_roll_cal_value = ");
-  Serial.println(gyro_axis_cal[1]);
-  Serial.print("manual_gyro_yaw_cal_value = ");
-  Serial.println(gyro_axis_cal[3]);
+  Serial.print("int16_t manual_acc_pitch_cal_value = ");
+  Serial.print(acc_axis_cal[1]);Serial.println(";");
+  Serial.print("int16_t manual_acc_roll_cal_value = ");
+  Serial.print(acc_axis_cal[2]);Serial.println(";");
+
+  Serial.println("//Manual gyro calibration values.");
+  Serial.println("//Set the use_manual_calibration variable to true to use the manual calibration variables.");
+  Serial.println("uint8_t use_manual_calibration = false;");
+  
+  Serial.print("int16_t manual_gyro_pitch_cal_value = ");
+  Serial.print(gyro_axis_cal[2]);Serial.println(";");
+  Serial.print("int16_t manual_gyro_roll_cal_value = ");
+  Serial.print(gyro_axis_cal[1]);Serial.println(";");
+  Serial.print("int16_t manual_gyro_yaw_cal_value = ");
+  Serial.print(gyro_axis_cal[3]);Serial.println(";");
 
   print_intro();                                                                        //Print the intro to the serial monitor.
 }
