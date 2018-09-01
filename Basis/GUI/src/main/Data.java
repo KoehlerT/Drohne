@@ -22,7 +22,7 @@ public class Data {
 	private static byte controlWord;
 	
 	//Statusinformationen
-	private static intWert arduinoRefresh = new intWert("Arduino Updates",true,200,400,300);
+	private static intWert arduinoRefresh = new intWert("Arduino Updates",true,0,4000,1000);
 	private static intWert communicatorRefresh = new intWert("Communicator Updates (10Hz)",false,0,150,100);
 	private static intWert hardwareRefresh = new intWert("Hardware Updates",false,0,50,20);
 	

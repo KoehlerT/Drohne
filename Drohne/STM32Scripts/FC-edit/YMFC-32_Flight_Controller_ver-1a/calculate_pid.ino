@@ -40,5 +40,24 @@ void calculate_pid(void){
   else if(pid_output_yaw < pid_max_yaw * -1)pid_output_yaw = pid_max_yaw * -1;
 
   pid_last_yaw_d_error = pid_error_temp;
+
+  //Throttle / Altitude calculations
+
+  if (doAltitudeHold){
+    pid_error_temp = pid_altitude_input - pid_altitude_setpoint;
+    pid_i_mem_altitude += pid_i_gain_altitude * pid_error_temp;
+    if (pid_i_mem_altitude > pid_max_altitude) pid_i_mem_altitude = pid_max_altitude;
+    else if (pid_i_mem_altitude < pid_max_altitude * -1) pid_i_mem_altitude = pid_max_altitude * -1;
+
+    pid_output_altitude = pid_p_gain_altitude * pid_error_temp + pid_i_mem_altitude + pid_d_gain_altitude * (pid_error_temp - pid_last_altitude_d_error);
+    if(pid_output_altitude > pid_max_altitude)pid_output_altitude = pid_max_altitude;
+    else if(pid_output_altitude < pid_max_altitude * -1)pid_output_altitude = pid_max_altitude * -1;
+
+    pid_last_altitude_d_error = pid_error_temp;
+  }else{
+    pid_output_altitude = 0;
+  }
+
+  
 }
 

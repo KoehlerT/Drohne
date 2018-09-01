@@ -13,6 +13,7 @@ void setTransmitUp(){
 
 void getRaspberryInfo(){
   setLooptime();
+  setIntegers();
   
   if (Serial1.available()){
     unsigned long st = micros();
@@ -65,13 +66,14 @@ void setLooptime(){
 }
 
 void setIntegers(){
-  transmit[0] = (char)((int)(battery_voltage*1000) & 0x00FF);
-  transmit[1] = (char)((int)(battery_voltage*1000) >> 8);
-  transmit[2] = (char)((int)(used_power*1000) & 0x00FF);
-  transmit[3] = (char)((int)(used_power*1000) >> 8);
-  /*transmit[4] = (char)(battery_voltage & 0x00FF);
-  transmit[5] = (char)(battery_voltage >> 8);
-  transmit[6] = (char)(battery_voltage & 0x00FF);
+  int16_t test = 60000;
+  transmit[0] = (char)((int16_t)(battery_voltage * 1000) & 0x00FF);
+  transmit[1] = (char)((int16_t)(battery_voltage * 1000) >> 8)&0x00FF;
+  transmit[2] = (char)((int16_t)(used_power*1000) & 0x00FF);
+  transmit[3] = (char)((int16_t)(used_power*1000) >> 8);
+  transmit[4] = (char)(int16_t)(((altitude_meter)+2)*100) & 0x00FF;
+  transmit[5] = (char)((int16_t)(((altitude_meter)+2)*100) >> 8)& 0x00FF;
+  /*transmit[6] = (char)(battery_voltage & 0x00FF);
   transmit[7] = (char)(battery_voltage >> 8);*/
 }
 

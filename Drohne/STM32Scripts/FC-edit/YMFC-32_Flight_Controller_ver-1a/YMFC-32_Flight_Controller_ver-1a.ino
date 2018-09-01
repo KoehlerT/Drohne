@@ -38,6 +38,11 @@ float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-contro
 float pid_d_gain_yaw = 0.0;                //Gain setting for the pitch D-controller (default = 0.0).
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-).
 
+float pid_p_gain_altitude = 1.5;
+float pid_i_gain_altitude = 0.2;
+float pid_d_gain_altitude = 400;
+int pid_max_altitude = 400;
+
 boolean auto_level = true;                 //Auto level on (true) or off (false).
 
 /*manual_acc_pitch_cal_value = 72
@@ -53,7 +58,7 @@ int16_t manual_acc_pitch_cal_value = 88;
 int16_t manual_acc_roll_cal_value = -365;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
-uint8_t use_manual_calibration = false;
+uint8_t use_manual_calibration = true;
 int16_t manual_gyro_pitch_cal_value = -86;
 int16_t manual_gyro_roll_cal_value = -246;
 int16_t manual_gyro_yaw_cal_value = 27;
@@ -66,7 +71,7 @@ uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //int16_t = signed 16 bit integer
 //uint16_t = unsigned 16 bit integer
-uint8_t loopDuration = 0;
+uint16_t loopDuration = 0;
 
 uint8_t last_channel_1, last_channel_2, last_channel_3, last_channel_4;
 uint8_t highByte, lowByte, flip32, start;
@@ -95,6 +100,11 @@ float pid_error_temp;
 float pid_i_mem_roll, pid_roll_setpoint, gyro_roll_input, pid_output_roll, pid_last_roll_d_error;
 float pid_i_mem_pitch, pid_pitch_setpoint, gyro_pitch_input, pid_output_pitch, pid_last_pitch_d_error;
 float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_yaw_d_error;
+uint16_t pid_altitude_throttle;
+//Altitude PID variables
+float pid_i_mem_altitude, pid_altitude_setpoint, pid_altitude_input, pid_output_altitude, pid_last_altitude_d_error;
+uint8_t doAltitudeHold = false;
+float actual_pressure;
 float angle_roll_acc, angle_pitch_acc, angle_pitch, angle_roll;
 float battery_voltage, used_power;
 
@@ -155,6 +165,8 @@ void setup() {
     Serial.print(error);
     Serial.println(" Before Errorloop");
   #endif
+  
+  barometer_setup();
   
   while (error != 0) {                                          //Stay in this loop because the MPU-6050 did not responde.
     getRaspberryInfo();
@@ -224,12 +236,12 @@ void loop() {
   
   error_signal();                                                                  //Show the errors via the red LED.
   gyro_signalen();                                                                 //Read the gyro and accelerometer data.
-
+  barometer_getvalue();
+  
   //65.5 = 1 deg/sec (check the datasheet of the MPU-6050 for more information).
   gyro_roll_input = (gyro_roll_input * 0.7) + (((float)gyro_roll / 65.5) * 0.3);   //Gyro pid input is deg/sec.
   gyro_pitch_input = (gyro_pitch_input * 0.7) + (((float)gyro_pitch / 65.5) * 0.3);//Gyro pid input is deg/sec.
   gyro_yaw_input = (gyro_yaw_input * 0.7) + (((float)gyro_yaw / 65.5) * 0.3);      //Gyro pid input is deg/sec.
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   //This is the added IMU code from the videos:
@@ -286,11 +298,26 @@ void loop() {
     pid_last_pitch_d_error = 0;
     pid_i_mem_yaw = 0;
     pid_last_yaw_d_error = 0;
+    pid_i_mem_altitude = 0;
+    pid_last_altitude_d_error = 0;
   }
   //Stopping the motors: throttle low and yaw right.
   if (start == 2 && channel_3 < 1050 && channel_4 > 1950) {
     start = 0;
     green_led(HIGH);                                                               //Turn on the green led.
+  }
+
+  //PID Altitude Setpoints
+  if (channel_3 == 1500 && !doAltitudeHold){ //Activate AH
+    doAltitudeHold = true;
+    pid_output_altitude = 0;
+    pid_i_mem_altitude = 0;
+    pid_last_altitude_d_error = 0;
+    pid_altitude_throttle = channel_3;
+    pid_altitude_setpoint = actual_pressure;
+  }
+  if (channel_3 != 1500 && doAltitudeHold){ //Deactivate AH
+    doAltitudeHold = false;
   }
 
   //The PID set point in degrees per second is determined by the roll receiver input.
@@ -340,12 +367,16 @@ void loop() {
 
   throttle = channel_3;                                                            //We need the throttle signal as a base signal.
 
+  if (doAltitudeHold){
+    throttle = 1500;
+  }
+  
   if (start == 2) {                                                                //The motors are started.
     if (throttle > 1800) throttle = 1800;                                          //We need some room to keep full control at full throttle.
-    esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw;        //Calculate the pulse for esc 1 (front-right - CCW).
-    esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw;        //Calculate the pulse for esc 2 (rear-right - CW).
-    esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw;        //Calculate the pulse for esc 3 (rear-left - CCW).
-    esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw;        //Calculate the pulse for esc 4 (front-left - CW).
+    esc_1 = throttle - pid_output_pitch + pid_output_roll - pid_output_yaw + pid_output_altitude;        //Calculate the pulse for esc 1 (front-right - CCW).
+    esc_2 = throttle + pid_output_pitch + pid_output_roll + pid_output_yaw + pid_output_altitude;        //Calculate the pulse for esc 2 (rear-right - CW).
+    esc_3 = throttle + pid_output_pitch - pid_output_roll - pid_output_yaw + pid_output_altitude;        //Calculate the pulse for esc 3 (rear-left - CCW).
+    esc_4 = throttle - pid_output_pitch - pid_output_roll + pid_output_yaw + pid_output_altitude;        //Calculate the pulse for esc 4 (front-left - CW).
 
     if (esc_1 < 1100) esc_1 = 1100;                                                //Keep the motors running.
     if (esc_2 < 1100) esc_2 = 1100;                                                //Keep the motors running.
@@ -389,6 +420,7 @@ void loop() {
     Serial.print(micros() -loop_timer);
     Serial.println("us");
   }
+  printEscs();
   #endif
 
   loopDuration = micros() - loop_timer;
@@ -397,3 +429,17 @@ void loop() {
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }
+
+#ifdef debug
+void printEscs(){
+  Serial.print(esc_1);
+  Serial.print(",");
+  Serial.print(esc_2);
+  Serial.print(",");
+  Serial.print(esc_3);
+  Serial.print(",");
+  Serial.print(esc_4);
+  Serial.println(",");
+}
+#endif
+
