@@ -109,7 +109,7 @@ namespace ErkennungCis
             //return gray;
             //Schlechter (Grün-) Filter
 
-            if (gray < 70)
+            if (gray < 125)
                 return 0;
             else
                 return 255;

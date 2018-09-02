@@ -113,6 +113,18 @@ public class ControllerInfo {
 				throttle = 1500;
 			}
 			
+			//D-Pad steuerung
+			if (getGamepad_D_UP()) {
+				pitch = 1450;
+			}
+			if (getGamepad_D_DOWN()) {
+				pitch = 1550;
+			}if (getGamepad_D_LEFT()) {
+				roll = 1450;
+			}if (getGamepad_D_RIGHT()) {
+				roll = 1550;
+			}
+			
 			
 			//Setze neue Werte
 			Data.setCont_throttle(throttle);
