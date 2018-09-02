@@ -7,6 +7,7 @@ import utillity.FlyingMode;
 public class ControllerInfo {
 	//Dank an: https://www.codeproject.com/Articles/26949/Xbox-Controller-Input-in-C-with-XInput
 	
+	public static boolean Hold = false;
 	
 	static {
 		if (System.getProperty("sun.arch.data.model").equals("64")) {
@@ -87,6 +88,11 @@ public class ControllerInfo {
 				ControlWordHandler.getInstance().addSendingWord((byte)0x2);
 			}
 			
+			if (getGamepad_SH_LEFT()) {
+				Hold = !Hold;
+				System.out.println("Hold: "+Hold);
+			}
+			
 			//Rotationen
 			int yaw = (mapValueAxesYaw(getThumb_LX()));
 			int pitch= (3000-mapValueAxes(getThumb_RY()));
@@ -103,6 +109,8 @@ public class ControllerInfo {
 				yaw = (1000);
 			}if (mode == FlyingMode.FORCEDOWN) {
 				throttle = (1000);
+			}if (Hold) {
+				throttle = 1500;
 			}
 			
 			
