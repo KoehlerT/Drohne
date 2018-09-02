@@ -54,14 +54,15 @@ manual_gyro_yaw_cal_value = 16
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 88;
-int16_t manual_acc_roll_cal_value = -365;
+int16_t manual_acc_pitch_cal_value = 80;
+int16_t manual_acc_roll_cal_value = -269;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
-uint8_t use_manual_calibration = true;
-int16_t manual_gyro_pitch_cal_value = -86;
-int16_t manual_gyro_roll_cal_value = -246;
-int16_t manual_gyro_yaw_cal_value = 27;
+uint8_t use_manual_calibration = false;
+int16_t manual_gyro_pitch_cal_value = -78;
+int16_t manual_gyro_roll_cal_value = -237;
+int16_t manual_gyro_yaw_cal_value = 23;
+
 
 
 uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 0x68 in hexadecimal form.
