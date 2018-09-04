@@ -54,13 +54,13 @@ manual_gyro_yaw_cal_value = 16
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 80;
-int16_t manual_acc_roll_cal_value = -269;
+int16_t manual_acc_pitch_cal_value = 211;
+int16_t manual_acc_roll_cal_value = -243;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -78;
-int16_t manual_gyro_roll_cal_value = -237;
+int16_t manual_gyro_pitch_cal_value = -85;
+int16_t manual_gyro_roll_cal_value = -245;
 int16_t manual_gyro_yaw_cal_value = 23;
 
 
@@ -108,7 +108,7 @@ uint8_t doAltitudeHold = false;
 float actual_pressure;
 float angle_roll_acc, angle_pitch_acc, angle_pitch, angle_roll;
 float battery_voltage, used_power;
-
+uint32_t startLoop = 0;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
@@ -228,6 +228,7 @@ void setup() {
   loop_timer = micros();                                        //Set the timer for the first loop.
 
   green_led(HIGH);                                              //Turn on the green led.
+  startLoop = millis();
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Main program loop

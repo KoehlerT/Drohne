@@ -2,6 +2,7 @@ int dataPointer = 0;
 char receive[10];
 char transmit[10];
 char last_byte = '\0';
+unsigned long lastComm = 0;
 
 unsigned long CommunicationDuration;
 
@@ -35,12 +36,20 @@ void getRaspberryInfo(){
         convertToReceiver();
       }
       #ifdef debug
+      
       else { Serial.println("Abbruch");}
       #endif
+      lastComm = micros();
+      
     }
     dataPointer = 0;
   }
-  
+
+  //Not-Aus, wenn übertragung für 2sec abbricht
+  if (lastComm != 0 && micros() - lastComm > 2000000){
+    start = 0;
+    error = 3;
+  }
 }
 
 void convertToReceiver(){

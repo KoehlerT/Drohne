@@ -20,11 +20,12 @@ uint8_t pressure_rotating_mem_location;
 float pressure_rotating_mem_actual;
 //uint32_t loop_timer;
 
-float altitude_meter, start_pressure;
+float altitude_meter, start_pressure = 0;
 
 uint8_t MS5611_address = 0x77;             //The I2C address of the MS5611 barometer is 0x77 in hexadecimal form.
 
 void barometer_setup(){
+  start_pressure = 0;
   HWire.beginTransmission(MS5611_address);                        //Start communication with the MS5611.
   if (HWire.endTransmission() != 0) {                                               //If the exit status is not 0 an error occurred.
 
@@ -115,7 +116,7 @@ void barometer_getvalue(){
     pressure_rotating_mem_location++;                                                   //Increase the rotating memory location.
     if (pressure_rotating_mem_location == 20)pressure_rotating_mem_location = 0;        //Start at 0 when the memory location 20 is reached.
     actual_pressure_fast = (float)pressure_total_avarage / 20.0;                        //Calculate the avarage pressure value of the last 20 readings.
-    if(millis() < 5000)actual_pressure_slow = actual_pressure_fast;                     //Keep the slow and fast avareges the same for the first 5 seconds.
+    if(millis() < 5000 + startLoop)actual_pressure_slow = actual_pressure_fast;                     //Keep the slow and fast avareges the same for the first 5 seconds.
 
     actual_pressure_slow = actual_pressure_slow * (float)0.985 + actual_pressure_fast * (float)0.015;
     
@@ -131,7 +132,7 @@ void barometer_getvalue(){
   if (barometer_counter == 3) {                                                         //When the barometer counter is 3
     //Time Left to do stuff
     barometer_counter = 0;                                                              //Set the barometer counter to 0 for the next measurements.
-    if(millis() > 5500 && start_pressure == 0){
+    if(millis() > 5500 +startLoop && start_pressure == 0){
       start_pressure = actual_pressure;
     }
     calculateHeightMeter();

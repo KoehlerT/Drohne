@@ -47,7 +47,7 @@ float altitude_meter, start_pressure;
 uint8_t MS5611_address = 0x77;             //The I2C address of the MS5611 barometer is 0x77 in hexadecimal form.
 
 void setup() {
-  Serial.begin(57600);                                          //Set the serial output to 57600 kbps.
+  Serial.begin(230400);                                          //Set the serial output to 57600 kbps.
   delay(200);
   Serial.println("Hello World");
   //Check if the MS5611 is responding.
