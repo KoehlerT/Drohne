@@ -2,111 +2,136 @@ package com.koehlert.camera;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 
 public class Camera {
 	
 	static{
-		System.out.println(System.getProperty("sun.arch.data.model"));
-		System.load("/home/pi/Documents/WCapture/picamdemo/libpiCamera.so");
+		//System.out.println(System.getProperty("sun.arch.data.model"));
+		//System.load("/home/pi/Documents/WCapture/picamdemo/libpiCamera.so");
+		System.load("/lib/drohne/libpiCamera.so");
 	}
 	
 	//Downsampling: how many detail levels (1 = just the capture res, >1 goes down by halves, 4 max)
 	private native void init(int width, int height, int framerate);
 	private native void stop();
 	
-	private native int[] getARGBArray(); //Returns argb values (byte 0,1 = alpga, 2,3 = red ...)
-	private native byte[] getGrayArray();
+	private native void getRGBAData(ByteBuffer buf);
 	
-	private int full_width;
-	private int full_height;
+	private int width;
+	private int height;
 	private int framerate;
-	private int downsamplingLevels;
+	private float getTime;
 	
-	public Camera(int width, int height, int framerate){
-		full_width = width;
-		full_height = height;
+	private ByteBuffer dataBuffer;
+	
+	private boolean doConversion;
+	
+	public Camera(int width, int height, int framerate, boolean doConversion){
+		this.width = width;
+		this.height = height;
 		this.framerate = framerate;
+		this.doConversion = doConversion;
+		
+		dataBuffer = ByteBuffer.allocateDirect(width * height * 4);
 	}
 	
 	public void init(){
-		init(full_width, full_height, framerate);
+		init(width, height, framerate);
 	}
 	
 	public void close(){
 		stop();
 	}
 	
+	private void getData(){
+		long start = System.nanoTime();
+		getRGBAData(dataBuffer);
+		long diff = System.nanoTime() - start;
+		getTime = (float)((float)diff/1000000.0f);
+		
+	}
+	
+	
+	private int getColorAt(int index){
+		int red = dataBuffer.get(index) & 0x000000FF;
+		int green = dataBuffer.get(index+1) & 0x000000FF;
+		int blue = dataBuffer.get(index+2) & 0x000000FF;
+		int alpha = dataBuffer.get(index+3) & 0x000000FF;
+		
+		//normal
+		if (!doConversion)
+			return blue | green << 8 | red << 16 | alpha << 24;
+		
+		//yuv angenommen
+		int _red = (int)(1.164*(double)(red-16)+1.596*(double)(blue-128));
+		int _green = (int)(1.164*(double)(red-16)-0.813*(double)(blue-128)-0.391*(double)(green-128));
+		int _blue = (int)(1.164*(double)(red-16)+2.018*(double)(green-128));
+		
+		_red = clamp(_red);
+		_green = clamp(_green);
+		_blue = clamp(_blue);
+		
+		return _blue | _green << 8 | _red << 16 | alpha << 24;
+	}
+	
+	private int clamp(int value){
+		if (value >=255)
+			return 255;
+		if (value <= 0)
+			return 0;
+		else return value;
+	}
+	
 	public BufferedImage getBufferedImage(){
-		int calc_width = full_width;
-		int calc_height = full_height;
-		
-		BufferedImage res = new BufferedImage(calc_width, calc_height, BufferedImage.TYPE_INT_ARGB);
-		
-		int[] colors = getARGBArray();
-		if (colors.length == 0)
-			throw new RuntimeException("Null");
-		
-		for (int y = 0; y < calc_height; y++){
-			for (int x = 0; x < calc_width; x++){
-				int rgb = colors[y*calc_width+x] & 0x00111111;
-				res.setRGB(x, y, rgb);
+		getData();
+		BufferedImage ret = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+	
+		for (int y = 0; y < height; y++){
+			for (int x=0; x<width; x++){
+				int index = (x + (y * width))*4;
+				int col = getColorAt(index);
+				ret.setRGB(x, y, col);
 			}
-			
 		}
-		
-		return res;
+		//printData();
+		return ret;
 	}
 	
-	public Color[][] getColorArray(){
-		int calc_width = full_width;
-		int calc_height = full_height;
+	public byte[][] getGrayArray(){
+		getData();
 		
-		Color[][] res = new Color[calc_width][];
-		for (int i = 0; i < res.length; i++){
-			res[i] = new Color[calc_height];
+		byte[][] ret = new byte[width][];
+		for (int i = 0; i < ret.length; i++){
+			ret[i] = new byte[height];
 		}
 		
-		int[] colors = getARGBArray();
-		
-		for (int y = 0; y < calc_height; y++){
-			for (int x = 0; x < calc_width; x++){
-				int rgb = colors[y*calc_width+x] & 0x00111111;
-				res[x][y] = new Color(rgb);
+		for (int y = 0; y < height; y++){
+			for (int x = 0; x < width; x++){
+				int index = (x + (y * width))*4;
+				
+				int color = getColorAt(index);
+				
+				int blue = color&0x000000FF;
+				int green = (color >> 8) & 0x000000FF;
+				int red = (color>>16) & 0x000000FF;
+				
+				ret[x][y] = (byte)((int)((float)(red+green+blue)/3.0f));
 			}
-			
 		}
 		
-		return res;
+		
+		return ret;
 	}
 	
-	public byte[][] getGrayscaleArray(byte[][] buffer){
-		int calc_width = full_width;
-		int calc_height = full_height;
-		
-		byte[] grays = getGrayArray();
-		
-		for (int y = 0; y < calc_height; y++){
-			for (int x = 0; x < calc_width; x++){
-				byte color = grays[y*calc_width+x];
-				buffer[x][y] = color;
-			}
-			
+	public float getTime(){
+		return getTime;
+	}
+	
+	public void printData(){
+		for (int i = 0; i< 100; i++){
+			System.out.print((int)(dataBuffer.get()&0x000000FF)+", ");
 		}
-		
-		return buffer;
 	}
-	
-	public byte[][] getGrayscaleArray(){
-		int calc_width = full_width;
-		int calc_height = full_height;
-		
-		byte[][] res = new byte[calc_width][];
-		for (int i = 0; i < res.length; i++){
-			res[i] = new byte[calc_height];
-		}
-		
-		return getGrayscaleArray(res);
-	}
-	
 
 }

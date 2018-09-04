@@ -1,8 +1,11 @@
 package com.koehlert.camera;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -13,24 +16,38 @@ public class Tester {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Camera camera = new Camera(640,480,10);
-		camera.init();
+		
+		
+		Camera c = new Camera(640,480,30,false);
+		
+		c.init();
 		System.out.println("Initialized Camera");
 		
-		for (int i = 0; i < 10; i++){
-			
-			BufferedImage img = camera.getBufferedImage();
-			System.out.println("Got Image");
+		BufferedImage[] arr = new BufferedImage[20];
+		
+		for (int i=0; i<arr.length; i++){
+			arr[i] = c.getBufferedImage();
+		}
+		
+		for (int i = 0; i < arr.length; i++){
+			File f = new File("image"+i+".jpg");
 			try {
-				File dest = new File("Image"+i+".jpg");
-				ImageIO.write(img, "JPG", dest);
-				System.out.println("Written to:"+dest.getAbsolutePath());
+				ImageIO.write(arr[i],"jpg",f);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		camera.close();
+		BufferedImage nachz = c.getBufferedImage();
+		try {
+			ImageIO.write(nachz,"jpg",new File("nachz.jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		c.close();
+		
 		
 	}
 
