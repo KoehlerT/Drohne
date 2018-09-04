@@ -1,7 +1,10 @@
 package hardware.communication;
 
+import java.util.List;
+
 import main.Daten;
 import main.ProgramState;
+import utility.Blume;
 
 public class Datapackager {
 	
@@ -12,8 +15,8 @@ public class Datapackager {
 	//-------------------------------------------BASIS------------------------------------------------------
 	
 	public static byte[] packageTransmit() {
-		byte[] toTransmit = new byte[23];
-		toTransmit[0] = Daten.getContWord();
+		byte[] toTransmit = new byte[46];
+		toTransmit[0] = ProgramState.getInstance().getNextSeningWord();
 		//GPS
 		writeGPS(toTransmit);
 		//Powers
@@ -24,6 +27,9 @@ public class Datapackager {
 		toTransmit[16] = (byte)(alt >> 8);
 		
 		writeStatusInfo(toTransmit);
+		writeControls(toTransmit);
+		writeConsoleChars(toTransmit);
+		writeBlumen(toTransmit);
 		
 		return toTransmit;
 	}
@@ -81,6 +87,55 @@ public class Datapackager {
 		buffer[22] = (byte)Daten.getCommunicatorRefresh();
 	}
 	
+	private static void writeControls(byte[] buffer) {
+		int thr = Daten.getThrottle() -1000;
+		int rll = Daten.getRoll()-1000;
+		int pth = Daten.getPitch()-1000;
+		int yaw = Daten.getYaw()-1000;
+		
+		buffer[23] = (byte)thr;
+		buffer[24] = (byte)(thr >> 8);
+		buffer[25] = (byte)rll;
+		buffer[26] = (byte)(rll >> 8);
+		buffer[27] = (byte)pth;
+		buffer[28] = (byte)(pth >> 8);
+		buffer[29] = (byte)yaw;
+		buffer[30] = (byte)(yaw >> 8);
+		
+	}
+	
+	private static void writeConsoleChars(byte[] buffer) {
+		for (int i = 0; i < 3; i++) {
+			char next = Daten.getNextConsole();
+			buffer[31 + (i*2)] = (byte)next;
+			buffer[31 + (i*2) +1] = (byte)(next >> 8);
+		}
+		//bis buffer[36]
+	}
+	
+	private static void writeBlumen(byte[] buffer) {
+		List<Blume> bl = Daten.getBlumen();
+		//übertrage 3 Blumen
+		//1. Byte relx 2.byte rel y 3.byte dist (cm)
+		for (int i = 0; i < 3; i++) {
+			byte x = 0;
+			byte y = 0;
+			byte dist = 0;
+			
+			if (bl.size() > i) {
+				Blume akt = bl.get(i);
+				x = (byte)(akt.relX() * 100.0f);
+				y = (byte)(akt.relY() * 100.0f);
+				dist = (byte)akt.getDist();
+			}
+			
+			buffer[37+(i*3)+0] = x;
+			buffer[37+(i*3)+1] = y;
+			buffer[37+(i*3)+2] = dist;
+			
+		}
+		//bis buffer[45]
+	}
 	
 	public static void untangleReceived(byte[] received) {
 		byte controlWord = received[1];
@@ -126,16 +181,15 @@ public class Datapackager {
 		
 		int looptime = buffer[9] & 0x000000FF;
 		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
-		System.out.println("Arduino Loop: "+looptime);
+		
+		System.out.println("ARD: "+looptime + " alt:  "+(((float)powers[2]/100f)-2));
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
-		Daten.setVoltage3v((float)powers[2]/1000f);
-		Daten.setVoltageMain((float)powers[1] * 5000f); //Die Spannung liegt im 5-fachen der Versorgungsspannung?!
-		Daten.setAmperage(((float)powers[0] / 185f) -15f ); //185 mV/A
+		Daten.setVoltage3v((((float)powers[2]/100f)-2));
+		Daten.setVoltageMain(((float)powers[0] / 1000f)); 
+		Daten.setAmperage(((float)powers[1]/1000f));
 		Daten.setArduinoRefresh((int)(1f/((float)looptime/1000_000f)));
 	}
-	
-	
 	public static void printBinaryArray(byte[] bin) {
 		for (int i = 0; i < bin.length; i++) {
 			byte content = bin[i];

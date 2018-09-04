@@ -6,7 +6,7 @@ public class Bild {
 	/*Objekte dieser Klasse halten informationen über die einzelnen Bilder
 	 * */
 	
-	private int aufnahmeDauer = 0;
+	private float aufnahmeDauer = 0;
 	private Date aufnahmeZeit;
 	private byte[][] imageData;
 	private int referenced = 0;
@@ -14,7 +14,7 @@ public class Bild {
 	public Bild() {
 		
 	}
-	public void changeData(byte[][] data, int dauer, Date zeit) {
+	public void changeData(byte[][] data, float dauer, Date zeit) {
 		//Bilddaten werden geupdatet. Wichtig für den BildPool zum Funktionieren
 		//Anstatt das ein neues Objekt erstellt wird, wird das alte mit neuen Daten ausgestattet
 		referenced = 0;
@@ -39,6 +39,6 @@ public class Bild {
 	
 	//Getter für die anderen Informationen GEHEIMNIS!!
 	public byte[][] getImageData() {return imageData;} 
-	public int getDauer() {return aufnahmeDauer;}
+	public float getDauer() {return aufnahmeDauer;}
 	public Date getzeit() {return aufnahmeZeit;}
 }

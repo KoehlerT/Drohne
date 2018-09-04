@@ -1,10 +1,13 @@
 package steuerung;
 
+import main.ControlWordHandler;
 import main.Data;
+import utillity.FlyingMode;
 
 public class ControllerInfo {
 	//Dank an: https://www.codeproject.com/Articles/26949/Xbox-Controller-Input-in-C-with-XInput
 	
+	public static boolean Hold = false;
 	
 	static {
 		if (System.getProperty("sun.arch.data.model").equals("64")) {
@@ -51,10 +54,6 @@ public class ControllerInfo {
 		System.out.println("Controller Init: "+res);
 	}
 	
-	//TODO: Einheitliches Statussystem
-	boolean down = false;
-	boolean off = false;
-	
 	public void Update() {
 		//B: Not Aus
 		//A: Throttle = 0
@@ -62,30 +61,90 @@ public class ControllerInfo {
 		//Linkes Pad Y - -> Throttle Down
 		
 		if (isConnected()) {
+			boolean änderung = false;
+			
+			
 			//Controls
-			if (getGamepad_B()) {
-				off = !off;
+			if (getGamepad_B()) { //Not Aus
+				Data.setFlyingMode(FlyingMode.FORCESTOP);
+				änderung = true;
 			}
-			if (getGamepad_A()) {
-				down = !down;
+			if (getGamepad_A()) { //Landen
+				Data.setFlyingMode(FlyingMode.FORCEDOWN);
+				änderung = true;
 			}
+			
+			if (getGamepad_Y()) {
+				Data.setFlyingMode(FlyingMode.AUTOMATIC);
+				änderung = true;
+			}
+			
+			if (getGamepad_X()) { //Beep
+				Data.setFlyingMode(FlyingMode.MANUAL);
+				änderung = true;
+			}
+			
+			if (getGamepad_SH_RIGHT()) {
+				ControlWordHandler.getInstance().addSendingWord((byte)0x2);
+			}
+			
+			if (getGamepad_SH_LEFT()) {
+				Hold = !Hold;
+				System.out.println("Hold: "+Hold);
+			}
+			
 			//Rotationen
-			Data.setCont_yaw(mapValueAxes(getThumb_LX()));
-			Data.setCont_pitch(mapValueAxes(getThumb_RY()));
-			Data.setCont_roll(mapValueAxes(getThumb_RX()));
+			int yaw = (mapValueAxesYaw(getThumb_LX()));
+			int pitch= (3000-mapValueAxes(getThumb_RY()));
+			int roll = (mapValueAxes(getThumb_RX()));
 			
 			//Throttle
 			int old = Data.getCont_throttle().getWert();
-			Data.setCont_throttle(getThrottle(old,getThumb_LY()));
+			int throttle = (getThrottle(old,getThumb_LY()));
 			
 			//Set Exordinary Status
-			//TODO: Nur einmal Wert setzen!
-			if (off) {
-				Data.setCont_throttle(1000);
-				Data.setCont_pitch(1000);
-			}if (down) {
-				Data.setCont_throttle(1000);
+			FlyingMode mode = Data.getFlyingMode();
+			if (mode == FlyingMode.FORCESTOP) {
+				throttle = (1000);
+				yaw = (1000);
+			}if (mode == FlyingMode.FORCEDOWN) {
+				throttle = (1000);
+			}if (Hold) {
+				throttle = 1500;
 			}
+			
+			//D-Pad steuerung
+			if (getGamepad_D_UP()) {
+				pitch = 1450;
+			}
+			if (getGamepad_D_DOWN()) {
+				pitch = 1550;
+			}if (getGamepad_D_LEFT()) {
+				roll = 1450;
+			}if (getGamepad_D_RIGHT()) {
+				roll = 1550;
+			}
+			
+			
+			//Setze neue Werte
+			Data.setCont_throttle(throttle);
+			Data.setCont_roll(roll);
+			Data.setCont_pitch(pitch);
+			Data.setCont_yaw(yaw);
+			
+			//Control Word
+			if (änderung) {
+				byte cw = (byte)0x15;
+				if (mode == FlyingMode.AUTOMATIC)
+					cw = (byte) 0x16;
+				if (mode == FlyingMode.FORCEDOWN)
+					cw = (byte) 0x14;
+				if (mode == FlyingMode.FORCESTOP)
+					cw = (byte) 0x12;
+				
+				ControlWordHandler.getInstance().addSendingWord(cw);
+			}
+			
 			
 		}else {
 			System.out.println("Controller Fehler! Nicht Verbunden!");
@@ -97,6 +156,22 @@ public class ControllerInfo {
 		//Wert von -32768 - 32767
 		value += 32796;
 		float scale = (value/65536f);
+		if (scale < 0.55 && scale > 0.45) {
+			scale = 0.5f;
+		}
+		int result = (int)(scale * 500);
+		//Wert von 1000 - 2000
+		return clamp(result + 1250);
+	}
+	
+
+	private int mapValueAxesYaw(int value) {
+		//Wert von -32768 - 32767
+		value += 32796;
+		float scale = (value/65536f);
+		if (scale < 0.7 && scale > 0.3) {
+			scale = 0.5f;
+		}
 		int result = (int)(scale * 1000);
 		//Wert von 1000 - 2000
 		return clamp(result + 1000);
@@ -112,10 +187,11 @@ public class ControllerInfo {
 	}
 	
 	private int getThrottle(int oldThrottle, int value) {
-		float scale = value/32768f;
-		if (scale < 0.2f && scale > -0.2f)
-			scale = 0;
-		int result = (int)(scale * 100);
+		float scale = (value+32768)/65536f;
+		if (scale < 0.55f && scale > 0.45f)
+			scale = 0.6f;
+		int result = (int)(scale * 150);
+		result -=90;
 		return clamp(oldThrottle+result);
 	}
 }

@@ -18,24 +18,19 @@ public class ComThread extends Thread{
 		this.setName("Communication");
 		
 		if (Info.sensorAttached) {
-			try {
-				arduinoMng = new Arduino();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			arduinoMng = new Arduino();
 		}
 		
 		wlanServer = new WlanServer();
 		
-		//ant = new Antenne();
+		//ant = new Antenne(); Timeout
 		
 	}
 	
 	@Override
 	public void run() {
 		wlanServer.acceptClients();
-		while (running) {
+		while (Daten.running) {
 			startTime = System.nanoTime();
 			
 			if (Info.sensorAttached) {
@@ -53,7 +48,17 @@ public class ComThread extends Thread{
 			
 			int duration = (int)(System.nanoTime() - startTime);
 			Daten.setCommunicatorRefresh((int)(1f/((float)duration/1000_000_0000f))); //in 10Hz
+			
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
+		wlanServer.closeConnection();
+		arduinoMng.closeConnection();
 		
 	}
 	

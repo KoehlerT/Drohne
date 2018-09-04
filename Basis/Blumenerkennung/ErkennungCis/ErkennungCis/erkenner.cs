@@ -108,6 +108,12 @@ namespace ErkennungCis
             byte gray = (byte)((c.R + c.G + c.B) / 3f); //- Linear, wenn direkt returnt
             //return gray;
             //Schlechter (Grün-) Filter
+
+            if (gray < 125)
+                return 0;
+            else
+                return 255;
+
             if (c.R < 100)
                 gray = 0;
             return (byte)(255*(1/(1+Math.Pow(Math.E,-0.025*(gray-127)))));//Sigmoid
@@ -204,9 +210,11 @@ namespace ErkennungCis
 
         private void maleErgebnisse(Blume[] erg)
         {
+            Debug.WriteLine("Male {0} Blumen", erg.Length);
             foreach (Blume b in erg)
             {
                 //Mittelpunkt einzeichnen
+                Debug.WriteLine("Blume ({0}|{1}) entf: {2}", b.mitte.X, b.mitte.Y, b.entfernung);
                 form.drawPoint(b.mitte.X, b.mitte.Y);
                 form.drawEll(b.mitte.X, b.mitte.Y, b.rad);
                 form.showText(b.mitte.X, b.mitte.Y, String.Format("entf: {0}cm", b.entfernung));

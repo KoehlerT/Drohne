@@ -1,5 +1,13 @@
 package main;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+
+import utility.FlyingMode;
 import utility.Vector3;
+import utility.Blume;
 
 public class Daten {
 	/*Klasse für alle Sensor und Flugdaten
@@ -10,6 +18,9 @@ public class Daten {
 	private static int refreshArduino;
 	private static int refreshCommunicator;
 	private static int refreshSensorread;
+	private static FlyingMode mode;
+	
+	public static boolean running = true;;
 	
 	//Variablen: 
 	//Fliegen, Fernbediengungersatz
@@ -17,6 +28,11 @@ public class Daten {
 	private static int cont_roll; //Wert von 1000-2000 Links- Rechtsneigung der Drohne
 	private static int cont_pitch; //Wert von 1000-2000 Vor- Zurückneigung der Drohne
 	private static int cont_yaw; //Wert von 1000-2000 Links- Rechtsdrehung der Drohne
+	
+	private static int throttle;
+	private static int roll;
+	private static int pitch;
+	private static int yaw;
 	
 	//Sensorwerte Strom
 	private static float voltageMain = 10; //Spannung der Hauptstromversorgung (11V)
@@ -35,21 +51,30 @@ public class Daten {
 	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
 	private static float temperature;
 	private static float pressure;
+	private static List<Blume> blumen = new ArrayList<Blume>(10);
+	
 	
 	//Statusinformationen
 	private static int numGpsSatellites;
 	private static boolean gpsAvailable;
+	private static Queue<Character> console = new ArrayBlockingQueue<Character>(200);
 	
 	//Getter
 	public static synchronized byte getContWord() {return controlWord;}
 	public static synchronized int getArduinoRefresh() {return refreshArduino;}
 	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
 	public static synchronized int getSensorRefresh() {return refreshSensorread;}
+	public static synchronized FlyingMode getFlyingMode() {return mode;}
 	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
 	public static synchronized int getCont_roll() {return cont_roll;}
 	public static synchronized int getCont_pitch() {return cont_pitch;}
 	public static synchronized int getCont_yaw() {return cont_yaw;}
+	
+	public static synchronized int getThrottle() {return throttle;}
+	public static synchronized int getRoll() {return roll;}
+	public static synchronized int getPitch() {return pitch;}
+	public static synchronized int getYaw() {return yaw;}
 	
 	public static synchronized float getVoltageMain() {return voltageMain;}
 	public static synchronized float getVoltage5v() {return voltage5v;}
@@ -61,6 +86,7 @@ public class Daten {
 	public static synchronized float getLongitude() {return longitude;}
 	public static synchronized float getGpsAltitude() {return gpsAltitude;}
 	public static synchronized float getPrsAltitude() {return prsAltitude;}
+	public static synchronized List<Blume> getBlumen() {return blumen;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
 	public static synchronized float getTemperature() {return temperature;}
@@ -68,17 +94,24 @@ public class Daten {
 	
 	public static synchronized int getNumGpsSatellites() {return numGpsSatellites;}
 	public static synchronized boolean getGpsAvailable() {return gpsAvailable;}
+	public static synchronized char getNextConsole() {return (console.peek()==null)?0:console.poll();}
 	
 	//Setter
 	public static synchronized void setControlWord(byte cw) {controlWord = cw;}
 	public static synchronized void setArduinoRefresh(int lt) {refreshArduino = lt;}
 	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}
 	public static synchronized void setSensorRefresh(int rf) { refreshSensorread = rf;}
+	public static synchronized void setFlyingMode(FlyingMode newMode) {mode = newMode;}
 	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
 	public static synchronized void setCont_roll(int rl) {cont_roll = rl;}
 	public static synchronized void setCont_pitch(int pt) {cont_pitch = pt;}
 	public static synchronized void setCont_yaw(int yw) {cont_yaw = yw;}
+	
+	public static synchronized void setThrottle(int thr) {throttle = thr;}
+	public static synchronized void setRoll(int rll) {roll = rll;}
+	public static synchronized void setPitch(int pth) {pitch = pth;}
+	public static synchronized void setYaw(int yw) {yaw = yw;}
 	
 	public static synchronized void setVoltageMain(float vm) {voltageMain = vm;}
 	public static synchronized void setVoltage5v(float v5) {voltage5v = v5;}
@@ -90,6 +123,7 @@ public class Daten {
 	public static synchronized void setLongitude(float lt) {longitude = lt;}
 	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
 	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
+	public static synchronized void setNewBlumen(Blume[] bl) {blumen.clear();blumen.addAll(Arrays.asList(bl));}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
 	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}
@@ -97,6 +131,11 @@ public class Daten {
 	
 	public static synchronized void setNumGpsSatellites(int sat) {numGpsSatellites = sat;}
 	public static synchronized void setGpsAvailable(boolean available) {gpsAvailable = available;}
+	public static synchronized void addConsole(String str) {
+		if (console.size() + str.length() > 199)
+			return;
+		for (char c : str.toCharArray()) {console.add(c);}
+	}
 }
 
 

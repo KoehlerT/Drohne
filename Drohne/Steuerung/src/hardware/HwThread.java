@@ -22,13 +22,15 @@ class HwThread extends Thread{
 	public HwThread() {
 		this.setName("Hardware");
 		
-		if (Info.sensorAttached)
+		if (Info.sensorAttached) {
 			ultrasonic = new Ultrasonic();
+			//alt = new Altitude(Altitude.MODE_STANDARD);
+		}
+			
 		
 		beeper = new Beeper();
-		alt = new Altitude(Altitude.MODE_STANDARD);
 		
-		gps = new GPS();
+		//gps = new GPS();
 	}
 	
 	@Override
@@ -36,11 +38,11 @@ class HwThread extends Thread{
 		
 		System.out.println("SPI Run "+running);
 		beeper.beep(50);
-		while(running) {
+		while(Daten.running) {
 			long startTime = System.nanoTime();
 			//Nehme Variablen
 			if (Info.sensorAttached) {
-				//SPI
+				//SPI -> Kommunikation
 				
 				//Ultraschall
 				try {
@@ -49,6 +51,9 @@ class HwThread extends Thread{
 					System.out.println("Fehler beim Messen der Entfernung");
 					e.printStackTrace();
 				}
+				
+				//Altitude
+				//alt.readAllSensorData();
 			}
 			//GPS
 			//Automatisch / Event driven
@@ -57,13 +62,9 @@ class HwThread extends Thread{
 			//Beeper
 			beeper.workBeeps();
 			
-			//Altitude
-			alt.readAllSensorData();
-			
-			
 			Daten.setSensorRefresh((int)(1f/((float)(System.nanoTime()-startTime)/1000_000_000f)));
 			//Warte ein wenig
-			//try {Thread.sleep(200);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}

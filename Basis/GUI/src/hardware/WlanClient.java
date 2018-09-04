@@ -23,7 +23,7 @@ public class WlanClient {
 	
 	public void connect() {
 		try {
-			server = new Socket("192.168.1.2", 1213);
+			server = new Socket("192.168.1.1", 1213);
 			System.out.println("Verbunden");
 			inFromServer = new Scanner(server.getInputStream());
 			outToServer = new PrintStream(server.getOutputStream());
@@ -49,12 +49,12 @@ public class WlanClient {
 	}
 	
 	public void receive() {
-		while(!connected);
+		//while(!connected);
 		
-		byte[] buffer = new byte[24];
+		byte[] buffer = new byte[47];
 		try {
-			int read = server.getInputStream().read(buffer, 1, 23);
-			if (read >= 23) {
+			int read = server.getInputStream().read(buffer, 1, 46);
+			if (read >= 46) {
 				packageReady(buffer);
 			}
 				

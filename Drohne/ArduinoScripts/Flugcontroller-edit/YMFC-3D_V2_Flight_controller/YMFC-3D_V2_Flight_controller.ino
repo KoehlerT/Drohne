@@ -26,9 +26,9 @@ MPU9250 myIMU;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-float pid_p_gain_roll = 1;               //Gain setting for the roll P-controller (1.3)
+float pid_p_gain_roll = 1.7;               //Gain setting for the roll P-controller (1.3) 0.9
 float pid_i_gain_roll = 0;              //Gain setting for the roll I-controller (0.05)
-float pid_d_gain_roll = 0;                //Gain setting for the roll D-controller (15)
+float pid_d_gain_roll = 30;                //Gain setting for the roll D-controller (15)
 int pid_max_roll = 400;                    //Maximum output of the PID-controller (+/-)
 
 float pid_p_gain_pitch = pid_p_gain_roll;  //Gain setting for the pitch P-controller.
@@ -36,8 +36,8 @@ float pid_i_gain_pitch = pid_i_gain_roll;  //Gain setting for the pitch I-contro
 float pid_d_gain_pitch = pid_d_gain_roll;  //Gain setting for the pitch D-controller.
 int pid_max_pitch = pid_max_roll;          //Maximum output of the PID-controller (+/-)
 
-float pid_p_gain_yaw = 1;                //Gain setting for the pitch P-controller. //4.0
-float pid_i_gain_yaw = 0;               //Gain setting for the pitch I-controller. //0.02
+float pid_p_gain_yaw = 3.0;                //Gain setting for the pitch P-controller. //4.0
+float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-controller. //0.02
 float pid_d_gain_yaw = 0;                //Gain setting for the pitch D-controller.
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-)
 
@@ -67,6 +67,9 @@ float pid_i_mem_yaw, pid_yaw_setpoint, gyro_yaw_input, pid_output_yaw, pid_last_
 byte datenplatzhalter[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}; //Daten zur Übermittlung an den Raspberry PI
 byte controllerInputs[8]; //Inputs vom Controller
 int looptime = 1;
+int timeout = 0;
+float Vcc; //Errechnen der Spannungen
+
 
 //Flugdaten
 int startLuftdruck;
@@ -160,6 +163,12 @@ void setup(){
   //The variable battery_voltage holds 1050 if the battery voltage is 10.5V. centiVolt
   battery_voltage = getBatteryVoltage();
 
+
+  //Read Reverence voltage
+  prepeareVoltage();
+  delay(2);
+  readVcc();
+
   //When everything is done, turn off the led.
   digitalWrite(8,LOW);                                        //Turn off the warning led.
 }
@@ -169,11 +178,15 @@ void setup(){
 void loop(){
   //if(start == 2){ Serial.print(gyro_roll,0); Serial.print(";"); Serial.print(gyro_pitch,0); Serial.print(";"); Serial.println(gyro_yaw,0); }
 
-  
+
   /*receiver_input_channel_1 = convert_receiver_channel(1);      //Convert the actual receiver signals for pitch to the standard 1000 - 2000us.
   receiver_input_channel_2 = convert_receiver_channel(2);      //Convert the actual receiver signals for roll to the standard 1000 - 2000us.
   receiver_input_channel_3 = convert_receiver_channel(3);      //Convert the actual receiver signals for throttle to the standard 1000 - 2000us.
   receiver_input_channel_4 = convert_receiver_channel(4);      //Convert the actual receiver signals for yaw to the standard 1000 - 2000us.*/
+
+  //prepeare Voltage readings
+  prepeareVoltage();
+
   //Get Controller Inputs via SPI#
   receive();
   convert_integer(4,receiver_input_channel_1,last_received_1);
@@ -204,6 +217,8 @@ void loop(){
   }
   //Stopping the motors: throttle low and yaw right.
   if(start == 2 && receiver_input_channel_3 < 1050 && receiver_input_channel_4 > 1950)start = 0;
+  //Stopping the motors at timeout
+  if (start == 2 && timeout > 500){start = 0;} //500: 2s
 
   //The PID set point in degrees per second is determined by the roll receiver input.
   //In the case of deviding by 3 the max roll rate is aprox 164 degrees per second ( (500-8)/3 = 164d/s ).
@@ -229,6 +244,13 @@ void loop(){
   }
   //PID inputs are known. So we can calculate the pid output.
   calculate_pid();
+
+  //Read Voltages
+
+  if (looptime < 3000){ //nur wenn Zeit ist!
+      readVcc();
+      readVoltages();
+  }
 
   //The battery voltage is needed for compensation.
   //A complementary filter is used to reduce noise.
@@ -284,7 +306,7 @@ void loop(){
 #ifdef debug
   //printSensors();
   //printESCs();
-  printCIs();
+  printDirs();
   Serial.print(";");Serial.print(micros()-loop_timer);
   Serial.print(";");Serial.print(start);
   Serial.println();
@@ -308,7 +330,7 @@ void loop(){
   }
 }
 
-
+#ifdef debug
 void printCIs(){
     Serial.print("Throttle: ");Serial.print(receiver_input_channel_3); Serial.print(" Roll: ");Serial.print(receiver_input_channel_2);Serial.print(" Pitch: "); Serial.print(receiver_input_channel_1); Serial.print(" Yaw: "); Serial.print(receiver_input_channel_4);
 }
@@ -321,14 +343,70 @@ void printSensors(){
     Serial.print(gyro_pitch_input); Serial.print(";");Serial.print(gyro_roll_input);Serial.print(";");Serial.print(gyro_yaw_input);
 }
 
+void printDirs(){
+    Serial.print("Right Wing ");
+    if (gyro_roll_input > 0){
+        Serial.print("DOWN");
+    }else{
+        Serial.print("UP");
+    }
+    Serial.print(";");
+    Serial.print("Nose ");
+    if (gyro_pitch_input > 0){
+        Serial.print("UP");
+    }else{
+        Serial.print("DOWN");
+    }
+    Serial.print(";");
+    Serial.print("Nose ");
+    if (gyro_yaw_input > 0){
+        Serial.print("LEFT");
+    }else{
+        Serial.print("RIGHT");
+    }
+    Serial.print(";");
+}
+
 void printCal(){
     Serial.print("Calibration: ");Serial.print(gyro_axis_cal[1]);Serial.print(" ");Serial.print(gyro_axis_cal[2]);Serial.print(" ");Serial.println(gyro_axis_cal[3]);
 }
+
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //This routine is called every time input 8, 9, 10 or 11 changed state
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Hier stand der Code für seinen Receiver
+
+//For Accurate Voltage readings registers are set
+void prepeareVoltage(){
+    // Read 1.1V reference against AVcc
+    ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+    //delay(2); // Wait for Vref to settle
+}
+
+void readVcc(){
+    ADCSRA |= _BV(ADSC); // Convert
+    while (bit_is_set(ADCSRA,ADSC));
+    long vcc = ADCL;
+    vcc |= ADCH<<8;
+    vcc = 1125300L / vcc; // Back-calculate AVcc in mV
+    Vcc = vcc/1000.0f;
+}
+
+float readVoltage(int pin){
+    unsigned int ADCValue = analogRead(pin);
+    return (ADCValue / 1024.0f) * Vcc;
+}
+
+void readVoltages(){
+    //readVcc();
+    for (int v = 0; v < 4; v++) {
+        int voltage = (readVoltage(v)*1000);
+        datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
+        datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
+    }
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Subroutine for reading the gyro
@@ -343,8 +421,8 @@ gyro_axis[2] = (float)myIMU.gyroCount[1]*myIMU.gRes;                            
 gyro_axis[3] = (float)myIMU.gyroCount[2]*myIMU.gRes;
 
 gyro_axis[1] = -gyro_axis[1];
-gyro_axis[2] = -gyro_axis[2];
-gyro_axis[3] = -gyro_axis[3];
+gyro_axis[2] = -gyro_axis[2];//Meines erachtens nach falsch, funktioniert aber besser!!!
+gyro_axis[3] = -gyro_axis[3];//Meines erachtens nach falsch, funktioniert aber besser!!!
 
   if(cal_int == 2000){
     gyro_axis[1] -= gyro_axis_cal[1];                            //Only compensate after the calibration
@@ -355,11 +433,6 @@ gyro_axis[3] = -gyro_axis[3];
   if (cal_int == 2000){ //Only calculate if not calibrating
       //datenplatzhalter 10 Elemente!
       //Read Voltages
-      for (int v = 0; v < 4; v++) {
-          int voltage = analogRead(v)*adcScale;
-          datenplatzhalter[v*2] = (byte)(voltage &0x00FF);
-          datenplatzhalter[v*2+1] =(byte)(voltage >> 8);
-      }
       //Bis index 7
       //float altitude RasPI
       datenplatzhalter[8] = (byte)looptime;
@@ -429,11 +502,11 @@ void receive(){
       if (SPDR == (byte)'R'){
         SPDR = (byte)'A';
         s = 0;
+        timeout = 0; //Wieder Daten angekommen
       }else{
         return;//Sollte nicht eintreffen, aber ohne Handshake keine Datenübermittlung
       }
       //Alle Daten werden verschickt
-      //50 bytes ca. 200ms
       while (s < sizeof(datenplatzhalter)){
         if ((SPSR & (1<<SPIF)) != 0){
           SPDR = datenplatzhalter[s];
@@ -445,7 +518,11 @@ void receive(){
           //Empfangen = SPDR
         }
       }
-    }
+  }else{
+      //Keine Daten wurden verschickt/ Empfangen
+      timeout ++;
+
+  }
 }
 
 

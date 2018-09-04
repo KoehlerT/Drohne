@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import main.Data;
+import utillity.FlyingMode;
 
 public class ManuManager implements KeyListener{
 
@@ -55,7 +56,7 @@ public class ManuManager implements KeyListener{
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		if (!Data.getManuMode())
+		if (Data.getFlyingMode() != FlyingMode.MANUAL)
 			return;
 		
 		

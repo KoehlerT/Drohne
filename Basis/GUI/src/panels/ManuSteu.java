@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import main.Data;
 import steuerung.ManuManager;
+import utillity.FlyingMode;
 
 public class ManuSteu  {
 	
@@ -64,17 +65,16 @@ public class ManuSteu  {
     }
     
     public void toggleManu() {
-    	boolean manu = Data.getManuMode();
+    	FlyingMode mode = Data.getFlyingMode();
     	
-    	manu = !manu;
-    	
-    	if (manu) {
+    	if (mode == FlyingMode.AUTOMATIC) {
+    		Data.setFlyingMode(FlyingMode.MANUAL);
     		enabledL.setText("Manueller Modus");
     	}else {
+    		Data.setFlyingMode(FlyingMode.AUTOMATIC);
     		enabledL.setText("Automatischer Modus");
     	}
-    	setColors(manu);
-    	Data.setManuMode(manu);
+    	setColors(mode == FlyingMode.AUTOMATIC);
     }
     
     public void updateLabels() {

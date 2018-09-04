@@ -65,6 +65,8 @@ public class Altitude{
 	
 	private int Mode;
 	
+	private double altitude_old = 0;
+	
 	public Altitude(int mode) {
 		Mode = mode;
 		//findAvailableBusses();
@@ -173,6 +175,11 @@ public class Altitude{
 		double altitude = 0f;
 		double pressure = (float)readPressure();
 		altitude = 44330.0 * (1.0 - Math.pow(pressure/seaLevelPressure, 0.1903));
+		
+		if (altitude_old == 0)
+			altitude_old = altitude;
+		
+		altitude = (altitude * 0.5) + (altitude_old * 0.5);
 		
 		return (float)altitude;
 	}

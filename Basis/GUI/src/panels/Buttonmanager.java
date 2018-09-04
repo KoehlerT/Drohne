@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.*;
 
 import main.Data;
-import main.ProgramState;
+import main.ControlWordHandler;
 
 public class Buttonmanager {
 	
@@ -59,7 +59,7 @@ public class Buttonmanager {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.out.println("Wir starten");
-						ProgramState.getInstance().addSendingWord((byte)0x2);
+						ControlWordHandler.getInstance().addSendingWord((byte)0x2);
 					}});
 				startB.setText("START");
 				startB.setBackground(Color.GREEN);
