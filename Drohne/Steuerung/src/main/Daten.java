@@ -1,6 +1,7 @@
 package main;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -19,6 +20,7 @@ public class Daten {
 	private static int refreshCommunicator;
 	private static int refreshSensorread;
 	private static FlyingMode mode;
+	private static long lastComm;
 	
 	public static boolean running = true;;
 	
@@ -65,6 +67,7 @@ public class Daten {
 	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
 	public static synchronized int getSensorRefresh() {return refreshSensorread;}
 	public static synchronized FlyingMode getFlyingMode() {return mode;}
+	public static synchronized long getLastComm() {return lastComm;}
 	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
 	public static synchronized int getCont_roll() {return cont_roll;}
@@ -102,6 +105,7 @@ public class Daten {
 	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}
 	public static synchronized void setSensorRefresh(int rf) { refreshSensorread = rf;}
 	public static synchronized void setFlyingMode(FlyingMode newMode) {mode = newMode;}
+	public static synchronized void setLastComm(long time) {lastComm = time;}
 	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
 	public static synchronized void setCont_roll(int rl) {cont_roll = rl;}

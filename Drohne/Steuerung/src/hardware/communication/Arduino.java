@@ -54,7 +54,7 @@ public class Arduino {
 			yaw = 1000;
 		}
 		
-		System.out.println(throttle+" "+pitch+" "+roll+" "+yaw);
+		//System.out.println(throttle+" "+pitch+" "+roll+" "+yaw);
 		
 		writeToArray(toSend,throttle,0);
 		writeToArray(toSend,pitch,2);

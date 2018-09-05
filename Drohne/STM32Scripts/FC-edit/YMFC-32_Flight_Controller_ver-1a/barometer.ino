@@ -138,7 +138,7 @@ void barometer_getvalue(){
     calculateHeightMeter();
 
     #ifdef debug
-      printAlt();
+      //printAlt();
     #endif
   }
   
