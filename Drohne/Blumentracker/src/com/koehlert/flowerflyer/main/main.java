@@ -15,7 +15,11 @@ public class main {
 	static Recognizer rg;
 	static PictureWriter pw;
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
+		rundown();
+	}*/
+	
+	public static void rundown() {
 		System.out.println("Hello World");
 		pg = new PictureGetter();
 		rg = new Recognizer(3);

@@ -1,10 +1,8 @@
 package main;
 
-import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import flightmodes.FlightModeManager;
 import hardware.Beeper;
 import utility.FlyingMode;
 

@@ -12,7 +12,7 @@ import main.Info;
 public class Cam {
 	
 	static {
-		System.load("/lib/drohne/libpiCamera.so");
+		//System.load("/lib/drohne/libpiCamera.so");
 	}
 	
 	private float aufnahmezeit;

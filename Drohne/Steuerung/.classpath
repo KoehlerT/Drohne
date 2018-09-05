@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry including="bilderkennung/|flightmodes/|hardware/|kamera/|main/|main/Message.java|main/start.java|utility/" kind="src" path="src"/>
+	<classpathentry including="bilderkennung/|flightmodes/|flowertracking/|hardware/|kamera/|main/|main/Message.java|main/start.java|utility/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/jrpicam-1.1.1.jar"/>
 	<classpathentry kind="lib" path="libs/WlanClient.jar"/>
@@ -15,5 +15,6 @@
 	<classpathentry kind="lib" path="libs/ArduinoNativeLibrary.jar"/>
 	<classpathentry kind="lib" path="libs/RPICam.jar"/>
 	<classpathentry kind="lib" path="libs/LibSerialComm.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FlowerFlyer"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

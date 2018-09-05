@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 import bilderkennung.BildStart;
 import flightmodes.ControllingStart;
-import flightmodes.FlightModeManager;
 import kamera.KameraStart;
 import hardware.HwStart;
 import utility.*;
@@ -34,7 +33,7 @@ public class start {
 				Daten.running = false;
 			
 			try {
-				Thread.sleep(10);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

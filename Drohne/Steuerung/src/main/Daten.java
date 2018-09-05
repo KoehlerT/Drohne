@@ -1,13 +1,14 @@
 package main;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import com.koehlert.flowerflyer.main.Location;
+import com.koehlert.flowerflyer.main.Vector3;
+
 import utility.FlyingMode;
-import utility.Vector3;
 import utility.Blume;
 
 public class Daten {
@@ -36,6 +37,8 @@ public class Daten {
 	private static int pitch;
 	private static int yaw;
 	
+	private static Vector3 targetVel;
+	
 	//Sensorwerte Strom
 	private static float voltageMain = 10; //Spannung der Hauptstromversorgung (11V)
 	private static float voltage5v = 5; //Spannung der 5V schiene
@@ -43,7 +46,6 @@ public class Daten {
 	private static float amperage = 30; //Stromstärke bzw Stromverbrauch
 	
 	//Sensorwerte Position 
-	private static Vector3 tilt; //Item1: roll Item2: pitch Item3: Yaw
 	private static float latitude;
 	private static float longitude;
 	private static float gpsAltitude;
@@ -54,6 +56,7 @@ public class Daten {
 	private static float temperature;
 	private static float pressure;
 	private static List<Blume> blumen = new ArrayList<Blume>(10);
+	private static Location target;
 	
 	
 	//Statusinformationen
@@ -74,6 +77,8 @@ public class Daten {
 	public static synchronized int getCont_pitch() {return cont_pitch;}
 	public static synchronized int getCont_yaw() {return cont_yaw;}
 	
+	public static synchronized Vector3 getTargetVel() {return targetVel;}
+	
 	public static synchronized int getThrottle() {return throttle;}
 	public static synchronized int getRoll() {return roll;}
 	public static synchronized int getPitch() {return pitch;}
@@ -84,12 +89,12 @@ public class Daten {
 	public static synchronized float getVoltage3v() {return voltage3v;}
 	public static synchronized float getAmperage() {return amperage;}
 	
-	public static synchronized Vector3 getTilt() {return tilt;}
 	public static synchronized float getLatitude() {return latitude;}
 	public static synchronized float getLongitude() {return longitude;}
 	public static synchronized float getGpsAltitude() {return gpsAltitude;}
 	public static synchronized float getPrsAltitude() {return prsAltitude;}
 	public static synchronized List<Blume> getBlumen() {return blumen;}
+	public static synchronized Location getTarget() {return target;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
 	public static synchronized float getTemperature() {return temperature;}
@@ -112,6 +117,8 @@ public class Daten {
 	public static synchronized void setCont_pitch(int pt) {cont_pitch = pt;}
 	public static synchronized void setCont_yaw(int yw) {cont_yaw = yw;}
 	
+	public static synchronized void setTargetVel(Vector3 v) {targetVel = v;}
+	
 	public static synchronized void setThrottle(int thr) {throttle = thr;}
 	public static synchronized void setRoll(int rll) {roll = rll;}
 	public static synchronized void setPitch(int pth) {pitch = pth;}
@@ -122,12 +129,12 @@ public class Daten {
 	public static synchronized void setVoltage3v(float v3) {voltage3v = v3;}
 	public static synchronized void setAmperage(float ap) {amperage = ap;}
 	
-	public static synchronized void setTilt(Vector3 tlt) {tilt = tlt;}
 	public static synchronized void setLatitude(float lt) {latitude = lt;}
 	public static synchronized void setLongitude(float lt) {longitude = lt;}
 	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
 	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
 	public static synchronized void setNewBlumen(Blume[] bl) {blumen.clear();blumen.addAll(Arrays.asList(bl));}
+	public static synchronized void setTarget(Location loc) {target = loc;}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
 	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}
