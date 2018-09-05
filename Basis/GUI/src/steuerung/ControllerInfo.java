@@ -115,14 +115,14 @@ public class ControllerInfo {
 			
 			//D-Pad steuerung
 			if (getGamepad_D_UP()) {
-				pitch = 1450;
+				pitch = 1400;
 			}
 			if (getGamepad_D_DOWN()) {
-				pitch = 1550;
+				pitch = 1600;
 			}if (getGamepad_D_LEFT()) {
-				roll = 1450;
+				roll = 1400;
 			}if (getGamepad_D_RIGHT()) {
-				roll = 1550;
+				roll = 1600;
 			}
 			
 			
