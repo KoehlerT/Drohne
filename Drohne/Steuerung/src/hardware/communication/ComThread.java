@@ -1,25 +1,18 @@
 package hardware.communication;
 
-import java.io.IOException;
-
 import main.Daten;
 import main.Info;
 
 public class ComThread extends Thread{
 	
-	private Antenne ant;
+	//private Antenne ant;
 	private WlanServer wlanServer;
-	private Arduino arduinoMng;
+	//private Arduino arduinoMng;
 	
-	private boolean running = true;
 	private long startTime;
 	
 	public ComThread() {
 		this.setName("Communication");
-		
-		if (Info.sensorAttached) {
-			arduinoMng = new Arduino();
-		}
 		
 		wlanServer = new WlanServer();
 		
@@ -32,10 +25,6 @@ public class ComThread extends Thread{
 		wlanServer.acceptClients();
 		while (Daten.running) {
 			startTime = System.nanoTime();
-			
-			if (Info.sensorAttached) {
-				arduinoMng.sendControllerInputs();
-			}
 			
 			//Antenne
 			//ant.receive();
@@ -58,7 +47,6 @@ public class ComThread extends Thread{
 		}
 		
 		wlanServer.closeConnection();
-		arduinoMng.closeConnection();
 		
 	}
 	

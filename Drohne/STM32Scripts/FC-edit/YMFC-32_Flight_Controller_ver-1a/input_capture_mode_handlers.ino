@@ -3,6 +3,7 @@ char receive[10];
 char transmit[10];
 char last_byte = '\0';
 unsigned long lastComm = 0;
+int channel_1_temp, channel_2_temp, channel_3_temp, channel_4_temp;
 
 unsigned long CommunicationDuration;
 
@@ -53,10 +54,22 @@ void getRaspberryInfo(){
 }
 
 void convertToReceiver(){
-  channel_3 = (receive[1] << 8) | receive[0]; //Throttle
-  channel_1 = (receive[5] << 8) | receive[4]; //Roll
-  channel_2 = (receive[3] << 8) | receive[2]; //Pitch
-  channel_4 = (receive[7] << 8) | receive[6]; //Yaw
+  channel_3_temp = (receive[1] << 8) | receive[0]; //Throttle
+  channel_1_temp = (receive[5] << 8) | receive[4]; //Roll
+  channel_2_temp = (receive[3] << 8) | receive[2]; //Pitch
+  channel_4_temp = (receive[7] << 8) | receive[6]; //Yaw
+
+  if (outOfRange(channel_3_temp)|| outOfRange(channel_1_temp) || outOfRange(channel_2_temp)|| outOfRange(channel_4_temp))
+    return;
+
+  channel_3 = channel_3_temp;
+  channel_1 = channel_1_temp;
+  channel_2 = channel_2_temp;
+  channel_4 = channel_4_temp;
+}
+
+boolean outOfRange(int v){
+  return (v<1000 || v > 2000);
 }
 
 void showReceived(void){
@@ -82,7 +95,7 @@ void setIntegers(){
   transmit[3] = (char)((int16_t)(used_power*1000) >> 8);
   transmit[4] = (char)(int16_t)(((altitude_meter)+2)*100) & 0x00FF;
   transmit[5] = (char)((int16_t)(((altitude_meter)+2)*100) >> 8)& 0x00FF;
-  /*transmit[6] = (char)(battery_voltage & 0x00FF);
-  transmit[7] = (char)(battery_voltage >> 8);*/
+  transmit[6] = (char)(0x76);
+  transmit[7] = (char)(0x9A);
 }
 

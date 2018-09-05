@@ -54,15 +54,14 @@ manual_gyro_yaw_cal_value = 16
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 211;
-int16_t manual_acc_roll_cal_value = -243;
+int16_t manual_acc_pitch_cal_value = 193;
+int16_t manual_acc_roll_cal_value = -269;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -85;
-int16_t manual_gyro_roll_cal_value = -245;
+int16_t manual_gyro_pitch_cal_value = -84;
+int16_t manual_gyro_roll_cal_value = -243;
 int16_t manual_gyro_yaw_cal_value = 23;
-
 
 
 uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 0x68 in hexadecimal form.
@@ -195,6 +194,11 @@ void setup() {
 
   calibrate_gyro();                                             //Calibrate the gyro offset.
 
+#ifdef debug
+  Serial.println("Cal finished");
+ #endif
+
+  
   //Wait until the receiver is active.
   while (channel_1 < 990 || channel_2 < 990 || channel_3 < 990 || channel_4 < 990)  {
     getRaspberryInfo();
@@ -417,15 +421,15 @@ void loop() {
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
 
 
+  loopDuration = micros() - loop_timer;
+  
   #ifdef debug
-  if (micros() - loop_timer > 4050){ 
-    Serial.print(micros() -loop_timer);
+  if (loopDuration > 4000){ 
+    Serial.print(loopDuration);
     Serial.println("us");
   }
-  printEscs();
+  //printEscs();
   #endif
-
-  loopDuration = micros() - loop_timer;
   
   if (micros() - loop_timer > 4050)error = 5;                                      //Turn on the LED if the loop time exceeds 4050us.
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.

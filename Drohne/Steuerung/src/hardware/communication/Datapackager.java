@@ -2,6 +2,7 @@ package hardware.communication;
 
 import java.util.List;
 
+import hardware.Beeper;
 import main.Daten;
 import main.ProgramState;
 import utility.Blume;
@@ -172,6 +173,9 @@ public class Datapackager {
 	
 	 //----------------------------------------------------- ARDUINO ------------------------------------------------------------------
 	public static void untangleArduinoReceived(byte[] buffer) {
+		int looptime = buffer[9] & 0x000000FF;
+		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
+		
 		int[] powers = new int[4];
 		for (int i = 0; i < 4; i++) {
 			int p = buffer[i*2+1] & 0x000000FF;
@@ -179,10 +183,18 @@ public class Datapackager {
 			powers[i] = p;
 		}
 		
-		int looptime = buffer[9] & 0x000000FF;
-		looptime = (looptime << 8) | (buffer[8] & 0x000000FF);
+		if (powers[3] != 0x9A76) {
+			//Unglaubwürdig
+			
+			return;
+		}
 		
-		System.out.println("ARD: "+looptime + " alt:  "+(((float)powers[2]/100f)-2));
+		
+		if (looptime > 4000){
+			System.out.println("ARD: "+looptime + " alt:  "+(((float)powers[2]/100f)-2));
+			Beeper.getInstance().addBeep(500);
+		}
+		
 		
 		Daten.setVoltage5v((float)powers[3]/1000f);
 		Daten.setVoltage3v((((float)powers[2]/100f)-2));
