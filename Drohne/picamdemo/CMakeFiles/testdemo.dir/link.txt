@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/testdemo.dir/test.cpp.o CMakeFiles/testdemo.dir/camera.cpp.o CMakeFiles/testdemo.dir/cameracontrol.cpp.o CMakeFiles/testdemo.dir/graphics.cpp.o  -o testdemo  -L/opt/vc/lib -Wl,-rpath,/opt/vc/lib -rdynamic -lmmal_core -lmmal_util -lmmal_vc_client -lvcos -lbcm_host -lGLESv2 -lEGL 

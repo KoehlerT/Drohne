@@ -1,0 +1,3 @@
+/home/pi/Documents/WCapture/picamdemo/CMakeFiles/rebuild_cache.dir
+/home/pi/Documents/WCapture/picamdemo/CMakeFiles/edit_cache.dir
+/home/pi/Documents/WCapture/picamdemo/CMakeFiles/piCamera.dir

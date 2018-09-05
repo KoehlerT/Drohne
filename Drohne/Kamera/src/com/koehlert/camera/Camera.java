@@ -124,6 +124,28 @@ public class Camera {
 		return ret;
 	}
 	
+	public int[][] getRGBArray(){
+		getData();
+		
+		int[][] ret = new int[width][];
+		for (int i = 0; i < ret.length; i++){
+			ret[i] = new int[height];
+		}
+		
+		for (int y = 0; y < height; y++){
+			for (int x = 0; x < width; x++){
+				int index = (x + (y * width))*4;
+				
+				int color = getColorAt(index);
+				
+				ret[x][y] = color;
+			}
+		}
+		
+		
+		return ret;
+	}
+	
 	public float getTime(){
 		return getTime;
 	}

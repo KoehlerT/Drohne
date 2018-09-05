@@ -1,0 +1,1 @@
+sudo g++ -Wall -shared -fPIC -o /lib/drohne/libSerialComm.so com_koehlert_serialcomm_Communicator.c com_koehlert_serialcomm_Communicator.h comm.h comm.c -I/usr/java/jdk1.8.0_161/include -I/usr/java/jdk1.8.0_161/include/linux

@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/picamdemo.dir/picam.cpp.o CMakeFiles/picamdemo.dir/com_koehlert_camera_Camera.cpp.o CMakeFiles/picamdemo.dir/camera.cpp.o CMakeFiles/picamdemo.dir/cameracontrol.cpp.o CMakeFiles/picamdemo.dir/graphics.cpp.o  -o picamdemo  -L/opt/vc/lib -Wl,-rpath,/opt/vc/lib -rdynamic -lmmal_core -lmmal_util -lmmal_vc_client -lvcos -lbcm_host -lGLESv2 -lEGL 
