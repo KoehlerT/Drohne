@@ -17,14 +17,14 @@
 #include <Wire.h>
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 193;
-int16_t manual_acc_roll_cal_value = -269;
+int16_t manual_acc_pitch_cal_value = 247;
+int16_t manual_acc_roll_cal_value = -105;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -84;
+int16_t manual_gyro_pitch_cal_value = -90;
 int16_t manual_gyro_roll_cal_value = -243;
-int16_t manual_gyro_yaw_cal_value = 23;
+int16_t manual_gyro_yaw_cal_value = 30;
 
 TwoWire WIRE2(2, I2C_FAST_MODE);
 #define HWire WIRE2
@@ -69,7 +69,7 @@ void setup() {
   green_led(LOW);                                               //Set output PB3 low.
   red_led(LOW);                                                 //Set output PB4 low.
 
-  Serial.begin(57600);                                          //Set the serial output to 57600 kbps.
+  Serial.begin(230400);                                          //Set the serial output to 57600 kbps.
   Serial1.begin(230400);  //Serial Communication with RasPI
   delay(100);                                                    //Give the serial port some time to start to prevent data loss.
   timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.

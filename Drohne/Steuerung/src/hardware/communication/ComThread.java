@@ -32,14 +32,16 @@ public class ComThread extends Thread{
 			//ant.setTransmitBuffer(toSend);
 			//ant.send();
 			
-			wlanServer.receive();
 			wlanServer.sendPackage();
+			wlanServer.receive();
+			
+			Daten.setLastComm(System.nanoTime());
 			
 			int duration = (int)(System.nanoTime() - startTime);
 			Daten.setCommunicatorRefresh((int)(1f/((float)duration/1000_000_0000f))); //in 10Hz
 			
 			try {
-				Thread.sleep(10);
+				Thread.sleep(20);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

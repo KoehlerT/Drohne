@@ -53,8 +53,8 @@ public class ProgramState {
 		case 0x16: Daten.setFlyingMode(FlyingMode.AUTOMATIC); break;
 		}
 		
-		if (b == 0x12 || (b >= 0x14 && b <= 0x16))
-			FlightModeManager.getInstance().switchFlightmode();
+		/*if (b == 0x12 || (b >= 0x14 && b <= 0x16))
+			FlightModeManager.getInstance().switchFlightmode();*/
 		
 	}
 	

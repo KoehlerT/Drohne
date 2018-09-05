@@ -1,5 +1,6 @@
 package flightmodes;
 
+import hardware.Beeper;
 import main.Daten;
 import utility.FlyingMode;
 
@@ -11,6 +12,7 @@ public class FlightModeManager {
 	Flightmode current;
 	
 	Flightmode[] modes = new Flightmode[4];
+	FlyingMode mode;
 	
 	private FlightModeManager(){
 		
@@ -24,18 +26,20 @@ public class FlightModeManager {
 	
 	
 	
-	public void switchFlightmode() {
+	void switchFlightmode() {
 		FlyingMode flm = Daten.getFlyingMode();
+		mode = flm;
 		current.onDisable();
 		switch (flm) {
 		case MANUAL: current = modes[0]; break;
 		case AUTOMATIC: current = modes[1]; break;
 		case FORCEDOWN: current = modes[2]; break;
 		case FORCESTOP: current = modes[3]; break;
-		
 		default:
 			break;
 		}
+		
+		Beeper.getInstance().addBeep(500);
 		current.onEnable();
 	}
 	
@@ -43,4 +47,7 @@ public class FlightModeManager {
 		current.onUpdate(deltaTime);
 	}
 	
+	public FlyingMode getCurrentFM(){
+		return mode;
+	}
 }

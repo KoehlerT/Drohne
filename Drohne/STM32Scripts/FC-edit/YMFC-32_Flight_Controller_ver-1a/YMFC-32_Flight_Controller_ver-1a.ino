@@ -54,14 +54,15 @@ manual_gyro_yaw_cal_value = 16
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 193;
-int16_t manual_acc_roll_cal_value = -269;
+int16_t manual_acc_pitch_cal_value = 247;
+int16_t manual_acc_roll_cal_value = -105;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -84;
+int16_t manual_gyro_pitch_cal_value = -90;
 int16_t manual_gyro_roll_cal_value = -243;
-int16_t manual_gyro_yaw_cal_value = 23;
+int16_t manual_gyro_yaw_cal_value = 30;
+
 
 
 uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 0x68 in hexadecimal form.
@@ -425,10 +426,15 @@ void loop() {
   
   #ifdef debug
   if (loopDuration > 4000){ 
-    Serial.print(loopDuration);
+    Serial.print("LOOP TOO LONG");
     Serial.println("us");
   }
-  //printEscs();
+  Serial.print(loopDuration);
+  Serial.print(",");
+  printEscs();
+  printGyro();
+  printInputs();
+  Serial.println();
   #endif
   
   if (micros() - loop_timer > 4050)error = 5;                                      //Turn on the LED if the loop time exceeds 4050us.
@@ -445,7 +451,32 @@ void printEscs(){
   Serial.print(esc_3);
   Serial.print(",");
   Serial.print(esc_4);
-  Serial.println(",");
+  Serial.print(",");
+}
+
+void printGyro(){
+  Serial.print(gyro_pitch);
+  Serial.print(",");
+  Serial.print(gyro_roll);
+  Serial.print(",");
+  Serial.print(gyro_yaw);
+  Serial.print(",");
+  Serial.print(acc_x);
+  Serial.print(",");
+  Serial.print(acc_y);
+  Serial.print(",");
+  Serial.print(acc_z);
+  Serial.print(",");
+}
+void printInputs(){
+  Serial.print(channel_3);
+  Serial.print(",");
+  Serial.print(channel_1);
+  Serial.print(",");
+  Serial.print(channel_2);
+  Serial.print(",");
+  Serial.print(channel_4);
+  Serial.print(",");
 }
 #endif
 
