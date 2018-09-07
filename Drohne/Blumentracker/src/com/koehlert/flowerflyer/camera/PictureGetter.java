@@ -17,7 +17,7 @@ public class PictureGetter {
 		cam = new Camera(640, 480, 30, true);
 		cam.init();
 		
-		saveTest();
+		//saveTest();
 	}
 	
 	public void close(){
@@ -29,6 +29,9 @@ public class PictureGetter {
 	}
 	
 	public byte[][] getArr(byte[][] res){
+		if (cam == null)
+			System.out.println("NULL");
+		
 		int[][] arr = cam.getRGBArray();
 		lastPic = arr;
 		for (int x = 0; x < arr.length; x++){
@@ -101,7 +104,7 @@ public class PictureGetter {
 	public void saveTest(){
 		BufferedImage img = cam.getBufferedImage();
 		try {
-			ImageIO.write(img, "jpg", new File("/home/pi/Desktop/test1.jpg"));
+			ImageIO.write(img, "jpg", new File("/home/pi/Bilder/test1.jpg"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

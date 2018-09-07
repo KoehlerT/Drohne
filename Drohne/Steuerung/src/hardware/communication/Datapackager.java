@@ -192,7 +192,7 @@ public class Datapackager {
 		
 		if (looptime > 4000){
 			System.out.println("ARD: "+looptime + " alt:  "+(((float)powers[2]/100f)-2));
-			Beeper.getInstance().addBeep(500);
+			//Beeper.getInstance().addBeep(500);
 		}
 		
 		

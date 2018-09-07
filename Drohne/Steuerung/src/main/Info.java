@@ -29,7 +29,7 @@ public class Info {
 	 * **/
 	public static final long ultrasonicTimeout = 100000000l; //100 ms
 	
-	public static final boolean CamAttached = false;
+	public static final boolean CamAttached = true;
 	
 	public static final int pictureWidth = 640;
 	public static final int pictureHeight = 480;

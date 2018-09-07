@@ -2,15 +2,14 @@ package main;
 
 import java.util.Scanner;
 
-import bilderkennung.BildStart;
 import flightmodes.ControllingStart;
-import kamera.KameraStart;
+import flowertracking.TrackerStart;
 import hardware.HwStart;
 import utility.*;
 
 public class start {
 	
-	private static Managable[] manag = new Managable[4];
+	private static Managable[] manag = new Managable[3];
 	
 	private static Scanner inputsc = new Scanner(System.in);
 
@@ -33,7 +32,7 @@ public class start {
 				Daten.running = false;
 			
 			try {
-				Thread.sleep(100);
+				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -49,10 +48,11 @@ public class start {
 		/*Hier werden alle Manager-Objekte der Programmabschnitte erstellt
 		 * 
 		 * */
-		manag[0] = new BildStart();
+		//manag[0] = new BildStart();
+		manag[0] = new TrackerStart();
 		manag[1] = new HwStart();
-		manag[2] = new KameraStart();
-		manag[3] = new ControllingStart();
+		//manag[2] = new KameraStart();
+		manag[2] = new ControllingStart();
 		
 		for (Managable m : manag) {
 			m.start();

@@ -11,10 +11,10 @@ import main.Info;
 class HwThread extends Thread{
 	
 	private Beeper beeper;
-	private Ultrasonic ultrasonic;
-	private GPS gps;
+	//private Ultrasonic ultrasonic;
+	//private GPS gps;
 	
-	private Altitude alt;
+	//private Altitude alt;
 	
 	private Boolean running = true;
 	
@@ -23,7 +23,7 @@ class HwThread extends Thread{
 		this.setName("Hardware");
 		
 		if (Info.sensorAttached) {
-			ultrasonic = new Ultrasonic();
+			//ultrasonic = new Ultrasonic();
 			//alt = new Altitude(Altitude.MODE_STANDARD);
 		}
 			
@@ -44,13 +44,13 @@ class HwThread extends Thread{
 			if (Info.sensorAttached) {
 				//SPI -> Kommunikation
 				
-				//Ultraschall
+				/*//Ultraschall
 				try {
 					 ultrasonic.measureDistanceDm();
 				} catch (InterruptedException e) {
 					System.out.println("Fehler beim Messen der Entfernung");
 					e.printStackTrace();
-				}
+				}*/
 				
 				//Altitude
 				//alt.readAllSensorData();
@@ -64,7 +64,7 @@ class HwThread extends Thread{
 			
 			Daten.setSensorRefresh((int)(1f/((float)(System.nanoTime()-startTime)/1000_000_000f)));
 			//Warte ein wenig
-			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 			
 		}
 	}

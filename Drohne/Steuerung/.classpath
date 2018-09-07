@@ -13,7 +13,6 @@
 	<classpathentry kind="lib" path="libs/pi4j-gpio-extension.jar"/>
 	<classpathentry kind="lib" path="libs/lib.jar"/>
 	<classpathentry kind="lib" path="libs/ArduinoNativeLibrary.jar"/>
-	<classpathentry kind="lib" path="libs/RPICam.jar"/>
 	<classpathentry kind="lib" path="libs/LibSerialComm.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FlowerFlyer"/>
 	<classpathentry kind="output" path="bin"/>

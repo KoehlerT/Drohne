@@ -15,22 +15,33 @@ public class Targeter {
 	private static Location locDrohne = new Location(0,0,0);
 	
 	private static Location target = null;
+	private static int failedReTracks = 0;
 	
 	public static Location target(Location[] locations){
 		if (locations.length == 0) 
 		{
+			failedReTracks++;
 			//Keine Blume erkannt...
 		}else{
 			
 			/*Wenn es mehr Blumen gibt 2 Möglichkeiten: 
 			 * 	a) Es ist keine Blume getargeted: näheste Location = target 
 			 * 	b) es ist eine Blume getargeted: nächste Blume am target ist neues target*/
-			if (target == null)
+			if (target == null) {
 				target = getNearestLoc(locDrohne, locations);
-			else
+				failedReTracks = 0;
+			}
+			else {
 				target = getNearestLoc(target, locations);
+				failedReTracks = 0;
+			}
+				
 		}
 		
+		if (failedReTracks >= 3) {
+			System.out.println("Blume nicht mehr erkannt!");
+			target = null;
+		}
 		
 		if (target == null){
 			System.out.println("No Target");

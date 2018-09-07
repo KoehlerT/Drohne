@@ -17,16 +17,21 @@ class TrackerThread extends Thread{
 	
 	private byte[][] bild;
 	
+	Vector3 nullVect = new Vector3(0,0,0);
+	
 	public TrackerThread() {
+		
+	}
+	
+	@Override
+	public void run() {
 		pg = new PictureGetter();
 		rg = new Recognizer(3);
 		pw = new PictureWriter();
 		
 		bild = new byte[640][480];
-	}
-	
-	@Override
-	public void run() {
+		
+		
 		long start;
 		while (Daten.running) {
 			start = System.nanoTime();
@@ -38,10 +43,17 @@ class TrackerThread extends Thread{
 			Daten.setTarget(target);
 			
 			// Geschwindigkeit zu Daten
-			Vector3 vel = SpeedController.calculatePid(target);
-			Daten.setTargetVel(vel);
-			
-			while(System.nanoTime() - start < 300000000);
+			if (target != null) {
+				Vector3 vel = SpeedController.calculatePid(target);
+				Daten.setTargetVel(vel);
+				System.out.println("Target: "+target.toString());
+			}else {
+				System.out.println("No Target");
+				Daten.setTargetVel(nullVect);
+			}
+				
+			System.out.println("Calc Time: "+(float)(System.nanoTime() - start)/1000000f+"ms");
+			//while(System.nanoTime() - start < 300000000);
 		}
 		
 		pg.close();
