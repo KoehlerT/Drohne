@@ -54,14 +54,14 @@ manual_gyro_yaw_cal_value = 16
 */
 
 //Manual accelerometer calibration values for IMU angles:
-int16_t manual_acc_pitch_cal_value = 247;
-int16_t manual_acc_roll_cal_value = -105;
+int16_t manual_acc_pitch_cal_value = 222;
+int16_t manual_acc_roll_cal_value = -143;
 //Manual gyro calibration values.
 //Set the use_manual_calibration variable to true to use the manual calibration variables.
 uint8_t use_manual_calibration = false;
-int16_t manual_gyro_pitch_cal_value = -90;
-int16_t manual_gyro_roll_cal_value = -243;
-int16_t manual_gyro_yaw_cal_value = 30;
+int16_t manual_gyro_pitch_cal_value = -86;
+int16_t manual_gyro_roll_cal_value = -239;
+int16_t manual_gyro_yaw_cal_value = 27;
 
 
 
