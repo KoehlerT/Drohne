@@ -142,10 +142,11 @@ public class Datapackager {
 		int yaw = Data.getCont_yaw().getWert();
 		//Force Stop/Down
 		FlyingMode mode = Data.getFlyingMode();
-		if (mode == FlyingMode.FORCEDOWN || mode == FlyingMode.FORCESTOP)
-			throttle = 1000;
-		if (mode == FlyingMode.FORCESTOP)
+		if (mode == FlyingMode.FORCESTOP) {
 			yaw = 1000;
+			throttle = 1000;
+		}
+			
 		
 		
 		//10bits Pro Control

@@ -108,7 +108,7 @@ public class ControllerInfo {
 				throttle = (1000);
 				yaw = (1000);
 			}if (mode == FlyingMode.FORCEDOWN) {
-				throttle = (1000);
+				//throttle = (1000);
 			}if (Hold) {
 				throttle = 1500;
 			}

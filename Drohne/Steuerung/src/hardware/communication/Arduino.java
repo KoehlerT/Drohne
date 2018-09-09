@@ -47,8 +47,6 @@ public class Arduino {
 		int yaw = Daten.getYaw();
 		
 		FlyingMode mode = Daten.getFlyingMode();
-		if (mode == FlyingMode.FORCEDOWN)
-			throttle = 1000;
 		if (mode == FlyingMode.FORCESTOP) {
 			throttle = 1000;
 			yaw = 1000;

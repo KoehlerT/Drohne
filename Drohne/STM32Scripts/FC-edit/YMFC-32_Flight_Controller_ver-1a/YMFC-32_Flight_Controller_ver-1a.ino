@@ -38,9 +38,9 @@ float pid_i_gain_yaw = 0.02;               //Gain setting for the pitch I-contro
 float pid_d_gain_yaw = 0.0;                //Gain setting for the pitch D-controller (default = 0.0).
 int pid_max_yaw = 400;                     //Maximum output of the PID-controller (+/-).
 
-float pid_p_gain_altitude = 1.5;
-float pid_i_gain_altitude = 0.2;
-float pid_d_gain_altitude = 400;
+float pid_p_gain_altitude = 5.0;
+float pid_i_gain_altitude = 0.8;
+float pid_d_gain_altitude = 0;
 int pid_max_altitude = 400;
 
 boolean auto_level = true;                 //Auto level on (true) or off (false).
@@ -435,6 +435,12 @@ void loop() {
   printEscs();
   printGyro();
   printInputs();
+  Serial.print((int)doAltitudeHold);
+  Serial.print(",");
+  Serial.print(actual_pressure);
+  Serial.print(",");
+  Serial.print(pid_altitude_setpoint);
+  Serial.print(",");
   Serial.println();
   #endif
   
