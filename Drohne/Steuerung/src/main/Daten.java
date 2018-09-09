@@ -16,6 +16,7 @@ public class Daten {
 	 * */
 	private Daten() {}
 	//Programmdaten
+	private static byte controlArd;
 	private static byte controlWord;
 	private static int refreshArduino;
 	private static int refreshCommunicator;
@@ -65,6 +66,7 @@ public class Daten {
 	private static Queue<Character> console = new ArrayBlockingQueue<Character>(200);
 	
 	//Getter
+	public static synchronized byte getContArd() {return controlArd;}
 	public static synchronized byte getContWord() {return controlWord;}
 	public static synchronized int getArduinoRefresh() {return refreshArduino;}
 	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
@@ -105,6 +107,7 @@ public class Daten {
 	public static synchronized char getNextConsole() {return (console.peek()==null)?0:console.poll();}
 	
 	//Setter
+	public static synchronized void setContrArd(byte cw) {controlArd = cw;}
 	public static synchronized void setControlWord(byte cw) {controlWord = cw;}
 	public static synchronized void setArduinoRefresh(int lt) {refreshArduino = lt;}
 	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}

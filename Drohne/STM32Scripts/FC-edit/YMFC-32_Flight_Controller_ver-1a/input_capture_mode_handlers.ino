@@ -66,6 +66,7 @@ void convertToReceiver(){
   channel_1 = channel_1_temp;
   channel_2 = channel_2_temp;
   channel_4 = channel_4_temp;
+  controlByte = receive[8];
 }
 
 boolean outOfRange(int v){

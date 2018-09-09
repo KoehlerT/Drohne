@@ -95,6 +95,7 @@ int32_t acc_total_vector;
 int32_t gyro_roll_cal, gyro_pitch_cal, gyro_yaw_cal;
 
 uint32_t loop_timer, error_timer;
+byte controlByte = 0;
 
 float roll_level_adjust, pitch_level_adjust;
 float pid_error_temp;
@@ -315,7 +316,7 @@ void loop() {
   }
 
   //PID Altitude Setpoints
-  if (channel_3 == 1500 && !doAltitudeHold){ //Activate AH
+  if (controlByte == 0x11 && !doAltitudeHold){ //Activate AH
     doAltitudeHold = true;
     pid_output_altitude = 0;
     pid_i_mem_altitude = 0;
@@ -323,7 +324,7 @@ void loop() {
     pid_altitude_throttle = channel_3;
     pid_altitude_setpoint = actual_pressure;
   }
-  if (channel_3 != 1500 && doAltitudeHold){ //Deactivate AH
+  if (controlByte == 0x12 && doAltitudeHold){ //Deactivate AH
     doAltitudeHold = false;
   }
 
@@ -375,7 +376,7 @@ void loop() {
   throttle = channel_3;                                                            //We need the throttle signal as a base signal.
 
   if (doAltitudeHold){
-    throttle = 1500;
+    throttle = pid_altitude_throttle;
   }
   
   if (start == 2) {                                                                //The motors are started.

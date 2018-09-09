@@ -61,7 +61,7 @@ public class Arduino {
 		writeToArray(toSend,roll,4);
 		writeToArray(toSend,yaw,6);
 		
-		toSend[8] = (byte) 0;
+		toSend[8] = Daten.getContArd();
 		//toSend[9] = (byte) 0;
 		
 		comm.setTransmitBuffer(toSend);
