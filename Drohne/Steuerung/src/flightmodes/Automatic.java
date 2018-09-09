@@ -30,7 +30,7 @@ public class Automatic implements Flightmode{
 		
 		Daten.setThrottle(throttle);
 		Daten.setRoll(roll);
-		Daten.setPitch(1500);
+		Daten.setPitch(Daten.getCont_pitch());
 		Daten.setYaw(1500);
 	}
 	
