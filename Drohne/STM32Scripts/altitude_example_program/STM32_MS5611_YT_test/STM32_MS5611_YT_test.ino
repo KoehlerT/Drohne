@@ -25,7 +25,7 @@ float pid_error_gain_altitude, pid_throttle_gain_altitude;
 uint16_t C[7];
 uint8_t barometer_counter, temperature_counter, average_temperature_mem_location, start;
 int64_t OFF, OFF_C2, SENS, SENS_C1, P;
-uint32_t raw_pressure, raw_temperature, temp, raw_temperature_rotating_memory[6], raw_average_temperature_total;
+uint32_t raw_pressure, raw_temperature,temp , raw_temperature_rotating_memory[6], raw_average_temperature_total;
 float actual_pressure, actual_pressure_slow, actual_pressure_fast, actual_pressure_diff;
 float ground_pressure, altutude_hold_pressure;
 int32_t dT, dT_C5;
@@ -172,17 +172,19 @@ void loop() {
     Serial.print(",");
     Serial.print(bottom_line);
     Serial.print(",");
-    Serial.println(altitude_meter);
+    Serial.println(actual_pressure);
+   // Serial.print(",");
+    //Serial.println(raw_temperature);
     barometer_counter = 0;                                                              //Set the barometer counter to 0 for the next measurements.
 
   }
 
   if (millis() > 5000 && start == 0) {
     start = 1;
-    /*top_line = actual_pressure + 20;
-    bottom_line = actual_pressure - 20;*/
-    top_line = 1.5;
-    bottom_line = -1.5;
+    top_line = actual_pressure + 20;
+    bottom_line = actual_pressure - 20;
+    /*top_line = 1.5;
+    bottom_line = -1.5;*/
     start_pressure = actual_pressure;
   }
 
