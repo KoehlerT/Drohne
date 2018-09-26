@@ -1,3 +1,4 @@
+#define HWire WIRE
 void check_compass(void) {
   loop_counter = 0;                                                                       //Reset the loop counter.
   battery_voltage = analogRead(4);                                                        //Set battery voltage.

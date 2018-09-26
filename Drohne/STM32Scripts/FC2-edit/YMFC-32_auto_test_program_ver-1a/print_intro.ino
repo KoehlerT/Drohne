@@ -1,3 +1,4 @@
+#define HWire WIRE
 void print_intro(void) {
   Serial.println(F(""));
   Serial.println(F(""));

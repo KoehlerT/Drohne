@@ -1,3 +1,4 @@
+#define HWire WIRE
 void check_imu_angles(void) {
   uint8_t first_angle = 0;
   loop_counter = 0;

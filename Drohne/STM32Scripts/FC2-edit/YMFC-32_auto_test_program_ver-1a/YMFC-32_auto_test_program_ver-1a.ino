@@ -15,9 +15,10 @@
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
 #include <Wire.h>
+#define HWire WIRE
 
 //HardWire HWire(2, I2C_FAST_MODE);
-TwoWire HWire (2, I2C_FAST_MODE);
+TwoWire HWire(1, I2C_FAST_MODE);
 
 //Let's declare some variables so we can use them in the complete program.
 //int16_t = signed 16 bit integer
@@ -77,18 +78,20 @@ void setup() {
   green_led(LOW);                                               //Set output PB3 low.
   red_led(LOW);                                                 //Set output PB4 low.
 
-  Serial.begin(57600);                                          //Set the serial output to 57600 kbps.
+  Serial.begin(230400);                                          //Set the serial output to 57600 kbps.
+  Serial1.begin(230400); //RaspberryPi
   delay(100);                                                    //Give the serial port some time to start to prevent data loss.
   timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.
   delay(50);                                                    //Give the timers some time to start.
 
+Serial.print("HWire Begin");
   HWire.begin();                                                //Start the I2C as master
-
+Serial.println("Stuck1");
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
   HWire.write(0x6B);                                            //We want to write to the PWR_MGMT_1 register (6B hex).
   HWire.write(0x00);                                            //Set the register bits as 00000000 to activate the gyro.
   HWire.endTransmission();                                      //End the transmission with the gyro.
-
+Serial.println("Stuck2");
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
   HWire.write(0x1B);                                            //We want to write to the GYRO_CONFIG register (1B hex).
   HWire.write(0x08);                                            //Set the register bits as 00001000 (500dps full scale).
@@ -103,7 +106,7 @@ void setup() {
   HWire.write(0x1A);                                            //We want to write to the CONFIG register (1A hex).
   HWire.write(0x03);                                            //Set the register bits as 00000011 (Set Digital Low Pass Filter to ~43Hz).
   HWire.endTransmission();                                      //End the transmission with the gyro.
-
+Serial.print("HWire Finish");
 
   print_intro();                                                //Print the intro on the serial monitor.
 }
@@ -119,16 +122,16 @@ void loop() {
   }
 
   if (!disable_throttle) {                                      //If the throttle is not disabled.
-    TIMER4_BASE->CCR1 = channel_3;                              //Set the throttle receiver input pulse to the ESC 1 output pulse.
-    TIMER4_BASE->CCR2 = channel_3;                              //Set the throttle receiver input pulse to the ESC 2 output pulse.
-    TIMER4_BASE->CCR3 = channel_3;                              //Set the throttle receiver input pulse to the ESC 3 output pulse.
-    TIMER4_BASE->CCR4 = channel_3;                              //Set the throttle receiver input pulse to the ESC 4 output pulse.
+    TIMER2_BASE->CCR1 = channel_3;                              //Set the throttle receiver input pulse to the ESC 1 output pulse.
+    TIMER2_BASE->CCR2 = channel_3;                              //Set the throttle receiver input pulse to the ESC 2 output pulse.
+    TIMER2_BASE->CCR3 = channel_3;                              //Set the throttle receiver input pulse to the ESC 3 output pulse.
+    TIMER2_BASE->CCR4 = channel_3;                              //Set the throttle receiver input pulse to the ESC 4 output pulse.
   }
   else {                                                        //If the throttle is disabled
-    TIMER4_BASE->CCR1 = 1000;                                   //Set the ESC 1 output to 1000us to disable the motor.
-    TIMER4_BASE->CCR2 = 1000;                                   //Set the ESC 2 output to 1000us to disable the motor.
-    TIMER4_BASE->CCR3 = 1000;                                   //Set the ESC 3 output to 1000us to disable the motor.
-    TIMER4_BASE->CCR4 = 1000;                                   //Set the ESC 4 output to 1000us to disable the motor.
+    TIMER2_BASE->CCR1 = 1000;                                   //Set the ESC 1 output to 1000us to disable the motor.
+    TIMER2_BASE->CCR2 = 1000;                                   //Set the ESC 2 output to 1000us to disable the motor.
+    TIMER2_BASE->CCR3 = 1000;                                   //Set the ESC 3 output to 1000us to disable the motor.
+    TIMER2_BASE->CCR4 = 1000;                                   //Set the ESC 4 output to 1000us to disable the motor.
   }
 
   if (data == 'a') {

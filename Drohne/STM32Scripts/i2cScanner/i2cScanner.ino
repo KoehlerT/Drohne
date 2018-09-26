@@ -1,4 +1,27 @@
-#define HWire WIRE
+#include <Wire.h>
+
+int nDevices;
+int data;
+int error;
+int downe;
+TwoWire HWire (1, I2C_FAST_MODE);
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(230400);
+  HWire.begin();
+
+  delay(100);
+  Serial.println("Hello World");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  i2c_scanner();
+  delay(100);
+}
+
 void i2c_scanner(void) {
   //The YMFC-32 flight controller expects some I2C devices. So let's print them on the
   //serial monitor as a reminder
@@ -41,6 +64,6 @@ void i2c_scanner(void) {
   else
     Serial.println("done");
   delay(2000);
-  print_intro();
+  //print_intro();
 }
 

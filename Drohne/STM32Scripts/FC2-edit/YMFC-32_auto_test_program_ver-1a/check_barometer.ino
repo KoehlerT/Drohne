@@ -1,3 +1,4 @@
+#define HWire WIRE
 void check_barometer(void) {
   loop_counter = 0;
 

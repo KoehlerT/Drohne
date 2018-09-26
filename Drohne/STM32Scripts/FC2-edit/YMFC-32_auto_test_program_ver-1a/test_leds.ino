@@ -1,3 +1,4 @@
+#define HWire WIRE
 void test_leds(void) {
   data = 0;
   if (Serial.available() > 0) {                                                         //If serial data is available
