@@ -1,6 +1,7 @@
 #define HWire WIRE
 void reading_receiver_signals(void) {
   while (data != 'q') {                                                                   //Stay in this loop until the data variable data holds a q.
+    getRaspberryInfo();
     delay(250);                                                                           //Print the receiver values on the screen every 250ms
     if (Serial.available() > 0) {                                                         //If serial data is available
       data = Serial.read();                                                               //Read the incomming byte
