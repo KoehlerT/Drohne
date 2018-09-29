@@ -6,42 +6,27 @@
 //STM32 for Arduino - Electronic Speed Controller (ESC) - STM32F103C8T6: https://youtu.be/Nju9rvZOjVQ
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void timer_setup(void) {
-  Timer2.attachCompare1Interrupt(handler_channel_1);
-  TIMER2_BASE->CR1 = TIMER_CR1_CEN;
-  TIMER2_BASE->CR2 = 0;
-  TIMER2_BASE->SMCR = 0;
-  TIMER2_BASE->DIER = TIMER_DIER_CC1IE;
-  TIMER2_BASE->EGR = 0;
-  TIMER2_BASE->CCMR1 = TIMER_CCMR1_CC1S_INPUT_TI1;
-  TIMER2_BASE->CCMR2 = 0;
-  TIMER2_BASE->CCER = TIMER_CCER_CC1E;
-
   //TIMER2_BASE->CCER |= TIMER_CCER_CC1P;    //Detect falling edge.
-  TIMER2_BASE->CCER &= ~TIMER_CCER_CC1P; //Detect rising edge.
-  TIMER2_BASE->PSC = 71;
-  TIMER2_BASE->ARR = 0xFFFF;
-  TIMER2_BASE->DCR = 0;
+  TIMER3_BASE->CR1 = TIMER_CR1_CEN | TIMER_CR1_ARPE;
+    TIMER3_BASE->CR2 = 0;
+    TIMER3_BASE->SMCR = 0;
+    TIMER3_BASE->DIER = 0;
+    TIMER3_BASE->EGR = 0;
+    TIMER3_BASE->CCMR1 = (0b110 << 4) | TIMER_CCMR1_OC1PE |(0b110 << 12) | TIMER_CCMR1_OC2PE;
+    TIMER3_BASE->CCMR2 = (0b110 << 4) | TIMER_CCMR2_OC3PE |(0b110 << 12) | TIMER_CCMR2_OC4PE;
+    TIMER3_BASE->CCER = TIMER_CCER_CC1E | TIMER_CCER_CC2E | TIMER_CCER_CC3E | TIMER_CCER_CC4E;
+    TIMER3_BASE->PSC = 71;
+    TIMER3_BASE->ARR = 4000;
+    TIMER3_BASE->DCR = 0;
+    TIMER3_BASE->CCR1 = 1000;
 
-  TIMER4_BASE->CR1 = TIMER_CR1_CEN | TIMER_CR1_ARPE;
-  TIMER4_BASE->CR2 = 0;
-  TIMER4_BASE->SMCR = 0;
-  TIMER4_BASE->DIER = 0;
-  TIMER4_BASE->EGR = 0;
-  TIMER4_BASE->CCMR1 = (0b110 << 4) | TIMER_CCMR1_OC1PE | (0b110 << 12) | TIMER_CCMR1_OC2PE;
-  TIMER4_BASE->CCMR2 = (0b110 << 4) | TIMER_CCMR2_OC3PE | (0b110 << 12) | TIMER_CCMR2_OC4PE;
-  TIMER4_BASE->CCER = TIMER_CCER_CC1E | TIMER_CCER_CC2E | TIMER_CCER_CC3E | TIMER_CCER_CC4E;
-  TIMER4_BASE->PSC = 71;
-  TIMER4_BASE->ARR = 5000;
-  TIMER4_BASE->DCR = 0;
-  TIMER4_BASE->CCR1 = 1000;
-
-  TIMER4_BASE->CCR1 = 1000;
-  TIMER4_BASE->CCR2 = 1000;
-  TIMER4_BASE->CCR3 = 1000;
-  TIMER4_BASE->CCR4 = 1000;
-  pinMode(PB6, PWM);
-  pinMode(PB7, PWM);
-  pinMode(PB8, PWM);
-  pinMode(PB9, PWM);
+    TIMER3_BASE->CCR1 = channel_3;
+    TIMER3_BASE->CCR2 = channel_3;
+    TIMER3_BASE->CCR3 = channel_3;
+    TIMER3_BASE->CCR4 = channel_3;
+    pinMode(PB1, PWM);
+    pinMode(PB0, PWM);
+    pinMode(PA7, PWM);
+    pinMode(PA6, PWM);
 }
 

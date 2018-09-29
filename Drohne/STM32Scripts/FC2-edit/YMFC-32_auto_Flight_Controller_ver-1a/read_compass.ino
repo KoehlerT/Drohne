@@ -1,4 +1,4 @@
-
+#define HWire WIRE
 void read_compass() {
   HWire.beginTransmission(compass_address);                     //Start communication with the compass.
   HWire.write(0x03);                                            //We want to start reading at the hexadecimal location 0x03.

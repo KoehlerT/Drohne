@@ -1,3 +1,4 @@
+#define HWire WIRE
 void read_barometer(void) {
   barometer_counter ++;
 

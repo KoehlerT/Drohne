@@ -18,7 +18,7 @@ public class Vitalmonitore {
 		//Neune Fenster+ anzeigen
 		p.add(critic);
 		p.add(uncritic);
-		critic.setSize(250, 250);
+		critic.setSize(250, 500);
 		uncritic.setSize(250, 250);
 		critic.setLocation(0, 0);
 		uncritic.setLocation(250, 0);
@@ -63,10 +63,9 @@ public class Vitalmonitore {
 		
 		//Kritische Informationen
 		updateLabel(Data.getVoltageMain(), criticLabels[0]);
-		updateLabel(Data.getVoltage5v(), criticLabels[1]);
-		updateLabel(Data.getVoltage3v(),criticLabels[2]);
-		updateLabel(Data.getAmperage(),criticLabels[3]);
-		
+		updateLabel(Data.getError(),criticLabels[1]);
+		updateLabel(Data.getStart(),criticLabels[2]);
+		updateLabel(Data.getFlightModeInt(),criticLabels[3]);
 		//GPS
 		updateLabel(Data.getLatitude(), criticLabels[4]);
 		updateLabel(Data.getLongitude(),criticLabels[5]);
@@ -81,6 +80,17 @@ public class Vitalmonitore {
 		updateLabel(Data.getDrone_roll(),criticLabels[10]);
 		updateLabel(Data.getDrone_pitch(),criticLabels[11]);
 		updateLabel(Data.getDrone_yaw(),criticLabels[12]);
+		
+		updateLabel(Data.getTakeoffThrottle(),criticLabels[13]);
+		updateLabel(Data.getTemoerature(),criticLabels[14]);
+		updateLabel(Data.getAngleRoll(),criticLabels[15]);
+		updateLabel(Data.getAnglePitch(),criticLabels[16]);
+		updateLabel(Data.getAngleYaw(),criticLabels[17]);
+		updateLabel(Data.getHeadingLock(),criticLabels[18]);
+		updateLabel(Data.getFixType(),criticLabels[19]);
+		updateLabel(Data.getSet1(),criticLabels[20]);
+		updateLabel(Data.getSet2(),criticLabels[21]);
+		updateLabel(Data.getSet3(),criticLabels[22]);
 	}
 	
 	private void updateLabel(Werteverwalter wert, JLabel label) {

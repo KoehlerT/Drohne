@@ -13,7 +13,7 @@ public class Data {
 	private Data() {}
 	
 	//ProgrammKonstanten
-	public static final int numCrit = 13; //Kritisch: 7
+	public static final int numCrit = 23; //Kritisch: 7
 	public static final int numUnCrit = 9; //Unkritisch: 7
 	public static final String port = "COM3";
 	
@@ -39,15 +39,26 @@ public class Data {
 	private static intWert drone_yaw = new intWert("Yaw",false,1000,2000,1500);
 	
 	private static doubleWert voltageMain = new doubleWert("Hauptspannung",true,10.0,14.0,11.0);
-	private static doubleWert voltage5v = new doubleWert("5V",true,2.5,7.5,5);
-	private static doubleWert voltage3v = new doubleWert("3V",true,1.2,4.0,3.3);
-	private static doubleWert amperage = new doubleWert("Strom",true,0,30,1);
 	
 	private static vektorenWert tilt = new vektorenWert("Rotation",false,-5,-5,-5,5,5,5,0,0,0);
-	private static doubleWert latitude = new doubleWert("Latutide",true,0,0,0);
-	private static doubleWert longitude = new doubleWert("Longitude",true,0,0,0);
-	private static doubleWert altitude = new doubleWert("Altitude",true,-5,15,0);
-	private static List<Blume> blumen = Collections.synchronizedList(new ArrayList<Blume>(3));
+	private static intWert latitude = new intWert("Latutide",true,0,0,0);
+	private static intWert longitude = new intWert("Longitude",true,0,0,0);
+	private static intWert altitude = new intWert("Altitude",true,-5,15,0);
+	private static intWert error = new intWert("Error",true,0,10,-1);
+	private static intWert start = new intWert("Start",true,0,5,-1);
+	private static intWert takeoff_throttle = new intWert("Takeoff",true,0,2000,-1);
+	private static intWert flightModeInt = new intWert("Flightmode",true,0,5,-1);
+	private static intWert temperature = new intWert("temperature",true,20,30,0);
+	private static intWert angleRoll = new intWert("angle Roll",true, -100,100,0);
+	private static intWert anglePitch = new intWert("angle Pitch",true,-100,100,0);
+	private static intWert angleYaw = new intWert("angle Yaw",true,-100,100,0);
+	private static intWert headingLock = new intWert("heading Lock",true,0,0,0);
+	private static intWert fixType = new intWert("Fix type",true,0,0,0);
+	private static intWert set1 = new intWert("Set 1",true,0,0,0);
+	private static intWert set2 = new intWert("Set 2",true,0,0,0);
+	private static intWert set3 = new intWert("Set 3",true,0,0,0);
+	
+	private static Blume blume;
 	
 	private static doubleWert distUltrasonic = new doubleWert("Distanz",false,3.0,50.0,10.0);
 	
@@ -75,15 +86,27 @@ public class Data {
 	public static synchronized intWert getDrone_yaw() {return drone_yaw;}
 	
 	public static synchronized doubleWert getVoltageMain() {return voltageMain;}
-	public static synchronized doubleWert getVoltage5v() {return voltage5v;}
-	public static synchronized doubleWert getVoltage3v() {return voltage3v;}
-	public static synchronized doubleWert getAmperage() {return amperage;}
 	
 	public static synchronized vektorenWert getTilt() {return tilt;}
-	public static synchronized doubleWert getLatitude() {return latitude;}
-	public static synchronized doubleWert getLongitude() {return longitude;}
-	public static synchronized doubleWert getAltitude() {return altitude;}
-	public static synchronized List<Blume> getBlumen(){return blumen;}
+	public static synchronized intWert getLatitude() {return latitude;}
+	public static synchronized intWert getLongitude() {return longitude;}
+	public static synchronized intWert getAltitude() {return altitude;}
+	public static synchronized intWert getError() {return error;}
+	public static synchronized intWert getStart(){return start;}
+	public static synchronized intWert getTakeoffThrottle() {return takeoff_throttle;}
+	public static synchronized intWert getFlightModeInt() {return flightModeInt;}
+	public static synchronized intWert getTemoerature() {return temperature;}
+	public static synchronized intWert getAngleRoll() {return angleRoll;}
+	public static synchronized intWert getAnglePitch() {return anglePitch;}
+	public static synchronized intWert getAngleYaw() {return angleYaw;}
+	public static synchronized intWert getHeadingLock() {return headingLock;}
+	public static synchronized intWert getFixType() {return fixType;}
+	public static synchronized intWert getSet1() {return set1;}
+	public static synchronized intWert getSet3() {return set3;}
+	public static synchronized intWert getSet2() {return set2;}
+	
+	
+	public static synchronized Blume getBlumen(){return blume;}
 	
 	public static doubleWert getDistUltrasonic() {return distUltrasonic;}
 	
@@ -110,14 +133,26 @@ public class Data {
 	public static synchronized void setDrone_yaw(int yaw) {drone_yaw.setWert(yaw);}
 	
 	public static synchronized void setVoltageMain(float vm) {voltageMain.setWert((float)vm);}
-	public static synchronized void setVoltage5V(float v5) {voltage5v.setWert((double)v5);}
-	public static synchronized void setVoltage3v(float v3) {voltage3v.setWert((double)v3);}
-	public static synchronized void setAmperage(float amp) {amperage.setWert((double)amp);}
-	public static synchronized void setBlumen(List<Blume> bl) {blumen.clear();blumen.addAll(bl);}
+	public static synchronized void setBlume(Blume bl) {blume = bl;}
 	
-	public static synchronized void setLatitude(float lat) {latitude.setWert((double)lat);}
-	public static synchronized void setLongitude(float lon) {longitude.setWert((double)lon);}
-	public static synchronized void setAltitude(float alt) {altitude.setWert((double)alt);};
+	public static synchronized void setLatitude(int lat) {latitude.setWert((int)lat);}
+	public static synchronized void setLongitude(int lon) {longitude.setWert((int)lon);}
+	public static synchronized void setAltitude(int alt) {altitude.setWert((int)alt);};
+	public static synchronized void setError(int var) { error.setWert(var);}
+	public static synchronized void setStart(int var){ start.setWert(var);}
+	public static synchronized void setTakeoffThrottle(int var) { takeoff_throttle.setWert(var);}
+	public static synchronized void setFlightModeInt(int var) { flightModeInt.setWert(var);}
+	public static synchronized void setTemperature(int var) {temperature.setWert(var);}
+	public static synchronized void setAngleRoll(int var) { angleRoll.setWert(var);}
+	public static synchronized void setAnglePitch(int var) { anglePitch.setWert(var);}
+	public static synchronized void setAngleYaw(int var) { angleYaw.setWert(var);}
+	public static synchronized void setHeadingLock(int var) { headingLock.setWert(var);}
+	public static synchronized void setFixType(int var) { fixType.setWert(var);}
+	public static synchronized void setSet1(int var) { set1.setWert(var);}
+	public static synchronized void setSet3(int var) { set3.setWert(var);}
+	public static synchronized void setSet2(int var) { set2.setWert(var);}
 	
 	public static synchronized void setDistUltrasonic(double dist) {distUltrasonic.setWert(dist);}
+
+	public static synchronized void setNumGpsSatellites(int num) {numGpsSatellites.setWert(num);}
 }

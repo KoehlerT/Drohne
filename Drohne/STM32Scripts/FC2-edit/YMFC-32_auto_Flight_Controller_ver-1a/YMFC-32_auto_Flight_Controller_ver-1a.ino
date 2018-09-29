@@ -14,10 +14,10 @@
 //Always remove the propellers and stay away from the motors unless you
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
-
+#define HWire WIRE
 #include <EEPROM.h>
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
-TwoWire HWire (2, I2C_FAST_MODE);          //Initiate I2C port 2 at 400kHz.
+TwoWire HWire (1, I2C_FAST_MODE);          //Initiate I2C port 2 at 400kHz.
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -173,15 +173,29 @@ uint16_t setting_click_counter;
 uint8_t previous_channel_6;
 float adjustable_setting_1, adjustable_setting_2, adjustable_setting_3;
 
+//Transmission Variables
+char programm_code;
+char receive[10];
+char transmit[10];
+float used_power,altitude_meter;
+uint32_t startLoop = 0;
+uint16_t loopDuration = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
-  pinMode(4, INPUT_ANALOG);                                     //This is needed for reading the analog value of port A4.
+  pinMode(5, INPUT_ANALOG);                                     //This is needed for reading the analog value of port A4.
   //Port PB3 and PB4 are used as JTDO and JNTRST by default.
   //The following function connects PB3 and PB4 to the
   //alternate output function.
   afio_cfg_debug_ports(AFIO_DEBUG_SW_ONLY);                     //Connects PB3 and PB4 to output function.
+
+  Serial1.begin(230400); //Raspberry Pi
+  #ifdef debug
+    Serial.begin(230400);
+    delay(100);
+    Serial.println("hello World");
+  #endif
 
   pinMode(PB3, OUTPUT);                                         //Set PB3 as output for green LED.
   pinMode(PB4, OUTPUT);                                         //Set PB4 as output for red LED.
@@ -211,6 +225,7 @@ void setup() {
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
   while (error != 0) {                                          //Stay in this loop because the MPU-6050 did not responde.
+    getRaspberryInfo();
     error = 1;                                                  //Set the error status to 1.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
@@ -221,6 +236,7 @@ void setup() {
   HWire.beginTransmission(compass_address);                     //Start communication with the HMC5883L.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
   while (error != 0) {                                          //Stay in this loop because the HMC5883L did not responde.
+    getRaspberryInfo();
     error = 2;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
@@ -231,6 +247,7 @@ void setup() {
   HWire.beginTransmission(MS5611_address);                      //Start communication with the MS5611.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
   while (error != 0) {                                          //Stay in this loop because the MS5611 did not responde.
+    getRaspberryInfo();
     error = 3;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
@@ -253,6 +270,7 @@ void setup() {
 
   //Wait until the receiver is active.
   while (channel_1 < 990 || channel_2 < 990 || channel_3 < 990 || channel_4 < 990)  {
+    getRaspberryInfo();
     error = 4;                                                  //Set the error status to 4.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Delay 4ms to simulate a 250Hz loop
@@ -270,7 +288,7 @@ void setup() {
   //analogRead => 0 = 0V ..... 4095 = 36.3V
   //36.3 / 4095 = 112.81.
   //The variable battery_voltage holds 1050 if the battery voltage is 10.5V.
-  battery_voltage = (float)analogRead(4) / 112.81;
+  battery_voltage = (float)analogRead(5) / 112.81;
 
   //For calculating the pressure the 6 calibration values need to be polled from the MS5611.
   //These 2 byte values are stored in the memory location 0xA2 and up.
@@ -309,6 +327,7 @@ void setup() {
 //Main program loop
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
+  getRaspberryInfo();
   //Some functions are only accessible when the quadcopter is off.
   if (start == 0) {
     //For compass calibration move both sticks to the top right.
@@ -423,7 +442,7 @@ void loop() {
   //The battery voltage is needed for compensation.
   //A complementary filter is used to reduce noise.
   //1410.1 = 112.81 / 0.08.
-  battery_voltage = battery_voltage * 0.92 + ((float)analogRead(4) / 1410.1);
+  battery_voltage = battery_voltage * 0.92 + ((float)analogRead(5) / 1410.1);
 
   //Turn on the led if battery voltage is to low. Default setting is 10.5V
   if (battery_voltage > 6.0 && battery_voltage < low_battery_warning && error == 0)error = 1;
@@ -475,11 +494,11 @@ void loop() {
   }
 
 
-  TIMER4_BASE->CCR1 = esc_1;                                                       //Set the throttle receiver input pulse to the ESC 1 output pulse.
-  TIMER4_BASE->CCR2 = esc_2;                                                       //Set the throttle receiver input pulse to the ESC 2 output pulse.
-  TIMER4_BASE->CCR3 = esc_3;                                                       //Set the throttle receiver input pulse to the ESC 3 output pulse.
-  TIMER4_BASE->CCR4 = esc_4;                                                       //Set the throttle receiver input pulse to the ESC 4 output pulse.
-  TIMER4_BASE->CNT = 5000;                                                         //This will reset timer 4 and the ESC pulses are directly created.
+  TIMER3_BASE->CCR1 = esc_1;                                                       //Set the throttle receiver input pulse to the ESC 1 output pulse.
+  TIMER3_BASE->CCR2 = esc_2;                                                       //Set the throttle receiver input pulse to the ESC 2 output pulse.
+  TIMER3_BASE->CCR3 = esc_3;                                                       //Set the throttle receiver input pulse to the ESC 3 output pulse.
+  TIMER3_BASE->CCR4 = esc_4;                                                       //Set the throttle receiver input pulse to the ESC 4 output pulse.
+  TIMER3_BASE->CNT = 5000;                                                         //This will reset timer 4 and the ESC pulses are directly created.
 
   send_telemetry_data();                                                           //Send telemetry data to the ground station.
 
@@ -489,7 +508,8 @@ void loop() {
   //that the loop time is still 4000us and no longer! More information can be found on
   //the Q&A page:
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
-
+  loopDuration = micros() - loop_timer;
+  
   if (micros() - loop_timer > 4050)error = 2;                                      //Output an error if the loop time exceeds 4050us.
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.

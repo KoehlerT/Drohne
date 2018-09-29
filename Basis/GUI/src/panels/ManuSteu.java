@@ -32,7 +32,7 @@ public class ManuSteu  {
         j.setLocation(0, 250);
         j.setTitle(s);
         j.setLayout(null);
-        
+        j.hide();
         //BUTTONS UND LABELS
         enabledL = new JLabel();
         throttleL = new JLabel();
@@ -55,7 +55,7 @@ public class ManuSteu  {
         j.addKeyListener(new ManuManager());
         j.setFocusable(true);
         
-        j.show();
+        //j.show();
         updateLabels();
         setColors(false);
         enabledL.setText("Automatischer Modus");

@@ -62,18 +62,17 @@ public class Bildanzeige {
 	static List<Blume> lst = new ArrayList<Blume>(5);
 	
 	public static void drawBlumen() {
-		lst.clear();
-		lst.addAll(Data.getBlumen());
+		Blume b = Data.getBlumen();
+		if (b== null)
+			return;
 		
 		Graphics g = bild.getGraphics();
 		g.drawImage(bg, 0, 0, Color.WHITE, null);
 		
-		for (Blume b : lst) {
 			float rx = b.getX();
 			float ry = b.getY();
 			
 			g.drawOval((int)(rx*width), (int)(ry*height), 50, 50);
-		}
 		
 	}
 	

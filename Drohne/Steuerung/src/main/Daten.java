@@ -41,21 +41,26 @@ public class Daten {
 	private static Vector3 targetVel;
 	
 	//Sensorwerte Strom
-	private static float voltageMain = 10; //Spannung der Hauptstromversorgung (11V)
-	private static float voltage5v = 5; //Spannung der 5V schiene
-	private static float voltage3v = 3.3f; //Spannung der 3,3V Schiene
-	private static float amperage = 30; //Stromstärke bzw Stromverbrauch
+	private static int voltageMain = 10; //Spannung der Hauptstromversorgung (11V)
 	
-	//Sensorwerte Position 
-	private static float latitude;
-	private static float longitude;
-	private static float gpsAltitude;
-	private static float prsAltitude;
+	//Sensorwerte Telemetry 
+	private static int latitude;
+	private static int longitude;
+	private static int altitude;
+	private static int error;
+	private static int start;
+	private static int takeoff_throttle;
+	private static int flightMode;
+	private static int angle_roll;
+	private static int angle_pitch;
+	private static int angle_yaw;
+	private static int heading_lock;
+	private static int fix_type;
+	private static int set1,set2,set3;
 	
 	//Sensorwerte Umgebung
 	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
-	private static float temperature;
-	private static float pressure;
+	private static int temperature;
 	private static List<Blume> blumen = new ArrayList<Blume>(10);
 	private static Location target;
 	
@@ -86,21 +91,30 @@ public class Daten {
 	public static synchronized int getPitch() {return pitch;}
 	public static synchronized int getYaw() {return yaw;}
 	
-	public static synchronized float getVoltageMain() {return voltageMain;}
-	public static synchronized float getVoltage5v() {return voltage5v;}
-	public static synchronized float getVoltage3v() {return voltage3v;}
-	public static synchronized float getAmperage() {return amperage;}
+	public static synchronized int getVoltageMain() {return voltageMain;}
+
 	
-	public static synchronized float getLatitude() {return latitude;}
-	public static synchronized float getLongitude() {return longitude;}
-	public static synchronized float getGpsAltitude() {return gpsAltitude;}
-	public static synchronized float getPrsAltitude() {return prsAltitude;}
+	public static synchronized int getLatitude() {return latitude;}
+	public static synchronized int getLongitude() {return longitude;}
+	public static synchronized int getAltitude() {return altitude;}
+	public static synchronized int getError() {return error;}
+	public static synchronized int getStart() {return start;}
+	public static synchronized int getTakeoffThrottle() {return takeoff_throttle;}
+	public static synchronized int getFlightInt() {return flightMode;}
+	public static synchronized int getAngleRoll() {return angle_roll;}
+	public static synchronized int getAnglePitch() {return angle_pitch;}
+	public static synchronized int getAngleYaw() {return angle_yaw;};
+	public static synchronized int getHeadingLock() {return heading_lock;}
+	public static synchronized int getFixType() {return fix_type;}
+	public static synchronized int getSet1() {return set1;}
+	public static synchronized int getSet2() {return set2;}
+	public static synchronized int getSet3() {return set3;}
+	
 	public static synchronized List<Blume> getBlumen() {return blumen;}
 	public static synchronized Location getTarget() {return target;}
 	
 	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
-	public static synchronized float getTemperature() {return temperature;}
-	public static synchronized float getPressure() {return pressure;}
+	public static synchronized int getTemperature() {return temperature;}
 	
 	public static synchronized int getNumGpsSatellites() {return numGpsSatellites;}
 	public static synchronized boolean getGpsAvailable() {return gpsAvailable;}
@@ -127,21 +141,29 @@ public class Daten {
 	public static synchronized void setPitch(int pth) {pitch = pth;}
 	public static synchronized void setYaw(int yw) {yaw = yw;}
 	
-	public static synchronized void setVoltageMain(float vm) {voltageMain = vm;}
-	public static synchronized void setVoltage5v(float v5) {voltage5v = v5;}
-	public static synchronized void setVoltage3v(float v3) {voltage3v = v3;}
-	public static synchronized void setAmperage(float ap) {amperage = ap;}
+	public static synchronized void setVoltageMain(int vm) {voltageMain = vm;}
 	
-	public static synchronized void setLatitude(float lt) {latitude = lt;}
-	public static synchronized void setLongitude(float lt) {longitude = lt;}
-	public static synchronized void setGpsAltitude(float alt) {gpsAltitude = alt;}
-	public static synchronized void setPrsAltitude(float alt) {prsAltitude = alt;}
+	public static synchronized void setLatitude (int var) {latitude = var;}
+	public static synchronized void setLongitude (int var) {longitude = var;}
+	public static synchronized void setAltitude (int var) {altitude = var;}
+	public static synchronized void setError (int var) {error = var;}
+	public static synchronized void setStart (int var) {start = var;}
+	public static synchronized void setTakeoffThrottle(int var) {takeoff_throttle = var;}
+	public static synchronized void setFlightInt (int var) {flightMode = var;}
+	public static synchronized void setAngleRoll (int var) {angle_roll = var;}
+	public static synchronized void setAnglePitch (int var) {angle_pitch = var;}
+	public static synchronized void setAngleYaw (int var) {angle_yaw = var;};
+	public static synchronized void setHeadingLock (int var) {heading_lock = var;}
+	public static synchronized void setFixType (int var) {fix_type = var;}
+	public static synchronized void setSet1 (int var) {set1 = var;}
+	public static synchronized void setSet2 (int var) {set2 = var;}
+	public static synchronized void setSet3 (int var) {set3 = var;}
+	
 	public static synchronized void setNewBlumen(Blume[] bl) {blumen.clear();blumen.addAll(Arrays.asList(bl));}
 	public static synchronized void setTarget(Location loc) {target = loc;}
 	
 	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
-	public static synchronized void setTemperature(float newTemp) {temperature = newTemp;}
-	public static synchronized void setPressure(float newPrs) {pressure = newPrs;}
+	public static synchronized void setTemperature(int newTemp) {temperature = newTemp;}
 	
 	public static synchronized void setNumGpsSatellites(int sat) {numGpsSatellites = sat;}
 	public static synchronized void setGpsAvailable(boolean available) {gpsAvailable = available;}

@@ -2,8 +2,16 @@
 //This part sends the telemetry data to the ground station.
 //The output for the serial monitor is PB0. Protocol is 1 start bit, 8 data bits, no parity, 1 stop bit.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+uint8_t sends = 0;
+
 void send_telemetry_data(void) {
-  telemetry_loop_counter++;                                                                 //Increment the telemetry_loop_counter variable.
+  //Send every package 2 times
+  sends++;
+  if (sends > 2){
+    telemetry_loop_counter++; 
+    sends = 0;
+  }
+                                                                 //Increment the telemetry_loop_counter variable.
   if (telemetry_loop_counter == 1)telemetry_send_byte = 'J';                                //Send a J as start signature.
   if (telemetry_loop_counter == 2)telemetry_send_byte = 'B';                                //Send a B as start signature.
   if (telemetry_loop_counter == 3) {
@@ -82,18 +90,18 @@ void send_telemetry_data(void) {
   //After 125 loops the telemetry_loop_counter variable is reset. This way the telemetry data is send every half second.
   if (telemetry_loop_counter == 125)telemetry_loop_counter = 0;                             //After 125 loops reset the telemetry_loop_counter variable
 
-  //Send the telemetry_send_byte via the serial protocol via ouput PB0.
-  //Send a start bit first.
+  //Send the Telemetry data via the Serial bus to the Raspberry
+  // Data is sent multiple times, to prevent data Loss
   if (telemetry_loop_counter <= 34) {
-    check_byte ^= telemetry_send_byte;
-    GPIOB_BASE->BSRR = 0b1 << 16;                                                             //Reset output PB0 to 0 to create a start bit.
-    delayMicroseconds(104);                                                                   //Delay 104us (1s/9600bps)
-    for (telemetry_bit_counter = 0; telemetry_bit_counter < 8; telemetry_bit_counter ++) {    //Create a loop fore every bit in the
-      if (telemetry_send_byte >> telemetry_bit_counter & 0b1) GPIOB_BASE->BSRR = 0b1 << 0;    //If the specific bit is set, set output PB0 to 1;
-      else GPIOB_BASE->BSRR = 0b1 << 16;                                                      //If the specific bit is not set, reset output PB0 to 0;
-      delayMicroseconds(104);                                                                 //Delay 104us (1s/9600bps)
-    }
-    //Send a stop bit
-    GPIOB_BASE->BSRR = 0b1 << 0;                                                              //Set output PB0 to 1;
+    transmit[0] = telemetry_loop_counter;
+    transmit[1] = telemetry_loop_counter;
+    transmit[2] = telemetry_loop_counter;
+    transmit[3] = telemetry_send_byte;
+    transmit[4] = telemetry_send_byte;
+    transmit[5] = telemetry_send_byte;
+    transmit[6] = (char)(0x76);
+    transmit[7] = (char)(0x9A);
+    transmit[8] = (byte)loopDuration;
+    transmit[9] = (byte) (loopDuration >> 8);
   }
 }

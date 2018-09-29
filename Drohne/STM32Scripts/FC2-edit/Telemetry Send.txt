@@ -1,0 +1,67 @@
+1 = J
+2 = B
+3 = error
+4 = flight Mode
+5 = batt volt * 10
+6 = temperature
+7 = temperature >> 8
+8 = angle roll + 100
+9 = angle pitch + 100
+10 = start
+11 = altitude + 1000
+12 = altitude >> 8
+13 = takeoff Throttle + 1500
+14 = takeoff_thr >> 8
+15 = angle yaw
+16 = angle yaw >> 8
+17 = heading lock
+18 = used sats
+19 = fix type
+20 = lat gps
+21 = lat >> 8
+22 = lat >> 16
+23 = lat >> 24
+24 = lon
+25 = lon >> 8
+26 = lon >> 16
+27 = lon >> 24
+28 = set 1 * 100
+29 = set 1 >> 8
+30 = set 2 * 100
+31 = set 2 >> 8
+32 = set 3 * 100
+33 = set 3 >> 8
+34 = check byte (0)
+
+To Send:
+#PACK A
+1 int8 error
+2 int8 flight Mode
+3 int8 batt volt
+4 int16 temperature
+5 int8 ang roll
+6 int8 ang pitch
+7 int8 start
+8 int16 altitude
+9 int16 takeoff
+10 int16 ang yaw
+11 int8 heading lock
+12 int8 sats
+12 int8 fix type
+13 int32 lat
+#PACK B
+14 int32 lon
+15 int16 set1
+16 int16 set2
+17 int16 set3
+18 int16 looptime
+19 int16 comm refresh
+20 int16 throttle
+21 int16 roll
+22 int16 pitch
+23 int16 yaw
+24 int16 chars
+
+bytes = 25 + 20 = 45
+
+ 
