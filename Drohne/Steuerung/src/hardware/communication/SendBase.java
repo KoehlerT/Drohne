@@ -59,6 +59,7 @@ public class SendBase {
 		write16(trans,19,Daten.getPitch());
 		write16(trans,21,Daten.getYaw());
 		write16(trans,23,Daten.getRoll());
+		
 	}
 	
 	private static void write8(byte[] arr, int ind, int val) {
@@ -86,9 +87,12 @@ public class SendBase {
 		byte dist = 0;
 		
 		Location loc = Daten.getTarget();
-		x = (byte)((loc.x*100) + 100);
-		y = (byte)((loc.y*100)+100);
-		dist = (byte)loc.dist;
+		if (loc != null) {
+			
+			x = (byte)((loc.x*100) + 100);
+			y = (byte)((loc.y*100)+100);
+			dist = (byte)loc.dist;
+		}
 		
 		arr[ind+0] = x;
 		arr[ind+1] = y;

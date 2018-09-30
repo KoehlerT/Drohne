@@ -74,9 +74,9 @@ public class GPS implements SerialDataEventListener{
 			float alt = Float.parseFloat(altStr);
 			int sat = Integer.parseInt(satStr);
 			
-			Daten.setLatitude(lat);
+			/*Daten.setLatitude(lat);
 			Daten.setLongitude(lon);
-			Daten.setGpsAltitude(alt);
+			Daten.setGpsAltitude(alt);*/
 			Daten.setNumGpsSatellites(sat);
 			if (!available) {
 				available = true;

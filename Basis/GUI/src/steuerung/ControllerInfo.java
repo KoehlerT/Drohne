@@ -7,8 +7,6 @@ import utillity.FlyingMode;
 public class ControllerInfo {
 	//Dank an: https://www.codeproject.com/Articles/26949/Xbox-Controller-Input-in-C-with-XInput
 	
-	public static boolean Hold = false;
-	
 	static {
 		if (System.getProperty("sun.arch.data.model").equals("64")) {
 			System.out.println("Load 64 bit Library");
@@ -63,6 +61,8 @@ public class ControllerInfo {
 		if (isConnected()) {
 			boolean änderung = false;
 			
+			boolean grob = false;
+			grob = getGamepad_SH_LEFT();
 			
 			//Controls
 			if (getGamepad_B()) { //Not Aus
@@ -88,15 +88,11 @@ public class ControllerInfo {
 				ControlWordHandler.getInstance().addSendingWord((byte)0x2);
 			}
 			
-			if (getGamepad_SH_LEFT()) {
-				Hold = !Hold;
-				System.out.println("Hold: "+Hold);
-			}
 			
 			//Rotationen
-			int yaw = (mapValueAxesYaw(getThumb_LX()));
-			int pitch= (3000-mapValueAxes(getThumb_RY()));
-			int roll = (mapValueAxes(getThumb_RX()));
+			int yaw = (mapValueAxesYaw(getThumb_LX(),grob));
+			int pitch= (3000-mapValueAxes(getThumb_RY(),grob));
+			int roll = (mapValueAxes(getThumb_RX(),grob));
 			
 			//Throttle
 			int old = Data.getCont_throttle().getWert();
@@ -109,8 +105,6 @@ public class ControllerInfo {
 				yaw = (1000);
 			}if (mode == FlyingMode.FORCEDOWN) {
 				//throttle = (1000);
-			}if (Hold) {
-				throttle = 1500;
 			}
 			
 			//D-Pad steuerung
@@ -125,6 +119,12 @@ public class ControllerInfo {
 				roll = 1600;
 			}
 			
+			if (getGamepad_START()) {
+				throttle = 2000;
+				yaw = 1000;
+				pitch = 1000;
+				roll = 1000;
+			}
 			
 			//Setze neue Werte
 			Data.setCont_throttle(throttle);
@@ -152,29 +152,37 @@ public class ControllerInfo {
 		
 	}
 	
-	private int mapValueAxes(int value) {
+	private int mapValueAxes(int value,boolean grob) {
+		int scl = 500;
+		if (grob)
+			scl = 250;
 		//Wert von -32768 - 32767
-		value += 32796;
-		float scale = (value/65536f);
-		if (scale < 0.55 && scale > 0.45) {
-			scale = 0.5f;
+		//value += 32796;
+		float scale = (value/32796f);
+		//System.out.println(scale);
+		if (scale < 0.1 && scale > -0.1) {
+			scale = 0f;
 		}
-		int result = (int)(scale * 500);
+		int result = (int)(scale * scl);
 		//Wert von 1000 - 2000
-		return clamp(result + 1250);
+		return clamp(result + 1500);
 	}
 	
 
-	private int mapValueAxesYaw(int value) {
+	private int mapValueAxesYaw(int value,boolean grob) {
+		int scl = 500;
+		if (grob)
+			scl = 250;
+		
 		//Wert von -32768 - 32767
-		value += 32796;
-		float scale = (value/65536f);
-		if (scale < 0.7 && scale > 0.3) {
-			scale = 0.5f;
+		//value += 32796;
+		float scale = (value/32796f);
+		if (scale < 0.3 && scale > -0.3) {
+			scale = 0f;
 		}
-		int result = (int)(scale * 1000);
+		int result = (int)(scale * scl);
 		//Wert von 1000 - 2000
-		return clamp(result + 1000);
+		return clamp(result + 1500);
 	}
 	
 	private int clamp(int value) {

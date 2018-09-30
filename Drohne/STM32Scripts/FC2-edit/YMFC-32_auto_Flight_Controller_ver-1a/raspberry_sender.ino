@@ -2,14 +2,11 @@
 //This part sends the telemetry data to the ground station.
 //The output for the serial monitor is PB0. Protocol is 1 start bit, 8 data bits, no parity, 1 stop bit.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-uint8_t sends = 0;
-
 void send_telemetry_data(void) {
   //Send every package 2 times
-  sends++;
-  if (sends > 2){
+  if (nextPackage){
     telemetry_loop_counter++; 
-    sends = 0;
+    nextPackage = false;
   }
                                                                  //Increment the telemetry_loop_counter variable.
   if (telemetry_loop_counter == 1)telemetry_send_byte = 'J';                                //Send a J as start signature.
@@ -87,8 +84,8 @@ void send_telemetry_data(void) {
   if (telemetry_loop_counter == 34)telemetry_send_byte = check_byte;                        //Send the check-byte.
 
 
-  //After 125 loops the telemetry_loop_counter variable is reset. This way the telemetry data is send every half second.
-  if (telemetry_loop_counter == 125)telemetry_loop_counter = 0;                             //After 125 loops reset the telemetry_loop_counter variable
+  //Data is sent whenever possible
+  if (telemetry_loop_counter == 35)telemetry_loop_counter = 0;                             //After 125 loops reset the telemetry_loop_counter variable
 
   //Send the Telemetry data via the Serial bus to the Raspberry
   // Data is sent multiple times, to prevent data Loss

@@ -42,8 +42,9 @@ void calibrate_compass(void) {
 
 void calibrate_level(void) {
   level_calibration_on = 1;
-
+  DEBUGa("Calibration level");
   while (channel_2 < 1100) {
+    getRaspberryInfo();
     send_telemetry_data();                                                   //Send telemetry data to the ground station.
     delay(10);
   }
@@ -55,6 +56,7 @@ void calibrate_level(void) {
 
   for (error = 0; error < 64; error ++) {
     send_telemetry_data();                                                   //Send telemetry data to the ground station.
+    getRaspberryInfo();
     gyro_signalen();
     acc_pitch_cal_value += acc_y;
     acc_roll_cal_value += acc_x;
@@ -67,6 +69,7 @@ void calibrate_level(void) {
   acc_roll_cal_value /= 64;
 
   red_led(LOW);
+  DEBUGa("Calibration finished");
   if (error < 80) {
     EEPROM.write(0x16, acc_pitch_cal_value);
     EEPROM.write(0x17, acc_roll_cal_value);

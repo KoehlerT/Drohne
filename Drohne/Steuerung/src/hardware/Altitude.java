@@ -90,9 +90,9 @@ public class Altitude{
 	//Public
 	
 	public void readAllSensorData() {
-		Daten.setPrsAltitude(readAltitude());
+		/*Daten.setPrsAltitude(readAltitude());
 		Daten.setTemperature(readTemperature());
-		Daten.setPressure(readPressure());
+		Daten.setPressure(readPressure());*/
 	}
 	
 	public float readTemperature() {

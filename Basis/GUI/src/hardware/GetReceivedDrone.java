@@ -19,13 +19,13 @@ public class GetReceivedDrone {
 	private static void untangleA(byte[] arr) {
 		Data.setError(read8(arr,2));
 		Data.setFlightModeInt(read8(arr,3));
-		Data.setVoltageMain(read8(arr,4));
+		Data.setVoltageMain((float)read8(arr,4)/10f);
 		Data.setTemperature(read16(arr,5));
 		Data.setAngleRoll(read8(arr,7));
 		Data.setAnglePitch(read8(arr,8));
 		Data.setStart(read8(arr,9));
 		Data.setAltitude(read16(arr,10));
-		Data.setTakeoffThrottle(read16(arr,12));
+		Data.setTakeoffThrottle(read16(arr,12)-1500);
 		Data.setAngleYaw(read16(arr,14));
 		Data.setHeadingLock(read8(arr,16));
 		Data.setNumGpsSatellites(read8(arr,17));
@@ -37,15 +37,15 @@ public class GetReceivedDrone {
 	
 	private static void untangleB(byte[] arr) {
 		Data.setLongitude(read32(arr,2));
-		Data.setSet1(read16(arr,6));
-		Data.setSet2(read16(arr,8));
-		Data.setSet3(read16(arr,10));
+		Data.setSet1((float)read16(arr,6)/100f);
+		Data.setSet2((float)read16(arr,8)/100f);
+		Data.setSet3((float)read16(arr,10)/100f);
 		Data.setArduinoRefresh(read16(arr,12));
 		Data.setCommunicatorRefresh(read16(arr,14));
 		Data.setDrone_throttle(read16(arr,16));
-		Data.setDrone_roll(read16(arr,16));
-		Data.setDrone_pitch(read16(arr,16));
-		Data.setDrone_yaw(read16(arr,16));
+		Data.setDrone_roll(read16(arr,18));
+		Data.setDrone_pitch(read16(arr,20));
+		Data.setDrone_yaw(read16(arr,22));
 	}
 	
 	

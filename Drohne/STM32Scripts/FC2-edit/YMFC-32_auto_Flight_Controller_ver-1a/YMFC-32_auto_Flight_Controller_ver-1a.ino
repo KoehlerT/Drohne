@@ -14,6 +14,16 @@
 //Always remove the propellers and stay away from the motors unless you
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
+#define deb
+
+#ifdef deb
+  #define DEBUGa(x) Serial.println(x);
+  #define DEBUGb(x,y) Serial.print(x); Serial.println(y);
+#else
+  #define DEBUGa(x) 
+  #define DEBUGb(x,y) 
+#endif
+
 #define HWire WIRE
 #include <EEPROM.h>
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
@@ -180,6 +190,7 @@ char transmit[10];
 float used_power,altitude_meter;
 uint32_t startLoop = 0;
 uint16_t loopDuration = 0;
+uint8_t nextPackage = true;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -191,10 +202,12 @@ void setup() {
   afio_cfg_debug_ports(AFIO_DEBUG_SW_ONLY);                     //Connects PB3 and PB4 to output function.
 
   Serial1.begin(230400); //Raspberry Pi
-  #ifdef debug
+  adjustable_setting_3 = 100;
+  #ifdef deb
     Serial.begin(230400);
-    delay(100);
-    Serial.println("hello World");
+    delay(200);
+    Serial.println("Hello World");
+    adjustable_setting_3 = 200;
   #endif
 
   pinMode(PB3, OUTPUT);                                         //Set PB3 as output for green LED.
@@ -208,6 +221,7 @@ void setup() {
   pinMode(PB0, OUTPUT);                                         //Set PB0 as output for telemetry TX.
 
   //EEPROM emulation setup
+  DEBUGa("EEPROM")
   EEPROM.PageBase0 = 0x801F000;
   EEPROM.PageBase1 = 0x801F800;
   EEPROM.PageSize  = 0x400;
@@ -224,6 +238,7 @@ void setup() {
   HWire.begin();                                                //Start the I2C as master
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
+  DEBUGb("MPU",error)
   while (error != 0) {                                          //Stay in this loop because the MPU-6050 did not responde.
     getRaspberryInfo();
     error = 1;                                                  //Set the error status to 1.
@@ -235,17 +250,20 @@ void setup() {
   HWire.begin();                                                //Start the I2C as master
   HWire.beginTransmission(compass_address);                     //Start communication with the HMC5883L.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
+  DEBUGb("Compass",error)
   while (error != 0) {                                          //Stay in this loop because the HMC5883L did not responde.
     getRaspberryInfo();
     error = 2;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
+    break;
   }
 
   //Check if the MS5611 barometer is responding.
   HWire.begin();                                                //Start the I2C as master
   HWire.beginTransmission(MS5611_address);                      //Start communication with the MS5611.
   error = HWire.endTransmission();                              //End the transmission and register the exit status.
+  DEBUGb("MS5611",error)
   while (error != 0) {                                          //Stay in this loop because the MS5611 did not responde.
     getRaspberryInfo();
     error = 3;                                                  //Set the error status to 2.
@@ -259,6 +277,7 @@ void setup() {
   angle_yaw = actual_compass_heading;                           //Set the initial compass heading.
 
   //Create a 5 second delay before calibration.
+  DEBUGa("Calibration")
   for (count_var = 0; count_var < 1250; count_var++) {          //1250 loops of 4 microseconds = 5 seconds.
     if (count_var % 125 == 0) {                                 //Every 125 loops (500ms).
       digitalWrite(PB4, !digitalRead(PB4));                     //Change the led status.
@@ -269,6 +288,7 @@ void setup() {
   calibrate_gyro();                                             //Calibrate the gyro offset.
 
   //Wait until the receiver is active.
+  DEBUGa("Receiver")
   while (channel_1 < 990 || channel_2 < 990 || channel_3 < 990 || channel_4 < 990)  {
     getRaspberryInfo();
     error = 4;                                                  //Set the error status to 4.
@@ -288,10 +308,12 @@ void setup() {
   //analogRead => 0 = 0V ..... 4095 = 36.3V
   //36.3 / 4095 = 112.81.
   //The variable battery_voltage holds 1050 if the battery voltage is 10.5V.
+  DEBUGa("voltage")
   battery_voltage = (float)analogRead(5) / 112.81;
 
   //For calculating the pressure the 6 calibration values need to be polled from the MS5611.
   //These 2 byte values are stored in the memory location 0xA2 and up.
+  DEBUGa("pressure")
   for (start = 1; start <= 6; start++) {
     HWire.beginTransmission(MS5611_address);                    //Start communication with the MPU-6050.
     HWire.write(0xA0 + start * 2);                              //Send the address that we want to read.
@@ -312,6 +334,7 @@ void setup() {
   actual_pressure = 0;                                          //Reset the pressure calculations.
 
   //Before starting the avarage accelerometer value is preloaded into the variables.
+  DEBUGa("accelerometer")
   for (start = 0; start <= 24; start++)acc_z_average_short[start] = acc_z;
   for (start = 0; start <= 49; start++)acc_z_average_long[start] = acc_z;
   acc_z_average_short_total = acc_z * 25;
@@ -320,6 +343,8 @@ void setup() {
 
   if (motor_idle_speed < 1000)motor_idle_speed = 1000;          //Limit the minimum idle motor speed to 1000us.
   if (motor_idle_speed > 1200)motor_idle_speed = 1200;          //Limit the maximum idle motor speed to 1200us.
+
+  DEBUGa("Finished Setup")
 
   loop_timer = micros();                                        //Set the timer for the first loop.
 }
@@ -509,8 +534,8 @@ void loop() {
   //the Q&A page:
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   loopDuration = micros() - loop_timer;
-  
-  if (micros() - loop_timer > 4050)error = 2;                                      //Output an error if the loop time exceeds 4050us.
+  //DEBUGb("LOOPTIME: ",loopDuration)
+  if (micros() - loop_timer > 4050){error = 2;DEBUGb("LOOP: ",micros() -loop_timer)}                                      //Output an error if the loop time exceeds 4050us.
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }

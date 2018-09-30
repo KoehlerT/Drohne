@@ -25,6 +25,7 @@ public class ArduinoData {
 			int loop = getLoop(rcv);
 			int send = getSent(rcv);
 			
+			
 			if (loop == -1 || send == -1)
 				return 2;
 			
@@ -42,28 +43,26 @@ public class ArduinoData {
 	
 	private static int getLoop(byte[] rcv) {
 		//2 gleiche Bytes reichen, um bearbeitet zu werden
-		int res = -1;
 		if (rcv[1] == rcv[2])
-			res = (rcv[1]&0x000000FF);
+			return (rcv[1]&0x000000FF);
 		if (rcv[2] == rcv[0]) 
-			res = rcv[2]&0x000000FF;
+			return rcv[2]&0x000000FF;
 		if (rcv[0] == rcv[1])
-			res = rcv[1]&0x000000FF;
+			return rcv[1]&0x000000FF;
 		
-		return res;
+		return -1;
 	}
 	
 	private static int getSent(byte[] rcv) {
 		//2 gleiche Bytes reichen, um bearbeitet zu werden
-		int res = -1;
 		if (rcv[5] == rcv[4])
-			res = (rcv[1]&0x000000FF);
+			return (rcv[5]&0x000000FF);
 		if (rcv[4] == rcv[3]) 
-			res = rcv[2]&0x000000FF;
+			return rcv[2]&0x000000FF;
 		if (rcv[3] == rcv[5])
-			res = rcv[1]&0x000000FF;
+			return rcv[3]&0x000000FF;
 		
-		return res;
+		return -1;
 	}
 	
 	private static void getData(int loop, int send) {
@@ -72,35 +71,41 @@ public class ArduinoData {
 		case 4: Daten.setFlightInt(send); break;
 		case 5: Daten.setVoltageMain(send); break;
 		case 6: temperature = send; break;
-		case 7: temperature |= (send << 8); if (last==6) Daten.setTemperature(temperature); break;
-		case 8: Daten.setAngleRoll(send); break;
-		case 9: Daten.setAnglePitch(send); break;
-		case 10: Daten.setStart(send);
-		case 11: altitude = send;
-		case 12: altitude |= (altitude << 8); if (last == 11) Daten.setAltitude(altitude); break;
-		case 13: takeoff_thr = send;
-		case 14: takeoff_thr |= (takeoff_thr<<8); if (last== 13) Daten.setTakeoffThrottle(takeoff_thr);break;
-		case 15: ang_yaw = send;
-		case 16: ang_yaw |= (send << 8); if (last == 15) Daten.setAngleYaw(ang_yaw); break;
-		case 17: Daten.setHeadingLock(send);
-		case 18: Daten.setNumGpsSatellites(send);
-		case 19: Daten.setFixType(send);
-		case 20: lat = send;
-		case 21: if (last == 20) lat |= (send << 8); else lat = 0; break;
-		case 22: if (last == 21 && lat != 0)lat |= (send << 16); else lat = 0; break;
-		case 23: if (last == 22 && lat != 0)Daten.setLatitude(lat | (send << 24)); break;
-		case 24: lon = send;
-		case 25: if (last == 24) lon |= (send << 8); else lon = 0; break;
-		case 26: if (last == 25 && lon != 0)lon |= (send << 16); else lon = 0; break;
-		case 27: if (last == 26 && lon != 0)Daten.setLatitude(lon | (send << 24)); break;
-		case 28: set1 = send;
-		case 29: if (last == 28) set1 |= (send << 8); Daten.setSet1(set1);break;
-		case 30: set2 = send;
-		case 31: if (last == 30) set2 |= (send << 8); Daten.setSet1(set2);break;
-		case 32: set3 = send;
-		case 33: if (last == 32) set3 |= (send << 8); Daten.setSet1(set3);break;
+		case 7: temperature |= (send << 8); /*if (last==6)*/ Daten.setTemperature(temperature); break;
+		case 8: Daten.setAngleRoll(send-100); break;
+		case 9: Daten.setAnglePitch(send-100); break;
+		case 10: Daten.setStart(send);break;
+		case 11: altitude = send;break;
+		case 12: altitude |= (altitude << 8); /*if (last == 11)*/ Daten.setAltitude(altitude); break;
+		case 13: takeoff_thr = send;break;
+		case 14: takeoff_thr |= (takeoff_thr<<8); /*if (last== 13)*/ Daten.setTakeoffThrottle(takeoff_thr);break;
+		case 15: ang_yaw = send;break;
+		case 16: ang_yaw |= (send << 8); /*if (last == 15)*/ Daten.setAngleYaw(ang_yaw); break;
+		case 17: Daten.setHeadingLock(send);break;
+		case 18: Daten.setNumGpsSatellites(send);break;
+		case 19: Daten.setFixType(send);break;
+		case 20: lat = send;break;
+		case 21: /*if (last == 20)*/ lat |= (send << 8);  break;
+		case 22: /*if (last == 21 && lat != 0)*/lat |= (send << 16);  break;
+		case 23: /*if (last == 22 && lat != 0)*/Daten.setLatitude(lat | (send << 24)); break;
+		case 24: lon = send;break;
+		case 25: /*if (last == 24)*/ lon |= (send << 8); break;
+		case 26: /*if (last == 25 && lon != 0)*/lon |= (send << 16);  break;
+		case 27: /*if (last == 26 && lon != 0)*/Daten.setLatitude(lon | (send << 24)); break;
+		case 28: set1 = send;break;
+		case 29: set1 |= (send << 8);Daten.setSet1(set1);break;
+		case 30: set2 = send;break;
+		case 31: set2 |= (send << 8);Daten.setSet2(set2);break;
+		case 32: set3 = send;break; //Also dieses Break hat 3h kopfschmerzen bereitet. Warum sind solche sachen immer so winzig!!!!
+		case 33: set3 |= (send << 8);if (last == 32)  Daten.setSet3(set3);break;
+		case 34: competed(); break;
 		default: break;
 		}
 		last = loop;
+	}
+	
+	private static void competed() {
+		System.out.println("Telemtry Completed"); 
+		System.out.println("Set1: "+set1+" Set2: "+set2+" Set3: "+set3);
 	}
 }

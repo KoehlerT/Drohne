@@ -11,8 +11,9 @@ unsigned long CommunicationDuration;
 
 void getRaspberryInfo(){
   if (Serial1.available()){
+    CommunicationDuration = 0;
     unsigned long st = micros();
-    while (dataPointer < 10){
+    while (dataPointer < 10 && CommunicationDuration<1000){
       if (Serial1.available()){
         char rd = (char)Serial1.read();
         if (rd == 'R'){ //Handshake inidicator 1
@@ -27,8 +28,9 @@ void getRaspberryInfo(){
         }
       }
       CommunicationDuration = micros() - st;
-      //showReceived();
-      convertToReceiver();
+    }
+    if (dataPointer >= 10){
+      nextPackage = true;
       readTransmission();
     }
     dataPointer = 0;

@@ -54,9 +54,9 @@ public class Data {
 	private static intWert angleYaw = new intWert("angle Yaw",true,-100,100,0);
 	private static intWert headingLock = new intWert("heading Lock",true,0,0,0);
 	private static intWert fixType = new intWert("Fix type",true,0,0,0);
-	private static intWert set1 = new intWert("Set 1",true,0,0,0);
-	private static intWert set2 = new intWert("Set 2",true,0,0,0);
-	private static intWert set3 = new intWert("Set 3",true,0,0,0);
+	private static doubleWert set1 = new doubleWert("Set 1",true,0,0,0);
+	private static doubleWert set2 = new doubleWert("Set 2",true,0,0,0);
+	private static doubleWert set3 = new doubleWert("Set 3",true,0,0,0);
 	
 	private static Blume blume;
 	
@@ -101,9 +101,9 @@ public class Data {
 	public static synchronized intWert getAngleYaw() {return angleYaw;}
 	public static synchronized intWert getHeadingLock() {return headingLock;}
 	public static synchronized intWert getFixType() {return fixType;}
-	public static synchronized intWert getSet1() {return set1;}
-	public static synchronized intWert getSet3() {return set3;}
-	public static synchronized intWert getSet2() {return set2;}
+	public static synchronized doubleWert getSet1() {return set1;}
+	public static synchronized doubleWert getSet3() {return set3;}
+	public static synchronized doubleWert getSet2() {return set2;}
 	
 	
 	public static synchronized Blume getBlumen(){return blume;}
@@ -148,9 +148,9 @@ public class Data {
 	public static synchronized void setAngleYaw(int var) { angleYaw.setWert(var);}
 	public static synchronized void setHeadingLock(int var) { headingLock.setWert(var);}
 	public static synchronized void setFixType(int var) { fixType.setWert(var);}
-	public static synchronized void setSet1(int var) { set1.setWert(var);}
-	public static synchronized void setSet3(int var) { set3.setWert(var);}
-	public static synchronized void setSet2(int var) { set2.setWert(var);}
+	public static synchronized void setSet1(float var) { set1.setWert(var);}
+	public static synchronized void setSet3(float var) { set3.setWert(var);}
+	public static synchronized void setSet2(float var) { set2.setWert(var);}
 	
 	public static synchronized void setDistUltrasonic(double dist) {distUltrasonic.setWert(dist);}
 
