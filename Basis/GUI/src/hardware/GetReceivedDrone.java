@@ -20,12 +20,12 @@ public class GetReceivedDrone {
 		Data.setError(read8(arr,2));
 		Data.setFlightModeInt(read8(arr,3));
 		Data.setVoltageMain((float)read8(arr,4)/10f);
-		Data.setTemperature(read16(arr,5));
+		Data.setTemperature((float) ((float)read16(arr,5)/(float)340.00)+36.53);
 		Data.setAngleRoll(read8(arr,7));
 		Data.setAnglePitch(read8(arr,8));
 		Data.setStart(read8(arr,9));
-		Data.setAltitude(read16(arr,10));
-		Data.setTakeoffThrottle(read16(arr,12)-1500);
+		Data.setAltitude(read16(arr,10)-1000);
+		Data.setTakeoffThrottle(read16(arr,12));
 		Data.setAngleYaw(read16(arr,14));
 		Data.setHeadingLock(read8(arr,16));
 		Data.setNumGpsSatellites(read8(arr,17));

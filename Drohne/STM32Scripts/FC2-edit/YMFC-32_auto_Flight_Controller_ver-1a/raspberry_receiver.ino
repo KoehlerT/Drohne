@@ -1,11 +1,56 @@
-void readTransmission(){
-  convertToReceiver();  
+int32_t read4(uint8_t index){
+  return receive[index] | receive[index+1] << 8 | (receive[index+2] << 16) | (receive[index+3] << 24);
+}
+int16_t read2(uint8_t index){
+  return receive[index] | (receive[index+1]<<8);
 }
 
-void convertToReceiver(){
+void readTransmission(){
+  getControllword();
+}
+
+void getControllword(void){
+  byte control = receive[0];
+  switch(control){
+    case 0x00: break;
+    case 0x01: getControllerInputs(); break;
+    case 0x10: calibrate_compass(); break;  //Calibrations
+    case 0x11: calibrate_level(); break;
+    case 0x20: adjustable_setting_1 = read4(1); break;  //Settubgs
+    case 0x21: adjustable_setting_2 = read4(1); break;
+    case 0x22: adjustable_setting_3 = read4(1); break;
+    case 0x30: if (receive[1] == 1) heading_lock = 1; else heading_lock = 0; break; //Heading lock on/off
+    case 0x31: if (receive[1] == 1) flight_mode = 2; else flight_mode = 1; break;  //Altitude hold on/off
+    case 0x32: if (receive[1] == 1) flight_mode = 3; else flight_mode = 2; break; //GPS hold on/off
+    case 0x40: start = 0; break;
+    case 0x41: start = 2; break;
+    case 0x42: break; //Reserved takeoff
+    case 0x43: break; //reserved land
+    case 0x50: setHeight();break;
+    case 0x51: setWaypoint(); break;
+  }
+}
+
+void getControllerInputs(void){
+  channel_3 = read2(1); //Throttle
+  channel_1 = read2(3); //Roll
+  channel_2 = read2(5); //Pitch
+  channel_4 = read2(7); //Yaw
+}
+void setHeight(void){
+  int32_t inputHeight = read4(1) - 100; //Input -100: Desired change in cm
+  float changePressure = (float)inputHeight / 8.42;
+  pid_altitude_setpoint += changePressure;
+}
+void setWaypoint(void){
+  l_lat_waypoint = read4(1);
+  l_lon_waypoint = read4(5);
+}
+
+
+/*void convertToReceiver(){
   channel_3 = (receive[1] << 8) | receive[0]; //Throttle
   channel_1 = (receive[5] << 8) | receive[4]; //Roll
   channel_2 = (receive[3] << 8) | receive[2]; //Pitch
   channel_4 = (receive[7] << 8) | receive[6]; //Yaw
-}
-
+}*/

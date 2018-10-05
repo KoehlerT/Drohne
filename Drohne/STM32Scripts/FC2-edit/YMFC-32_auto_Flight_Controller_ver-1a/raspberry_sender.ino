@@ -27,7 +27,7 @@ void send_telemetry_data(void) {
   if (telemetry_loop_counter == 10)telemetry_send_byte = start;                             //Send the error as a byte.
   if (telemetry_loop_counter == 11) {
     if (start == 2) {                                                                       //Only send the altitude when the quadcopter is flying.
-      telemetry_buffer_byte = 1000 + ((ground_pressure - actual_pressure) * 0.0842);        //Calculate the altitude and add 1000 to prevent negative numbers.
+      telemetry_buffer_byte = 1000 + ((ground_pressure - actual_pressure) * 8.42);        //Calculate the altitude (cm!) and add 1000 to prevent negative numbers.
     }
     else {
       telemetry_buffer_byte = 1000;                                                         //Send and altitude of 0 meters if the quadcopter isn't flying.

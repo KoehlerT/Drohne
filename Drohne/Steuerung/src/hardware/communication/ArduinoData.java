@@ -70,15 +70,15 @@ public class ArduinoData {
 		case 3: Daten.setError(send); break;
 		case 4: Daten.setFlightInt(send); break;
 		case 5: Daten.setVoltageMain(send); break;
-		case 6: temperature = send; break;
-		case 7: temperature |= (send << 8); /*if (last==6)*/ Daten.setTemperature(temperature); break;
+		case 6: temperature = send&0x000000FF; break;
+		case 7: temperature |= ((send&0x000000FF) << 8); /*if (last==6)*/ Daten.setTemperature(temperature); break;
 		case 8: Daten.setAngleRoll(send-100); break;
 		case 9: Daten.setAnglePitch(send-100); break;
 		case 10: Daten.setStart(send);break;
-		case 11: altitude = send;break;
-		case 12: altitude |= (altitude << 8); /*if (last == 11)*/ Daten.setAltitude(altitude); break;
+		case 11: altitude = send&0x000000FF;break;
+		case 12: altitude |= ((send&0x000000FF) << 8); /*if (last == 11)*/ Daten.setAltitude(altitude); break;
 		case 13: takeoff_thr = send;break;
-		case 14: takeoff_thr |= (takeoff_thr<<8); /*if (last== 13)*/ Daten.setTakeoffThrottle(takeoff_thr);break;
+		case 14: takeoff_thr |= (send<<8); /*if (last== 13)*/ Daten.setTakeoffThrottle(takeoff_thr);break;
 		case 15: ang_yaw = send;break;
 		case 16: ang_yaw |= (send << 8); /*if (last == 15)*/ Daten.setAngleYaw(ang_yaw); break;
 		case 17: Daten.setHeadingLock(send);break;
@@ -107,5 +107,6 @@ public class ArduinoData {
 	private static void competed() {
 		System.out.println("Telemtry Completed"); 
 		System.out.println("Set1: "+set1+" Set2: "+set2+" Set3: "+set3);
+		System.out.println("Altitude: "+altitude);
 	}
 }

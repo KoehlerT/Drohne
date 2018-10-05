@@ -2,6 +2,7 @@ package hardware.communication;
 
 import main.Daten;
 import main.ProgramState;
+import utility.FlyingMode;
 
 public class Datapackager {
 	
@@ -54,6 +55,15 @@ public class Datapackager {
 	public static void untangleArduinoReceived(byte[] buffer) {
 		ArduinoData.getArduinoData(buffer);
 	}
+	
+	public static byte[] getArduinoSend(byte[] toSend) {
+		
+		ArduinoSender.getTransmitPackage(toSend);
+		return toSend;
+	}
+	
+	
+	
 	public static void printBinaryArray(byte[] bin) {
 		for (int i = 0; i < bin.length; i++) {
 			byte content = bin[i];

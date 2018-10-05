@@ -43,20 +43,20 @@ public class Data {
 	private static vektorenWert tilt = new vektorenWert("Rotation",false,-5,-5,-5,5,5,5,0,0,0);
 	private static intWert latitude = new intWert("Latutide",true,0,0,0);
 	private static intWert longitude = new intWert("Longitude",true,0,0,0);
-	private static intWert altitude = new intWert("Altitude",true,-5,15,0);
+	private static intWert altitude = new intWert("Altitude (cm)",true,-100,1500,0);
 	private static intWert error = new intWert("Error",true,0,10,-1);
 	private static intWert start = new intWert("Start",true,0,5,-1);
-	private static intWert takeoff_throttle = new intWert("Takeoff",true,0,2000,-1);
+	private static intWert takeoff_throttle = new intWert("Takeoff",true,1400,1600,-1);
 	private static intWert flightModeInt = new intWert("Flightmode",true,0,5,-1);
-	private static intWert temperature = new intWert("temperature",true,20,30,0);
-	private static intWert angleRoll = new intWert("angle Roll",true, -100,100,0);
-	private static intWert anglePitch = new intWert("angle Pitch",true,-100,100,0);
-	private static intWert angleYaw = new intWert("angle Yaw",true,-100,100,0);
+	private static doubleWert temperature = new doubleWert("temperature",true,20,30,0);
+	private static intWert angleRoll = new intWert("angle Roll",true, 0,360,0);
+	private static intWert anglePitch = new intWert("angle Pitch",true,0,360,0);
+	private static intWert angleYaw = new intWert("angle Yaw",true,0,360,0);
 	private static intWert headingLock = new intWert("heading Lock",true,0,0,0);
-	private static intWert fixType = new intWert("Fix type",true,0,0,0);
-	private static doubleWert set1 = new doubleWert("Set 1",true,0,0,0);
-	private static doubleWert set2 = new doubleWert("Set 2",true,0,0,0);
-	private static doubleWert set3 = new doubleWert("Set 3",true,0,0,0);
+	private static intWert fixType = new intWert("Fix type",true,0,1,0);
+	private static doubleWert set1 = new doubleWert("Set 1",true,-1000,1000,0);
+	private static doubleWert set2 = new doubleWert("Set 2",true,-1000,1000,0);
+	private static doubleWert set3 = new doubleWert("Set 3",true,-1000,1000,0);
 	
 	private static Blume blume;
 	
@@ -95,7 +95,7 @@ public class Data {
 	public static synchronized intWert getStart(){return start;}
 	public static synchronized intWert getTakeoffThrottle() {return takeoff_throttle;}
 	public static synchronized intWert getFlightModeInt() {return flightModeInt;}
-	public static synchronized intWert getTemoerature() {return temperature;}
+	public static synchronized doubleWert getTemoerature() {return temperature;}
 	public static synchronized intWert getAngleRoll() {return angleRoll;}
 	public static synchronized intWert getAnglePitch() {return anglePitch;}
 	public static synchronized intWert getAngleYaw() {return angleYaw;}
@@ -142,7 +142,7 @@ public class Data {
 	public static synchronized void setStart(int var){ start.setWert(var);}
 	public static synchronized void setTakeoffThrottle(int var) { takeoff_throttle.setWert(var);}
 	public static synchronized void setFlightModeInt(int var) { flightModeInt.setWert(var);}
-	public static synchronized void setTemperature(int var) {temperature.setWert(var);}
+	public static synchronized void setTemperature(float var) {temperature.setWert(var);}
 	public static synchronized void setAngleRoll(int var) { angleRoll.setWert(var);}
 	public static synchronized void setAnglePitch(int var) { anglePitch.setWert(var);}
 	public static synchronized void setAngleYaw(int var) { angleYaw.setWert(var);}

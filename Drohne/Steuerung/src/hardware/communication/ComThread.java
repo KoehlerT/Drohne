@@ -1,7 +1,6 @@
 package hardware.communication;
 
 import main.Daten;
-import main.Info;
 
 public class ComThread extends Thread{
 	

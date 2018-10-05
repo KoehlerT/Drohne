@@ -526,7 +526,8 @@ void loop() {
   TIMER3_BASE->CNT = 5000;                                                         //This will reset timer 4 and the ESC pulses are directly created.
 
   send_telemetry_data();                                                           //Send telemetry data to the ground station.
-
+  DEBUGb("takeoff detected: ", takeoff_detected);
+  
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is
   //longer or shorter than 4000us the angle calculation is off. If you modify the code make sure
