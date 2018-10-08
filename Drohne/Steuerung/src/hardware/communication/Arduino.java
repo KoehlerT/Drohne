@@ -2,6 +2,8 @@ package hardware.communication;
 
 import com.koehlert.serialcomm.Communicator;
 
+import hardware.dataHandling.Datapackager;
+
 public class Arduino {
 	
 	private Communicator comm;

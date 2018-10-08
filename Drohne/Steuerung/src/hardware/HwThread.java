@@ -1,10 +1,6 @@
 package hardware;
 
-import java.io.IOException;
 
-import hardware.communication.Antenne;
-import hardware.communication.Arduino;
-import hardware.communication.WlanServer;
 import main.Daten;
 import main.Info;
 
@@ -21,16 +17,10 @@ class HwThread extends Thread{
 	
 	public HwThread() {
 		this.setName("Hardware");
-		
-		if (Info.sensorAttached) {
-			//ultrasonic = new Ultrasonic();
-			//alt = new Altitude(Altitude.MODE_STANDARD);
-		}
 			
 		
 		beeper = new Beeper();
 		
-		//gps = new GPS();
 	}
 	
 	@Override
@@ -41,28 +31,8 @@ class HwThread extends Thread{
 		while(Daten.running) {
 			long startTime = System.nanoTime();
 			//Nehme Variablen
-			if (Info.sensorAttached) {
-				//SPI -> Kommunikation
-				
-				/*//Ultraschall
-				try {
-					 ultrasonic.measureDistanceDm();
-				} catch (InterruptedException e) {
-					System.out.println("Fehler beim Messen der Entfernung");
-					e.printStackTrace();
-				}*/
-				
-				//Altitude
-				//alt.readAllSensorData();
-			}
-			//GPS
-			//Automatisch / Event driven
-			//GPS.printGps();
 			
-			//Beeper
 			beeper.workBeeps();
-			
-			Daten.setSensorRefresh((int)(1f/((float)(System.nanoTime()-startTime)/1000_000_000f)));
 			//Warte ein wenig
 			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 			

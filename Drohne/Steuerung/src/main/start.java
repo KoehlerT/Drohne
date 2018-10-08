@@ -48,11 +48,9 @@ public class start {
 		/*Hier werden alle Manager-Objekte der Programmabschnitte erstellt
 		 * 
 		 * */
-		//manag[0] = new BildStart();
-		manag[0] = new TrackerStart();
-		manag[1] = new HwStart();
-		//manag[2] = new KameraStart();
-		manag[2] = new ControllingStart();
+		manag[0] = new TrackerStart();		//Kamera/ Flugsystem
+		manag[1] = new HwStart();			//Kommunikation
+		manag[2] = new ControllingStart();	//Flugprogramme
 		
 		for (Managable m : manag) {
 			m.start();

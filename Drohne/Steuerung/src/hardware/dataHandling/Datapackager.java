@@ -1,8 +1,8 @@
-package hardware.communication;
+package hardware.dataHandling;
 
+import flightmodes.FlightModeManager;
+import hardware.Beeper;
 import main.Daten;
-import main.ProgramState;
-import utility.FlyingMode;
 
 public class Datapackager {
 	
@@ -22,7 +22,7 @@ public class Datapackager {
 		byte controlWord = received[1];
 		
 		//System.out.println("CW: "+controlWord);
-		ProgramState.getInstance().addControlWord(controlWord);
+		handleControlWord(controlWord);
 		int throttle = received[2] & 0x000000FF;
 		throttle |= ((received[6]&0b11000000)<<2);
 		throttle+=1000;
@@ -44,6 +44,22 @@ public class Datapackager {
 		Daten.setCont_roll(roll);
 		Daten.setCont_pitch(pitch);
 		Daten.setCont_yaw(yaw);
+	}
+	
+	private static void handleControlWord(byte cw) {
+		System.out.println("Evaluate "+cw);
+		
+		switch (cw) {
+		case 0x02: Beeper.getInstance().addBeep(100);break;
+		
+		//Flightmodes
+		case 0x10: FlightModeManager.requestFlightmode(0); // Forcestop
+		case 0x11: FlightModeManager.requestFlightmode(1); //Manual
+		case 0x12: FlightModeManager.requestFlightmode(2); //Forcedown
+		case 0x13: FlightModeManager.requestFlightmode(3); //Automatic
+		case 0x14: FlightModeManager.requestFlightmode(4); //Altitude Hold
+		case 0x15: FlightModeManager.requestFlightmode(5); //Cal Level
+		}
 	}
 	
 	

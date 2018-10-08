@@ -1,4 +1,4 @@
-package hardware;
+package com.koehlert.excluded;
 /*Quelle:
  * git clone https://github.com/adafruit/Adafruit-Raspberry-Pi-Python-Code.git
 cd Adafruit-Raspberry-Pi-Python-Code/

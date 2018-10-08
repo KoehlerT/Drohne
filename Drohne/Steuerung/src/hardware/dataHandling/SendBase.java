@@ -1,4 +1,4 @@
-package hardware.communication;
+package hardware.dataHandling;
 
 import com.koehlert.flowerflyer.main.Location;
 

@@ -25,12 +25,6 @@ public class ComThread extends Thread{
 		while (Daten.running) {
 			startTime = System.nanoTime();
 			
-			//Antenne
-			//ant.receive();
-			//byte[] toSend = Datapackager.packageTransmit();
-			//ant.setTransmitBuffer(toSend);
-			//ant.send();
-			
 			wlanServer.sendPackage();
 			wlanServer.receive();
 			

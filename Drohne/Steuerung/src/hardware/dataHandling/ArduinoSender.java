@@ -1,23 +1,33 @@
-package hardware.communication;
+package hardware.dataHandling;
 
+import flightmodes.FlightModeManager;
 import main.Daten;
-import utility.FlyingMode;
+import utility.ArduinoInstruction;
 
 public class ArduinoSender {
 	
 	private ArduinoSender() {}
 	
 	public static void getTransmitPackage(byte[] buffer) {
-		FlyingMode mode = Daten.getFlyingMode();
-		if (mode != FlyingMode.FORCESTOP) {
+		ArduinoInstruction inst = ArduinoInstruction.getInst();
+		
+		if (inst.enabled()) {
+			//Has enabled instruction -> Send the instruction
+			setInstruction(buffer, inst);
+			FlightModeManager.getInstance().sentCallback();
+		}else {
+			//Send Controller Inputs as default. Shorter Latencys
 			//Controller Inputs
 			controllerInputs(buffer);
 		}
-		if (mode == FlyingMode.FORCESTOP) {
-			//Send Killing Signal
-			buffer[0] = 0x40; //Code Stop Motors
-		}
 		
+	}
+	
+	private static void setInstruction(byte[] buffer, ArduinoInstruction inst) {
+		buffer[0] = inst.getControl();
+		for (int i = 1; i < 10; i++) {
+			buffer[i] = inst.getData()[i-1];
+		}
 	}
 	
 	private static void controllerInputs(byte[] buffer) {

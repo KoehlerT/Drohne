@@ -134,13 +134,13 @@ public class ControllerInfo {
 			
 			//Control Word
 			if (änderung) {
-				byte cw = (byte)0x15;
+				byte cw = (byte)0x11;
 				if (mode == FlyingMode.AUTOMATIC)
-					cw = (byte) 0x16;
-				if (mode == FlyingMode.FORCEDOWN)
 					cw = (byte) 0x14;
+				if (mode == FlyingMode.FORCEDOWN)
+					cw = (byte) 0x11; //Manual (Disabled)
 				if (mode == FlyingMode.FORCESTOP)
-					cw = (byte) 0x12;
+					cw = (byte) 0x10;
 				
 				ControlWordHandler.getInstance().addSendingWord(cw);
 			}

@@ -1,4 +1,4 @@
-package flightmodes;
+package flightmodes.programs;
 
 import com.koehlert.flowerflyer.main.Vector3;
 
@@ -32,6 +32,12 @@ public class Automatic implements Flightmode{
 		Daten.setRoll(roll);
 		Daten.setPitch(Daten.getCont_pitch());
 		Daten.setYaw(1500);
+	}
+
+	@Override
+	public void onCallback() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

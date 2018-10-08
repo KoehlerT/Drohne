@@ -1,43 +1,47 @@
 package flightmodes;
 
+import flightmodes.programs.AltitudeHold;
+import flightmodes.programs.Automatic;
+import flightmodes.programs.CalibrateLevel;
+import flightmodes.programs.Flightmode;
+import flightmodes.programs.Forcedown;
+import flightmodes.programs.Forcestop;
+import flightmodes.programs.Manual;
 import hardware.Beeper;
 import main.Daten;
-import utility.FlyingMode;
 
 public class FlightModeManager {
 	
 	private static FlightModeManager inst = new FlightModeManager();
 	public static FlightModeManager getInstance() {return inst;}
 	
+	int currentIndex;
 	Flightmode current;
 	
-	Flightmode[] modes = new Flightmode[4];
-	FlyingMode mode;
+	Flightmode[] modes = new Flightmode[6];
 	
 	private FlightModeManager(){
 		
-		modes[0] = new Manual();
-		modes[1] = new Automatic();
+		//Lade alle Flugprogramme
+		modes[0] = new Forcestop();
+		modes[1] = new Manual();
 		modes[2] = new Forcedown();
-		modes[3] = new Forcestop();
+		modes[3] = new Automatic();
+		modes[4] = new AltitudeHold();
+		modes[5] = new CalibrateLevel();
 		
 		current = modes[0];
 	}
 	
 	
 	
-	void switchFlightmode() {
-		FlyingMode flm = Daten.getFlyingMode();
-		mode = flm;
+	void switchFlightmode(int index) {
+		if (index == currentIndex)
+			return; //Gleicher Flightmode, nichts ändert sich return
+		
 		current.onDisable();
-		switch (flm) {
-		case MANUAL: current = modes[0]; break;
-		case AUTOMATIC: current = modes[1]; break;
-		case FORCEDOWN: current = modes[2]; break;
-		case FORCESTOP: current = modes[3]; break;
-		default:
-			break;
-		}
+		
+		current = modes[index];
 		
 		Beeper.getInstance().addBeep(500);
 		current.onEnable();
@@ -47,7 +51,17 @@ public class FlightModeManager {
 		current.onUpdate(deltaTime);
 	}
 	
-	public FlyingMode getCurrentFM(){
-		return mode;
+	public void sentCallback() {
+		current.onCallback();
+	}
+	
+	public int getCurrentFlightmode() {
+		return currentIndex;
+	}
+	public static int getRequestedFlightmode() {return requestedFlightMode;}
+	
+	private static int requestedFlightMode;
+	public static synchronized void requestFlightmode(int m) {
+		requestedFlightMode = m;
 	}
 }

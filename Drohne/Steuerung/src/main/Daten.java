@@ -8,7 +8,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import com.koehlert.flowerflyer.main.Location;
 import com.koehlert.flowerflyer.main.Vector3;
 
-import utility.FlyingMode;
 import utility.Blume;
 
 public class Daten {
@@ -16,12 +15,10 @@ public class Daten {
 	 * */
 	private Daten() {}
 	//Programmdaten
-	private static byte controlArd;
 	private static byte controlWord;
 	private static int refreshArduino;
 	private static int refreshCommunicator;
 	private static int refreshSensorread;
-	private static FlyingMode mode;
 	private static long lastComm;
 	
 	public static boolean running = true;;
@@ -59,9 +56,7 @@ public class Daten {
 	private static int set1,set2,set3;
 	
 	//Sensorwerte Umgebung
-	private static float distanceUltrasonic; //Distanz zum nächsten gegenstand
 	private static int temperature;
-	private static List<Blume> blumen = new ArrayList<Blume>(10);
 	private static Location target;
 	
 	
@@ -71,12 +66,10 @@ public class Daten {
 	private static Queue<Character> console = new ArrayBlockingQueue<Character>(200);
 	
 	//Getter
-	public static synchronized byte getContArd() {return controlArd;}
 	public static synchronized byte getContWord() {return controlWord;}
 	public static synchronized int getArduinoRefresh() {return refreshArduino;}
 	public static synchronized int getCommunicatorRefresh() {return refreshCommunicator;}
 	public static synchronized int getSensorRefresh() {return refreshSensorread;}
-	public static synchronized FlyingMode getFlyingMode() {return mode;}
 	public static synchronized long getLastComm() {return lastComm;}
 	
 	public static synchronized int getCont_throttle() {return cont_throttle;}
@@ -110,10 +103,8 @@ public class Daten {
 	public static synchronized int getSet2() {return set2;}
 	public static synchronized int getSet3() {return set3;}
 	
-	public static synchronized List<Blume> getBlumen() {return blumen;}
 	public static synchronized Location getTarget() {return target;}
 	
-	public static synchronized float getDistanceUltrasonic() {return distanceUltrasonic;}
 	public static synchronized int getTemperature() {return temperature;}
 	
 	public static synchronized int getNumGpsSatellites() {return numGpsSatellites;}
@@ -121,12 +112,10 @@ public class Daten {
 	public static synchronized char getNextConsole() {return (console.peek()==null)?0:console.poll();}
 	
 	//Setter
-	public static synchronized void setContrArd(byte cw) {controlArd = cw;}
 	public static synchronized void setControlWord(byte cw) {controlWord = cw;}
 	public static synchronized void setArduinoRefresh(int lt) {refreshArduino = lt;}
 	public static synchronized void setCommunicatorRefresh(int rf) {refreshCommunicator = rf;}
 	public static synchronized void setSensorRefresh(int rf) { refreshSensorread = rf;}
-	public static synchronized void setFlyingMode(FlyingMode newMode) {mode = newMode;}
 	public static synchronized void setLastComm(long time) {lastComm = time;}
 	
 	public static synchronized void setCont_throttle(int th) {cont_throttle = th;}
@@ -159,10 +148,8 @@ public class Daten {
 	public static synchronized void setSet2 (int var) {set2 = var;}
 	public static synchronized void setSet3 (int var) {set3 = var;}
 	
-	public static synchronized void setNewBlumen(Blume[] bl) {blumen.clear();blumen.addAll(Arrays.asList(bl));}
 	public static synchronized void setTarget(Location loc) {target = loc;}
 	
-	public static synchronized void setDistanceUltrasonic(float newDistance) {distanceUltrasonic = newDistance;} //Dm
 	public static synchronized void setTemperature(int newTemp) {temperature = newTemp;}
 	
 	public static synchronized void setNumGpsSatellites(int sat) {numGpsSatellites = sat;}

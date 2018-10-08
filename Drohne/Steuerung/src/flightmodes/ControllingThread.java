@@ -1,10 +1,10 @@
 package flightmodes;
 
 import main.Daten;
-import main.ProgramState;
-import utility.FlyingMode;
 
 public class ControllingThread extends Thread{
+	
+	
 	
 	public ControllingThread() {
 		this.setName("Controlling");
@@ -15,13 +15,12 @@ public class ControllingThread extends Thread{
 		long startTime = System.nanoTime();
 		
 		while (Daten.running) {
-			ProgramState.getInstance().evaluateControlWord();
 			
 			if (System.nanoTime() - Daten.getLastComm() > 600000000) //Wenn 6s keine Kommunikation stattgefunden hat zwischen Basis und RasPI
-				Daten.setFlyingMode(FlyingMode.FORCESTOP);
+				FlightModeManager.requestFlightmode(0);
 			
-			if (FlightModeManager.getInstance().getCurrentFM() != Daten.getFlyingMode()) {
-				FlightModeManager.getInstance().switchFlightmode();
+			if (FlightModeManager.getInstance().getCurrentFlightmode() != FlightModeManager.getRequestedFlightmode()) {
+				FlightModeManager.getInstance().switchFlightmode(FlightModeManager.getRequestedFlightmode());
 			}
 			
 			long diff = System.nanoTime() - startTime;
@@ -37,4 +36,6 @@ public class ControllingThread extends Thread{
 		}
 		
 	}
+	
+	
 }

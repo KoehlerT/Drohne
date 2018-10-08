@@ -20,7 +20,7 @@ public class GetReceivedDrone {
 		Data.setError(read8(arr,2));
 		Data.setFlightModeInt(read8(arr,3));
 		Data.setVoltageMain((float)read8(arr,4)/10f);
-		Data.setTemperature((float) ((float)read16(arr,5)/(float)340.00)+36.53);
+		Data.setTemperature((float) ((float) ((float)read16(arr,5)/(float)340.00)+36.53));
 		Data.setAngleRoll(read8(arr,7));
 		Data.setAnglePitch(read8(arr,8));
 		Data.setStart(read8(arr,9));

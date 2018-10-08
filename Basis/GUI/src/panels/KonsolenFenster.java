@@ -3,6 +3,8 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
+
+import steuerung.CommandProcesser;
 public class KonsolenFenster {
 	static Color c1 = Color.BLACK;
 	static Color c2 = Color.BLACK;
@@ -33,7 +35,9 @@ public class KonsolenFenster {
 		buttonOK.setAction(new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(consol.getText());
+				//System.out.println(consol.getText());
+				CommandProcesser.processCommand(consol.getText());
+				consol.setText("");
 			}
 		});
 		buttonOK.setText("OK");
