@@ -53,12 +53,12 @@ public class Datapackager {
 		case 0x02: Beeper.getInstance().addBeep(100);break;
 		
 		//Flightmodes
-		case 0x10: FlightModeManager.requestFlightmode(0);break; // Forcestop
-		case 0x11: FlightModeManager.requestFlightmode(1);break; //Manual
-		case 0x12: FlightModeManager.requestFlightmode(2);break; //Forcedown
-		case 0x13: FlightModeManager.requestFlightmode(3);break; //Automatic
-		case 0x14: FlightModeManager.requestFlightmode(4);break; //Altitude Hold
-		case 0x15: FlightModeManager.requestFlightmode(5);break; //Cal Level
+		case 0x10: FlightModeManager.requestFlightmode(0); // Forcestop
+		case 0x11: FlightModeManager.requestFlightmode(1); //Manual
+		case 0x12: FlightModeManager.requestFlightmode(2); //Forcedown
+		case 0x13: FlightModeManager.requestFlightmode(3); //Automatic
+		case 0x14: FlightModeManager.requestFlightmode(4); //Altitude Hold
+		case 0x15: FlightModeManager.requestFlightmode(5); //Cal Level
 		}
 	}
 	
