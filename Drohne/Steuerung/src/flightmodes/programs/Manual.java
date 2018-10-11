@@ -19,7 +19,7 @@ public class Manual implements flightmodes.programs.Flightmode{
 	@Override
 	public void onDisable() {
 		// TODO Auto-generated method stub
-		
+		messageGot = false;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class Manual implements flightmodes.programs.Flightmode{
 	@Override
 	public void onCallback() {
 		// TODO Auto-generated method stub
-		
+		messageGot = true;
 	}
 
 }
