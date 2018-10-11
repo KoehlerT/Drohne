@@ -1,4 +1,3 @@
-#include "LED_control"
 ///////////////////////////////////////////////////////////////////////////////////////
 //Terms of use
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -541,15 +540,3 @@ void loop() {
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }
-
-#ifdef deb
-  void printEscs(void){
-    DEBUGb("ESC 1", esc_1)
-    DEBUGb("ESC 2", esc_2)
-    DEBUGb("ESC 3", esc_3)
-    DEBUGb("ESC 4", esc_4)
-
-  }
-#endif
-  }
-
