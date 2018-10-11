@@ -6,6 +6,7 @@ import utility.ArduinoInstruction;
 public class AltitudeHold implements Flightmode{
 	
 	private boolean messageGot = false;
+	private float time = 0;
 	
 	@Override
 	public void onEnable() {
@@ -18,14 +19,17 @@ public class AltitudeHold implements Flightmode{
 	@Override
 	public void onDisable() {
 		// TODO Auto-generated method stub
-		
+		messageGot = false;
+		time = 0;
 	}
+	
+	
 
 	@Override
 	public void onUpdate(float deltaTime) {
 		// TODO Auto-generated method stub
 		if (messageGot == true) {
-			ArduinoInstruction.getInst().disable();
+			
 		
 		//Controler Inputs werden standardmäßig übertragen
 		Daten.setThrottle(Daten.getCont_throttle());
@@ -33,6 +37,8 @@ public class AltitudeHold implements Flightmode{
 		Daten.setPitch(Daten.getCont_pitch());
 		Daten.setYaw(Daten.getCont_yaw());
 		}
+		
+		time += deltaTime;
 	}
 
 	@Override

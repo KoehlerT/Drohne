@@ -42,6 +42,7 @@ public class FlightModeManager {
 		current.onDisable();
 		
 		current = modes[index];
+		currentIndex = index;
 		
 		Beeper.getInstance().addBeep(500);
 		current.onEnable();

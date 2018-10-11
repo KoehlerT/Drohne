@@ -346,6 +346,8 @@ void setup() {
 
   DEBUGa("Finished Setup")
 
+  flight_mode = 1;
+  
   loop_timer = micros();                                        //Set the timer for the first loop.
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -376,7 +378,7 @@ void loop() {
   heading_lock = 0;
   if (channel_6 > 1200)heading_lock = 1;                                           //If channel 6 is between 1200us and 1600us the flight mode is 2
 
-  flight_mode = 1;                                                                 //In all other situations the flight mode is 1;
+  //flight_mode = 1;                                                                 //In all other situations the flight mode is 1;
   if (channel_5 >= 1200 && channel_5 < 1600)flight_mode = 2;                       //If channel 6 is between 1200us and 1600us the flight mode is 2
   if (channel_5 >= 1600 && channel_5 < 2100)flight_mode = 3;                       //If channel 6 is between 1600us and 1900us the flight mode is 3
 
@@ -526,7 +528,7 @@ void loop() {
   TIMER3_BASE->CNT = 5000;                                                         //This will reset timer 4 and the ESC pulses are directly created.
 
   send_telemetry_data();                                                           //Send telemetry data to the ground station.
-  DEBUGb("takeoff detected: ", takeoff_detected);
+  //DEBUGb("takeoff detected: ", takeoff_detected);
   
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is

@@ -27,6 +27,7 @@ public class SendBase {
 	}
 	
 	private static void fillA(byte[] trans) {
+		System.out.println("Flightmode: "+Daten.getFlightInt());
 		write8(trans, 0, 0); //pack 0 wird geschriebebn
 		write8(trans,1,Daten.getError());
 		write8(trans,2,Daten.getFlightInt());

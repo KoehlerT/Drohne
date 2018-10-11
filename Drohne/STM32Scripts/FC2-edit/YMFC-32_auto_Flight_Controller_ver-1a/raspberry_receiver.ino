@@ -14,8 +14,8 @@ void getControllword(void){
   switch(control){
     case 0x00: break;
     case 0x01: getControllerInputs(); break;
-    case 0x10: calibrate_compass(); break;  //Calibrations
-    case 0x11: calibrate_level(); break;
+    case 0x10: CalComp(); break;  //Calibrations
+    case 0x11: CalLevel(); break;
     case 0x20: adjustable_setting_1 = read4(1); break;  //Settubgs
     case 0x21: adjustable_setting_2 = read4(1); break;
     case 0x22: adjustable_setting_3 = read4(1); break;
@@ -29,6 +29,16 @@ void getControllword(void){
     case 0x50: setHeight();break;
     case 0x51: setWaypoint(); break;
   }
+
+  #ifdef deb
+    if (control != 1){
+      DEBUGb("Control Word: ", control)
+      DEBUGb("Data: ", (int)receive[1])
+      DEBUGb("Flight Mode: ", (int)flight_mode)
+    DEBUGb("Thorttle: ", channel_3)
+    }
+    
+  #endif
 }
 
 void getControllerInputs(void){
@@ -47,8 +57,17 @@ void setWaypoint(void){
   l_lon_waypoint = read4(5);
 }
 
-
-/*void convertToReceiver(){
+void CalComp(){
+  calibrate_compass();
+}
+void CalLevel(){
+  receive[0] = 0;
+  if (level_calibration_on == 0){
+    calibrate_level();
+  }
+  
+}/*void convertToReceiver(){
+}
   channel_3 = (receive[1] << 8) | receive[0]; //Throttle
   channel_1 = (receive[5] << 8) | receive[4]; //Roll
   channel_2 = (receive[3] << 8) | receive[2]; //Pitch
