@@ -32,10 +32,10 @@ void getRaspberryInfo(){
 }
 
 void convertToReceiver(){
-  channel_3 = (receive[1] << 8) | receive[0]; //Throttle
-  channel_1 = (receive[5] << 8) | receive[4]; //Roll
-  channel_2 = (receive[3] << 8) | receive[2]; //Pitch
-  channel_4 = (receive[7] << 8) | receive[6]; //Yaw
+  channel_3 = (receive[2] << 8) | receive[1]; //Throttle
+  channel_1 = (receive[6] << 8) | receive[5]; //Roll
+  channel_2 = (receive[4] << 8) | receive[3]; //Pitch
+  channel_4 = (receive[8] << 8) | receive[7]; //Yaw
 }
 
 void showReceived(void){

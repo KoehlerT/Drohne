@@ -6,6 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int dataPointer = 0;
 char last_byte = '\0';
+int missedTransmissions = 0;
 
 unsigned long CommunicationDuration;
 
@@ -31,9 +32,16 @@ void getRaspberryInfo(){
     }
     if (dataPointer >= 10){
       nextPackage = true;
+      missedTransmissions = 0;
       readTransmission();
     }
     dataPointer = 0;
+  }else{
+    missedTransmissions ++;
+    if (missedTransmissions > 400){//Wenn seit 1,6s keine übertragung stattgefunden hat
+      error = 8;
+      start = 0;
+    }
   }
   
 }

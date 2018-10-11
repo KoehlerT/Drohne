@@ -195,6 +195,7 @@ uint8_t nextPackage = true;
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void setup() {
+  esc_1 = 1000; esc_2 = 1000; esc_3 = 1000; esc_4 = 1000; 
   pinMode(5, INPUT_ANALOG);                                     //This is needed for reading the analog value of port A4.
   //Port PB3 and PB4 are used as JTDO and JNTRST by default.
   //The following function connects PB3 and PB4 to the
@@ -229,6 +230,7 @@ void setup() {
   //Serial.begin(57600);                                        //Set the serial output to 57600 kbps. (for debugging only)
   //delay(250);                                                 //Give the serial port some time to start to prevent data loss.
 
+  DEBUGa("Timers");
   timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.
   delay(50);                                                    //Give the timers some time to start.
 
@@ -529,7 +531,9 @@ void loop() {
 
   send_telemetry_data();                                                           //Send telemetry data to the ground station.
   //DEBUGb("takeoff detected: ", takeoff_detected);
-  
+  #ifdef deb
+    //printEscs();
+  #endif
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is
   //longer or shorter than 4000us the angle calculation is off. If you modify the code make sure
@@ -542,3 +546,12 @@ void loop() {
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }
+
+#ifdef deb
+  void printEscs(void){
+    DEBUGb("ESC 1: ", esc_1);
+    DEBUGb("ESC 2: ", esc_2);
+    DEBUGb("ESC 3: ", esc_3);
+    DEBUGb("ESC 4: ", esc_4);
+  }
+#endif
