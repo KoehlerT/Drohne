@@ -16,9 +16,9 @@ void getControllword(void){
     case 0x01: getControllerInputs(); break;
     case 0x10: CalComp(); break;  //Calibrations
     case 0x11: CalLevel(); break;
-    case 0x20: adjustable_setting_1 = read4(1); break;  //Settubgs
-    case 0x21: adjustable_setting_2 = read4(1); break;
-    case 0x22: adjustable_setting_3 = read4(1); break;
+    case 0x20: variable_1_to_adjust = read4(1)-1500; DEBUGb("set1",variable_1_to_adjust) break;  //Settubgs
+    case 0x21: variable_2_to_adjust = read4(1); break;
+    case 0x22: variable_3_to_adjust = read4(1); break;
     case 0x30: if (receive[1] == 1) heading_lock = 1; else heading_lock = 0; break; //Heading lock on/off
     case 0x31: if (receive[1] == 1) flight_mode = 2; else flight_mode = 1; break;  //Altitude hold on/off
     case 0x32: if (receive[1] == 1) flight_mode = 3; else flight_mode = 2; break; //GPS hold on/off

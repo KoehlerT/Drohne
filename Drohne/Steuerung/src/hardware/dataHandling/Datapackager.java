@@ -59,6 +59,8 @@ public class Datapackager {
 		case 0x13: FlightModeManager.requestFlightmode(3);break; //Automatic
 		case 0x14: FlightModeManager.requestFlightmode(4);break; //Altitude Hold
 		case 0x15: FlightModeManager.requestFlightmode(5);break; //Cal Level
+		case 0x16: FlightModeManager.requestFlightmode(6);break; //Cal Compass
+		case 0x17: FlightModeManager.requestFlightmode(7);break; //Set Takeoff
 		}
 	}
 	

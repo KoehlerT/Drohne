@@ -6,7 +6,6 @@ import utility.ArduinoInstruction;
 public class AltitudeHold implements Flightmode{
 	
 	private boolean messageGot = false;
-	private float time = 0;
 	
 	@Override
 	public void onEnable() {
@@ -20,7 +19,6 @@ public class AltitudeHold implements Flightmode{
 	public void onDisable() {
 		// TODO Auto-generated method stub
 		messageGot = false;
-		time = 0;
 	}
 	
 	
@@ -38,7 +36,6 @@ public class AltitudeHold implements Flightmode{
 		Daten.setYaw(Daten.getCont_yaw());
 		}
 		
-		time += deltaTime;
 	}
 
 	@Override
