@@ -136,7 +136,7 @@ public class ControllerInfo {
 			if (änderung) {
 				byte cw = (byte)0x11;
 				if (mode == FlyingMode.AUTOMATIC)
-					cw = (byte) 0x14;
+					cw = (byte) 0x17; //Update Takeoff Throttle 
 				if (mode == FlyingMode.FORCEDOWN)
 					cw = (byte) 0x11; //Manual (Disabled)
 				if (mode == FlyingMode.FORCESTOP)
