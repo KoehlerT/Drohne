@@ -16,6 +16,7 @@ void getRaspberryInfo(){
     unsigned long st = micros();
     while (dataPointer < 10 && CommunicationDuration<1000){
       if (Serial1.available()){
+        DEBUGa("Angekommen")
         char rd = (char)Serial1.read();
         if (rd == 'R'){ //Handshake inidicator 1
           last_byte = rd;

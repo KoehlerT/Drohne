@@ -17,7 +17,7 @@ public class Beeper {
 	private GpioPinDigitalOutput pin;
 	
 	Beeper() {
-		pin = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_21, "Piepser",PinState.LOW);
+		pin = GpioFactory.getInstance().provisionDigitalOutputPin(RaspiPin.GPIO_07, "Piepser",PinState.LOW);
 		instance = this;
 	}
 	

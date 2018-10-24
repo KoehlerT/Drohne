@@ -84,9 +84,7 @@ public class ControllerInfo {
 				änderung = true;
 			}
 			
-			if (getGamepad_SH_RIGHT()) {
-				ControlWordHandler.getInstance().addSendingWord((byte)0x2);
-			}
+			
 			
 			
 			//Rotationen
@@ -124,6 +122,15 @@ public class ControllerInfo {
 				yaw = 1000;
 				pitch = 1000;
 				roll = 1000;
+			}
+			
+			if (getGamepad_SH_RIGHT()) {
+				//ControlWordHandler.getInstance().addSendingWord((byte)0x2);
+				//Reset all Inputs
+				throttle = 1500;
+				roll = 1500;
+				pitch = 1500;
+				yaw = 1500;
 			}
 			
 			//Setze neue Werte

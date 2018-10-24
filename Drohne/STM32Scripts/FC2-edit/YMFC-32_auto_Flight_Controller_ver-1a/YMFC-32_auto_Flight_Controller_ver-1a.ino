@@ -246,6 +246,7 @@ void setup() {
     error = 1;                                                  //Set the error status to 1.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
+    break;
   }
 
   //Check if the compass is responding.
@@ -258,6 +259,7 @@ void setup() {
     error = 2;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
+    break;
   }
 
   //Check if the MS5611 barometer is responding.
@@ -270,6 +272,7 @@ void setup() {
     error = 3;                                                  //Set the error status to 2.
     error_signal();                                             //Show the error via the red LED.
     delay(4);                                                   //Simulate a 250Hz refresch rate as like the main loop.
+    break;
   }
 
   gyro_setup();                                                 //Initiallize the gyro and set the correct registers.
@@ -532,6 +535,7 @@ void loop() {
   //DEBUGb("takeoff detected: ", takeoff_detected);
   #ifdef deb
     //printEscs();
+    printSignals();
   #endif
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is
@@ -552,5 +556,12 @@ void loop() {
     DEBUGb("ESC 2: ", esc_2);
     DEBUGb("ESC 3: ", esc_3);
     DEBUGb("ESC 4: ", esc_4);
+  }
+
+  void printSignals(void){
+    DEBUGb("Throttle: ", throttle)
+    DEBUGb("ptich: ", pid_output_pitch)
+    DEBUGb("Roll: ", pid_output_roll)
+    DEBUGb("Yaw: ", pid_output_yaw)
   }
 #endif
