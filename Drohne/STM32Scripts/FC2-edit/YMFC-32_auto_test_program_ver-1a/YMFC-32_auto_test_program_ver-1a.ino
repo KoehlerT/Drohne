@@ -15,10 +15,14 @@
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
 #include <Wire.h>
+#include <SPI.h>
+
+#define SPI2_NSS_PIN PB12
 #define HWire WIRE
 
 //HardWire HWire(2, I2C_FAST_MODE);
 TwoWire HWire(1, I2C_FAST_MODE);
+SPIClass SPI_2(2);
 
 //Let's declare some variables so we can use them in the complete program.
 //int16_t = signed 16 bit integer
@@ -79,11 +83,14 @@ void setup() {
   red_led(LOW);                                                 //Set output PB4 low.
 
   Serial.begin(230400);                                          //Set the serial output to 57600 kbps.
-  Serial1.begin(230400); //RaspberryPi
-  delay(100);                                                    //Give the serial port some time to start to prevent data loss.
+  delay(300);                                                    //Give the serial port some time to start to prevent data loss.
+  Serial.println("Hello World");
+  pinMode(SPI2_NSS_PIN, INPUT);
+  SPI_2.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
   timer_setup();                                                //Setup the timers for the receiver inputs and ESC's output.
   delay(50);                                                    //Give the timers some time to start.
 
+  Serial.println("HWire Begin");
   HWire.begin();                                                //Start the I2C as master
   HWire.beginTransmission(gyro_address);                        //Start communication with the MPU-6050.
   HWire.write(0x6B);                                            //We want to write to the PWR_MGMT_1 register (6B hex).
@@ -104,6 +111,7 @@ void setup() {
   HWire.write(0x03);                                            //Set the register bits as 00000011 (Set Digital Low Pass Filter to ~43Hz).
   HWire.endTransmission();                                      //End the transmission with the gyro.
 
+  Serial.println("HWire end");
   print_intro();                                                //Print the intro on the serial monitor.
 }
 

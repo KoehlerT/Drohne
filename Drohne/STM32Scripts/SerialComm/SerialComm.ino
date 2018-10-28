@@ -46,13 +46,14 @@ void loop() {
     
     //Anz
     for (int i = 0; i < 10; i++){
-      Serial.print((int)receive[i]);
+      Serial.print(receive[i],HEX);
       Serial.print(", ");
     }
-    Serial.print("Dur: ");
+    Serial.println();
+    /*Serial.print("Dur: ");
     Serial.print(dur);
     Serial.println("us");
-    convertToReceiver();
+    convertToReceiver();*/
   }
   delay(4);
 }

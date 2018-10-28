@@ -1,4 +1,4 @@
-package hardware.communication;
+package com.koehlert.excluded;
 
 import com.koehlert.serialcomm.Communicator;
 
@@ -34,14 +34,18 @@ public class Arduino {
 	public void sendControllerInputs() {
 		
 		//toSend[9] = (byte) 0;
-		toSend = Datapackager.getArduinoSend(toSend);
+		//toSend = Datapackager.getArduinoSend(toSend);
 		
 		comm.setTransmitBuffer(toSend);
 		//System.out.println("COMM");
 		comm.communicate();
 		comm.getReceiveBuffer(received);
 		
-		//Datapackager.printBinaryArray(received);
+		System.out.println("SEND:");
+		Datapackager.printBinaryArray(toSend);
+		
+		System.out.println("RECV:");
+		Datapackager.printBinaryArray(received);
 		
 		Datapackager.untangleArduinoReceived(received);
 	}

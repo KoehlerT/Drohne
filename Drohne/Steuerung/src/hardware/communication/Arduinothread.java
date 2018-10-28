@@ -1,30 +1,44 @@
 package hardware.communication;
 
+import hardware.dataHandling.ArduinoData;
+import hardware.dataHandling.ArduinoSender;
+import hardware.dataHandling.Datapackager;
 import main.Daten;
 import main.Info;
 
 public class Arduinothread extends Thread{
 	
-	private Arduino arduinoMng;
+	//private Arduino arduinoMng;
+	private SPIComm comm;
+	private byte[] Send = new byte[10];
+	private byte[] Recv = new byte[10];
 	
 	public Arduinothread() {
-		if (Info.sensorAttached) {
-			arduinoMng = new Arduino();
-		}
+		
 		
 		this.start();
 	}
 	
 	@Override
 	public void run(){
+		if (Info.sensorAttached) {
+			comm = new SPIComm(); //Runs communication forever
+		}
+		
+		
 		while (Daten.running) {
 			if (Info.sensorAttached) {
-				arduinoMng.sendControllerInputs();
+				ArduinoSender.getTransmitPackage(Send);
+				comm.setTransmitBuffer(Send);
+				comm.comm();
+				comm.getReceived(Recv);
+				//Datapackager.printBinaryArray(Recv);
+				ArduinoData.getArduinoData(Recv);
 			}
 			
 			
 			try {
-				Thread.sleep(4);
+				Thread.sleep(2);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

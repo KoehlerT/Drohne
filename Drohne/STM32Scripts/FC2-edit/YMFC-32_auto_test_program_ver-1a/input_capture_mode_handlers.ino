@@ -1,50 +1,54 @@
 int dataPointer = 0;
 char receive[10];
-char transmit[10];
+char transmit[10] = {1,1,1,1,1,1,1,1,1,1};
 char last_byte = '\0';
 
 unsigned long CommunicationDuration;
 
-void getRaspberryInfo(){
-  if (Serial1.available()){
-    unsigned long st = micros();
-    while (dataPointer < 10){
-      if (Serial1.available()){
-        char rd = (char)Serial1.read();
-        if (rd == 'R'){ //Handshake inidicator 1
-          last_byte = rd;
-          Serial1.print('A'); //Handshake Accept
-        }else if (rd == 'Q' && last_byte == 'R'){ //Handshake indicator 2
-          dataPointer = 0; //Start Transmission
-        }else{
-          receive[dataPointer] = rd;
-          Serial1.print(transmit[dataPointer]);
-          dataPointer++;
-        }
-      }
-      CommunicationDuration = micros() - st;
-      //showReceived();
-      convertToReceiver();
-    }
-    dataPointer = 0;
-  }
-  
+int16_t read2(uint8_t index){
+  return receive[index] | (receive[index+1]<<8);
 }
 
+void getRaspberryInfo(){
+  unsigned int st = micros();
+  if (/*!digitalRead(SPI2_NSS_PIN)*/true){
+    char msg = SPI_2.transfer('A');//Handshake
+    dataPointer = 0;
+    if (msg == 'R'){
+      for (int i = 0; i < 10; i++){
+        receive[i] = SPI_2.transfer(transmit[i]);
+      }
+
+      CommunicationDuration = micros() - st;
+      //showReceived();
+        convertToReceiver();
+        dataPointer = 0;
+        Serial.print(CommunicationDuration);
+        Serial.println("us");
+    }
+      
+      
+    }
+
+}
+
+
+
 void convertToReceiver(){
-  channel_3 = (receive[2] << 8) | receive[1]; //Throttle
-  channel_1 = (receive[6] << 8) | receive[5]; //Roll
-  channel_2 = (receive[4] << 8) | receive[3]; //Pitch
-  channel_4 = (receive[8] << 8) | receive[7]; //Yaw
+  channel_3 = read2(1); //Throttle
+  channel_1 = read2(3); //Roll
+  channel_2 = read2(5); //Pitch
+  channel_4 = read2(7); //Yaw
 }
 
 void showReceived(void){
   for (int i = 0; i < 10; i++){
-      Serial.print((int)receive[i]);
+      Serial.print(receive[i],HEX);
       Serial.print(", ");
     }
-    Serial.print("Dur: ");
-    Serial.print(CommunicationDuration);
-    Serial.println("us");
+    //Serial.print("Dur: ");
+    //Serial.print(CommunicationDuration);
+    //Serial.println("us");
+    Serial.println();
 }
 
