@@ -25,18 +25,14 @@ public class SPIComm {
 		}
 		
 		init(receive, sending, 10000000,size,3);
-		
+		System.out.println("SPI init");
 		
 	}
 	
 	public void comm() {
-		long start = System.nanoTime();
+		//long start = System.nanoTime();
 		transmit();
-		float time = ((float)(System.nanoTime()-start)/1000000000.0f);
-		for (int i = 0; i< size; i++) {
-			System.out.print(receive.get(i)+ ", ");
-		}
-		System.out.println("Time: "+time+"ss");
+		//float time = ((float)(System.nanoTime()-start)/1000000000.0f);
 	}
 	
 	public void setTransmitBuffer(byte[] toSend) {

@@ -22,7 +22,7 @@ public class Arduinothread extends Thread{
 	@Override
 	public void run(){
 		if (Info.sensorAttached) {
-			comm = new SPIComm(); //Runs communication forever
+			comm = new SPIComm(); 
 		}
 		
 		
@@ -32,17 +32,16 @@ public class Arduinothread extends Thread{
 				comm.setTransmitBuffer(Send);
 				comm.comm();
 				comm.getReceived(Recv);
-				//Datapackager.printBinaryArray(Recv);
 				ArduinoData.getArduinoData(Recv);
 			}
 			
 			
-			try {
-				Thread.sleep(2);
+			/*try {
+				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			}*/
 		}
 	}
 	

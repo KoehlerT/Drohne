@@ -10,8 +10,9 @@ int16_t read2(uint8_t index){
 }
 
 void getRaspberryInfo(){
+  //return;
   unsigned int st = micros();
-  if (/*!digitalRead(SPI2_NSS_PIN)*/true){
+  if (true/*!digitalRead(SPI2_NSS_PIN)*/){
     char msg = SPI_2.transfer('A');//Handshake
     dataPointer = 0;
     if (msg == 'R'){

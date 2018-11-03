@@ -27,7 +27,11 @@
 #define HWire WIRE
 #include <EEPROM.h>
 #include <Wire.h>                          //Include the Wire.h library so we can communicate with the gyro.
+#include <SPI.h>
+
+#define SPI2_NSS_PIN PB12
 TwoWire HWire (1, I2C_FAST_MODE);          //Initiate I2C port 2 at 400kHz.
+SPIClass SPI_2(2);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PID gain and limit settings
@@ -62,7 +66,7 @@ float gps_d_gain = 6.5;                    //Gain setting for the GPS D-controll
 
 float declination = 3.08;                   //Set the declination between the magnetic and geographic north.
 
-int16_t manual_takeoff_throttle = 0;    //Enter the manual hover point when auto take-off detection is not desired (between 1400 and 1600).
+int16_t manual_takeoff_throttle = 1550;    //Enter the manual hover point when auto take-off detection is not desired (between 1400 and 1600).
 int16_t motor_idle_speed = 1100;           //Enter the minimum throttle pulse of the motors when they idle (between 1000 and 1200). 1170 for DJI
 
 uint8_t gyro_address = 0x68;               //The I2C address of the MPU-6050 is 0x68 in hexadecimal form.
@@ -202,7 +206,9 @@ void setup() {
   //alternate output function.
   afio_cfg_debug_ports(AFIO_DEBUG_SW_ONLY);                     //Connects PB3 and PB4 to output function.
 
-  Serial1.begin(230400); //Raspberry Pi
+  pinMode(SPI2_NSS_PIN, INPUT);
+  SPI_2.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
+  
   adjustable_setting_3 = 100;
   #ifdef deb
     Serial.begin(230400);
@@ -227,6 +233,12 @@ void setup() {
   EEPROM.PageBase1 = 0x801F800;
   EEPROM.PageSize  = 0x400;
 
+  //Takeoff Throttle
+  manual_takeoff_throttle = EEPROM.read(0x18) | (EEPROM.read(0x19)<<8);
+  if (manual_takeoff_throttle == 0)
+    manual_takeoff_throttle = 1500;
+
+  
   //Serial.begin(57600);                                        //Set the serial output to 57600 kbps. (for debugging only)
   //delay(250);                                                 //Give the serial port some time to start to prevent data loss.
 
@@ -535,7 +547,8 @@ void loop() {
   //DEBUGb("takeoff detected: ", takeoff_detected);
   #ifdef deb
     //printEscs();
-    printSignals();
+    //printSignals();
+    DEBUGa(throttle);
   #endif
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is

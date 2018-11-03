@@ -53,7 +53,6 @@ class TrackerThread extends Thread{
 			}
 				
 			System.out.println("Calc Time: "+(float)(System.nanoTime() - start)/1000000f+"ms");
-			//while(System.nanoTime() - start < 300000000);
 		}
 		
 		pg.close();

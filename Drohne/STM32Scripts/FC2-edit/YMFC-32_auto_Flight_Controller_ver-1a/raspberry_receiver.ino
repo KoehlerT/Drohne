@@ -16,7 +16,7 @@ void getControllword(void){
     case 0x01: getControllerInputs(); break;
     case 0x10: CalComp(); break;  //Calibrations
     case 0x11: CalLevel(); break;
-    case 0x20: variable_1_to_adjust = read4(1)-1500; DEBUGb("set1",variable_1_to_adjust) break;  //Settubgs
+    case 0x20: variable_1_to_adjust = read4(1)-1500; setManTakeoff();break;  //Settubgs
     case 0x21: variable_2_to_adjust = read4(1); break;
     case 0x22: variable_3_to_adjust = read4(1); break;
     case 0x30: if (receive[1] == 1) heading_lock = 1; else heading_lock = 0; break; //Heading lock on/off
@@ -31,14 +31,21 @@ void getControllword(void){
   }
 
   #ifdef deb
-    if (control != 1){
+    /*if (control != 1){
       DEBUGb("Control Word: ", control)
       DEBUGb("Data: ", (int)receive[1])
       DEBUGb("Flight Mode: ", (int)flight_mode)
     DEBUGb("Thorttle: ", channel_3)
-    }
+    }*/
     
   #endif
+}
+
+void setManTakeoff(){
+  manual_takeoff_throttle = variable_1_to_adjust + 1500;
+
+  EEPROM.write(0x18,manual_takeoff_throttle);
+  EEPROM.write(0x19,manual_takeoff_throttle>>8);
 }
 
 void getControllerInputs(void){

@@ -3,7 +3,6 @@
 //The output for the serial monitor is PB0. Protocol is 1 start bit, 8 data bits, no parity, 1 stop bit.
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void send_telemetry_data(void) {
-  //Send every package 2 times
   if (nextPackage){
     telemetry_loop_counter++; 
     nextPackage = false;

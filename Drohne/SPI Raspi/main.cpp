@@ -10,7 +10,9 @@ unsigned char result;
 int main (void)
 {
 
-    init(10000000);
+    init(100000);
+
+    std::cout << "Initialized" << std::endl;
 
     while (1)
     {

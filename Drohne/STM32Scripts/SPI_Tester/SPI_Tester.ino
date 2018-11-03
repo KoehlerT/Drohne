@@ -35,13 +35,13 @@ byte transmit[10];
 
 void setup() {
 
-  SPI_2.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
+  SPI_2.beginTransactionSlave(SPISettings(100000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
   
   pinMode(SPI2_NSS_PIN, INPUT);
 
   Serial.begin(230400);
   delay(300);
-  Serial.println("Hello World");
+  Serial.println("SPI Tester");
 
   for (int i = 0; i < 10; i++){
     transmit[i] = (byte)10-i;
@@ -68,6 +68,7 @@ void sendSPI2()
   //Handshake PA9
   startTime = micros();
   char msg = SPI_2.transfer('A');
+  Serial.println("After trans");
   if (msg == 'R'){
     for (int i = 0; i < 10; i++){
       receive[i] = SPI_2.transfer(transmit[i]);

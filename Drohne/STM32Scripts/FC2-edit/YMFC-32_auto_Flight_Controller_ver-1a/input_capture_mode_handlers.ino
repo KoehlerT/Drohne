@@ -4,47 +4,25 @@
 //More information can be found in these two videos:
 //STM32 for Arduino - Connecting an RC receiver via input capture mode: https://youtu.be/JFSFbSg0l2M
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int dataPointer = 0;
 char last_byte = '\0';
 int missedTransmissions = 0;
 
 unsigned long CommunicationDuration;
 
 void getRaspberryInfo(){
-  if (Serial1.available()){
-    CommunicationDuration = 0;
-    unsigned long st = micros();
-    while (dataPointer < 10 && CommunicationDuration<1000){
-      if (Serial1.available()){
-        DEBUGa("Angekommen")
-        char rd = (char)Serial1.read();
-        if (rd == 'R'){ //Handshake inidicator 1
-          last_byte = rd;
-          Serial1.print('A'); //Handshake Accept
-        }else if (rd == 'Q' && last_byte == 'R'){ //Handshake indicator 2
-          dataPointer = 0; //Start Transmission
-        }else{
-          receive[dataPointer] = rd;
-          Serial1.print(transmit[dataPointer]);
-          dataPointer++;
-        }
+  unsigned int st = micros();
+  if (true/*!digitalRead(SPI2_NSS_PIN)*/){
+    char msg = SPI_2.transfer('A');//Handshake
+    if (msg == 'R'){
+      for (int i = 0; i < 10; i++){
+        receive[i] = SPI_2.transfer(transmit[i]);
       }
+
       CommunicationDuration = micros() - st;
-    }
-    if (dataPointer >= 10){
       nextPackage = true;
-      missedTransmissions = 0;
       readTransmission();
-    }
-    dataPointer = 0;
-  }else{
-    missedTransmissions ++;
-    if (missedTransmissions > 400){//Wenn seit 1,6s keine übertragung stattgefunden hat
-      error = 8;
-      start = 0;
-    }
+    }      
   }
-  
 }
 
 void showReceived(void){

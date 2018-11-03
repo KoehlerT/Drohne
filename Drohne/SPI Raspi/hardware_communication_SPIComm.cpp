@@ -21,17 +21,6 @@ JNIEXPORT jint JNICALL Java_hardware_communication_SPIComm_init
     uSleepTime = nanoSleep;
 
     int res = init(spd);
-
-    while (1){
-        shakeHands(uSleepTime);
-        for (int i = 0; i < bSize; i++){
-
-            bb_receive[i] = spiTxRx(bb_transmit[i]);
-
-            usleep(uSleepTime);
-        }
-    }
-
     return res;
 }
 

@@ -32,7 +32,7 @@ public class Bildanzeige {
 		bild.setLayout(null);
 		//bild laden
 		try {
-			bg = ImageIO.read(new File("res/bg1.png"));
+			bg = ImageIO.read(new File("res/bg2.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,7 +72,12 @@ public class Bildanzeige {
 			float rx = b.getX();
 			float ry = b.getY();
 			
-			g.drawOval((int)(rx*width), (int)(ry*height), 50, 50);
+			int drawX = (int)((1+rx)*width/2);
+			int drawY = height-(int)((1+ry)*height/2);
+			
+			g.drawOval(drawX, drawY, 50, 50);
+			char[] text = (b.getDist()+"cm").toCharArray();
+			g.drawChars(text, 0, text.length, drawX+10, drawY+10);
 		
 	}
 	

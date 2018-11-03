@@ -66,6 +66,7 @@ public class GetReceivedDrone {
 		int d = read8(arr, ind+2);
 		
 		Blume b = new Blume((float)(x-100)/100f, (float)(y-100)/100f, d);
+		//System.out.println("Blume: "+b.toString());
 		Data.setBlume(b);
 	}
 	private static String nextLine = "";

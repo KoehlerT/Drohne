@@ -24,5 +24,9 @@ public class Blume {
 	public int getDist() {
 		return dist;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "("+x+"|"+y+"): "+dist+"cm";
+	}
 }
