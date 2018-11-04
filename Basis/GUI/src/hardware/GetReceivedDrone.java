@@ -38,7 +38,7 @@ public class GetReceivedDrone {
 	private static void untangleB(byte[] arr) {
 		Data.setLongitude(read32(arr,2));
 		Data.setSet1((float)read16(arr,6)/100f);
-		Data.setSet2((float)read16(arr,8)/100f);
+		Data.setSet2((float)read16(arr,8));
 		Data.setSet3((float)read16(arr,10)/100f);
 		Data.setArduinoRefresh(read16(arr,12));
 		Data.setCommunicatorRefresh(read16(arr,14));

@@ -15,6 +15,8 @@ g++ -o SPI_Hello_Arduino SPI_Hello_Arduino.cpp
 #include <fcntl.h>
 #include <cstring>
 
+#include <wiringPi.h>
+
 
 
 /**********************************************************
@@ -37,9 +39,13 @@ Main
 
 int init(unsigned int spd){
     speed = spd;
+    wiringPiSetup () ;
     fd = open("/dev/spidev0.0", O_RDWR);
 
     ioctl (fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+
+    pinMode (16, OUTPUT);
+
     return fd;
 }
 
@@ -59,7 +65,6 @@ spiTxRx
 
 int spiTxRx(unsigned char txDat)
 {
-
   unsigned char rxDat;
 
   struct spi_ioc_transfer spi;
@@ -70,13 +75,18 @@ int spiTxRx(unsigned char txDat)
   spi.rx_buf        = (unsigned long)&rxDat;
   spi.len           = 1;
 
+digitalWrite(16,LOW);
   ioctl (fd, SPI_IOC_MESSAGE(1), &spi);
+
 
   return rxDat;
 }
 
 void shakeHands(int nanodelay){
+    digitalWrite(16,HIGH);
     while (spiTxRx('R') != 'A'){
         usleep(nanodelay);
     }
+    digitalWrite(16,LOW);
+
 }

@@ -98,7 +98,7 @@ public class ArduinoData {
 		case 31: set2 |= (send << 8);Daten.setSet2(set2);break;
 		case 32: set3 = send;break; //Also dieses Break hat 3h kopfschmerzen bereitet. Warum sind solche sachen immer so winzig!!!!
 		case 33: set3 |= (send << 8);if (last == 32)  Daten.setSet3(set3);break;
-		case 34: competed(); break;
+		case 34: /*competed()*/; break;
 		default: break;
 		}
 		last = loop;

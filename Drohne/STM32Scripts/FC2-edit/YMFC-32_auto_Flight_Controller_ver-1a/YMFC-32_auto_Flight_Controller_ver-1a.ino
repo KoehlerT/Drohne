@@ -79,7 +79,7 @@ float low_battery_warning = 10.5;          //Set the battery warning at 10.5V (d
 
 //Tuning parameters/settings is explained in this video: https://youtu.be/ys-YpOaA2ME
 #define variable_1_to_adjust takeoff_throttle   //Change dummy_float to any setting that you want to tune.
-#define variable_2_to_adjust dummy_float   //Change dummy_float to any setting that you want to tune.
+#define variable_2_to_adjust throttle   //Change dummy_float to any setting that you want to tune.
 #define variable_3_to_adjust dummy_float   //Change dummy_float to any setting that you want to tune.
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -164,6 +164,12 @@ int32_t pressure_rotating_mem[50], pressure_total_avarage;
 uint8_t pressure_rotating_mem_location;
 float pressure_rotating_mem_actual;
 
+//Loop exeed calculation variables
+int8_t loop_rotating_memory[100];
+uint8_t loop_rot_mem_loc;
+float averageExeeds;
+uint8_t currendExeeds;
+
 //GPS variables
 uint8_t read_serial_byte, incomming_message[100], number_used_sats, fix_type;
 uint8_t waypoint_set, latitude_north, longiude_east ;
@@ -195,6 +201,8 @@ float used_power,altitude_meter;
 uint32_t startLoop = 0;
 uint16_t loopDuration = 0;
 uint8_t nextPackage = true;
+unsigned long CommunicationDuration;
+unsigned long HSDuration;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Setup routine
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,6 +215,7 @@ void setup() {
   afio_cfg_debug_ports(AFIO_DEBUG_SW_ONLY);                     //Connects PB3 and PB4 to output function.
 
   pinMode(SPI2_NSS_PIN, INPUT);
+  pinMode(PA2, INPUT);
   SPI_2.beginTransactionSlave(SPISettings(18000000, MSBFIRST, SPI_MODE0, DATA_SIZE_8BIT));
   
   adjustable_setting_3 = 100;
@@ -548,7 +557,7 @@ void loop() {
   #ifdef deb
     //printEscs();
     //printSignals();
-    DEBUGa(throttle);
+    //DEBUGa(throttle);
   #endif
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   //Because of the angle calculation the loop time is getting very important. If the loop time is
@@ -557,8 +566,20 @@ void loop() {
   //the Q&A page:
   //! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
   loopDuration = micros() - loop_timer;
-  //DEBUGb("LOOPTIME: ",loopDuration)
-  if (micros() - loop_timer > 4050){error = 2;DEBUGb("LOOP: ",micros() -loop_timer)}                                      //Output an error if the loop time exceeds 4050us.
+  
+  currendExeeds -= loop_rotating_memory[loop_rot_mem_loc];
+  if (micros() - loop_timer > 4050){
+    error = 2;
+    loop_rotating_memory[loop_rot_mem_loc] = 1;
+    #ifdef deb
+      printComm();
+    #endif
+  }                                      //Output an error if the loop time exceeds 4050us.
+  else {loop_rotating_memory[loop_rot_mem_loc] = 0;}
+  currendExeeds += loop_rotating_memory[loop_rot_mem_loc];
+  loop_rot_mem_loc++;                                                                         //Increase the rotating memory location.
+  if (loop_rot_mem_loc == 100)loop_rot_mem_loc = 0;
+  
   while (micros() - loop_timer < 4000);                                            //We wait until 4000us are passed.
   loop_timer = micros();                                                           //Set the timer for the next loop.
 }
@@ -576,5 +597,10 @@ void loop() {
     DEBUGb("ptich: ", pid_output_pitch)
     DEBUGb("Roll: ", pid_output_roll)
     DEBUGb("Yaw: ", pid_output_yaw)
+  }
+
+  void printComm(){
+    DEBUGb("Comm: ",CommunicationDuration)
+    DEBUGb("HS: ", HSDuration)
   }
 #endif

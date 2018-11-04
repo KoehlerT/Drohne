@@ -69,12 +69,12 @@ void send_telemetry_data(void) {
   }
   if (telemetry_loop_counter == 29)telemetry_send_byte = telemetry_buffer_byte >> 8;        //Send the next 8 bytes of the adjustable setting 1.
   if (telemetry_loop_counter == 30) {
-    telemetry_buffer_byte = adjustable_setting_2 * 100;                                     //Store the adjustable setting 1 as it can change during the next loop.
+    telemetry_buffer_byte = throttle;                                     //Store the adjustable setting 1 as it can change during the next loop.
     telemetry_send_byte = telemetry_buffer_byte;                                            //Send the first 8 bytes of the adjustable setting 2.
   }
   if (telemetry_loop_counter == 31)telemetry_send_byte = telemetry_buffer_byte >> 8;        //Send the next 8 bytes of the adjustable setting 2.
   if (telemetry_loop_counter == 32) {
-    telemetry_buffer_byte = adjustable_setting_3 * 100;                                     //Store the adjustable setting 1 as it can change during the next loop.
+    telemetry_buffer_byte = currendExeeds;                                     //Store the adjustable setting 2 currendExceeds /100 * 100
     telemetry_send_byte = telemetry_buffer_byte;                                            //Send the first 8 bytes of the adjustable setting 3.
   }
   if (telemetry_loop_counter == 33)telemetry_send_byte = telemetry_buffer_byte >> 8;        //Send the next 8 bytes of the adjustable setting 3.

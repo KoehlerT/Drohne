@@ -17,6 +17,15 @@ public class start {
 		// Start des Programms
 		System.out.println("Drohnenprogramm gestartet");
 		
+		if (args.length > 0) {
+			if (args[0].toLowerCase() == "nocam") {
+				Info.CamAttached = false;
+			}else {
+				Info.CamAttached = true;
+			}
+		}
+			
+		
 		starteProgrammteile();
 		
 		System.out.println("Abschnitte Gestartet");

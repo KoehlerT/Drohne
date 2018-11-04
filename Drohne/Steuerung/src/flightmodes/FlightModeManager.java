@@ -1,16 +1,7 @@
 package flightmodes;
 
-import flightmodes.programs.AltitudeHold;
-import flightmodes.programs.Automatic;
-import flightmodes.programs.CalibrateCompass;
-import flightmodes.programs.CalibrateLevel;
-import flightmodes.programs.Flightmode;
-import flightmodes.programs.Forcedown;
-import flightmodes.programs.Forcestop;
-import flightmodes.programs.Manual;
-import flightmodes.programs.SetTakeoffThrottle;
+import flightmodes.programs.*;
 import hardware.Beeper;
-import main.Daten;
 
 public class FlightModeManager {
 	
@@ -20,7 +11,7 @@ public class FlightModeManager {
 	int currentIndex;
 	Flightmode current;
 	
-	Flightmode[] modes = new Flightmode[8];
+	Flightmode[] modes = new Flightmode[9];
 	
 	private FlightModeManager(){
 		
@@ -33,6 +24,7 @@ public class FlightModeManager {
 		modes[5] = new CalibrateLevel();
 		modes[6] = new CalibrateCompass();
 		modes[7] = new SetTakeoffThrottle();
+		modes[8] = new Follow();
 		
 		current = modes[0];
 	}

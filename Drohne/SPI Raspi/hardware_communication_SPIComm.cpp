@@ -5,6 +5,7 @@
 #include "SPI.h"
 #include "hardware_communication_SPIComm.h"
 #include <iostream>
+#include <wiringPi.h>
 
 
 jbyte* bb_receive;
@@ -31,9 +32,9 @@ JNIEXPORT jint JNICALL Java_hardware_communication_SPIComm_init
 
         shakeHands(uSleepTime);
         for (int i = 0; i < bSize; i++){
-
+            digitalWrite(16,HIGH);
+            usleep(uSleepTime);
             bb_receive[i] = spiTxRx(bb_transmit[i]);
 
-            usleep(uSleepTime);
         }
 }

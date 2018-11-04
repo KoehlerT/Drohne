@@ -1,3 +1,6 @@
+//build: g++ -Wall -o SPI main.cpp SPI.cpp -lwiringPi
+
+
 #include "SPI.h"
 #include <iostream>
 #include <ctime>
@@ -18,17 +21,18 @@ int main (void)
     {
 
         clock_t begin = clock();
-       shakeHands(10);
+       shakeHands(3);
        for (int i = 0; i < 10; i++)
        {
           result = spiTxRx((char)i);
-          std::cout << (int)result;
-          usleep (10);
+          //std::cout << (int)result;
+          usleep (3);
        }
 
        clock_t end = clock();
-  double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        std::cout << "Time: " << elapsed_secs << "s" << std::endl;
+  	    double elapsed_secs = (double(end - begin) / CLOCKS_PER_SEC)*1000;
+        std::cout << "Time: " << elapsed_secs << "us" << std::endl;
+        usleep(3000);
     }
 
 

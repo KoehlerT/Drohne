@@ -6,22 +6,29 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 char last_byte = '\0';
 int missedTransmissions = 0;
-
-unsigned long CommunicationDuration;
+int dataLoc = 0;
 
 void getRaspberryInfo(){
   unsigned int st = micros();
-  if (true/*!digitalRead(SPI2_NSS_PIN)*/){
-    char msg = SPI_2.transfer('A');//Handshake
-    if (msg == 'R'){
-      for (int i = 0; i < 10; i++){
-        receive[i] = SPI_2.transfer(transmit[i]);
+  if (digitalRead(PA2)){
+      char msg = SPI_2.transfer('A');//Handshake
+      HSDuration = micros() - st;
+      dataLoc = 0;
+      if (msg == 'R'){
+        
+        while ((dataLoc < 10) && ((micros() - st) < 2000)){
+          if (digitalRead(PA2)){
+            receive[dataLoc] = SPI_2.transfer(transmit[dataLoc]);
+            dataLoc ++;
+          }
+        } 
       }
-
-      CommunicationDuration = micros() - st;
-      nextPackage = true;
-      readTransmission();
-    }      
+       
+      if (dataLoc >= 10){
+        CommunicationDuration = micros() - st;
+        nextPackage = true;
+        readTransmission();    
+      }
   }
 }
 
