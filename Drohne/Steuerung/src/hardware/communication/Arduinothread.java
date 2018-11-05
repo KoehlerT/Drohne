@@ -8,7 +8,6 @@ import main.Info;
 
 public class Arduinothread extends Thread{
 	
-	//private Arduino arduinoMng;
 	private SPIComm comm;
 	private byte[] Send = new byte[10];
 	private byte[] Recv = new byte[10];
