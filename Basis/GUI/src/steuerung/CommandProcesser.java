@@ -15,6 +15,13 @@ public class CommandProcesser {
 	}
 	
 	private static void flightModeChange(String command) {
+		if (command.toLowerCase() == "help") {
+			System.out.println("0: Forcestop\n1: Manual\n"
+					+ "2: Forcedown\n3: Automatic\n4: Altitude Hold\n"
+					+ "5: Calibrate Level\n6: Calibrate Compass\n"
+					+ "7: Set Takeoff Throttle\n8: Follow");
+		}
+		
 		String number = command.substring(3);
 		System.out.println("Number "+number);
 		try {

@@ -39,7 +39,7 @@ public class SpeedController {
 	static{
 		pid_alt_setpoint = 0;
 		pid_roll_setpoint = 0;
-		pid_pitch_setpoint = 20f/60f;
+		pid_pitch_setpoint = 30f/60f;
 	}
 	
 	public static Vector3 calculatePid(Location target){

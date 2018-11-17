@@ -1,5 +1,6 @@
 package flightmodes.programs;
 
+import main.Daten;
 import utility.ArduinoInstruction;
 
 public class Forcestop implements Flightmode{
@@ -8,6 +9,7 @@ public class Forcestop implements Flightmode{
 	public void onEnable() {
 		// TODO Auto-generated method stub
 		System.out.println("Modus: Forcedown");
+		Daten.addConsole("Modus: Forcedown\n");
 		ArduinoInstruction.getInst().enable();
 		ArduinoInstruction.getInst().setControl((byte)0x40);
 	}

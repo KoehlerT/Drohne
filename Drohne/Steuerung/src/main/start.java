@@ -18,8 +18,10 @@ public class start {
 		System.out.println("Drohnenprogramm gestartet");
 		
 		if (args.length > 0) {
-			if (args[0].toLowerCase() == "nocam") {
+			System.out.println("Argument: "+args[0]);
+			if (args[0].toLowerCase().contains("nocam")) {
 				Info.CamAttached = false;
+				System.out.println("Cam disabled");
 			}else {
 				Info.CamAttached = true;
 			}

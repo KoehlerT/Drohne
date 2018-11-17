@@ -8,6 +8,7 @@ import com.koehlert.flowerflyer.target.SpeedController;
 import com.koehlert.flowerflyer.target.Targeter;
 
 import main.Daten;
+import main.Info;
 
 class TrackerThread extends Thread{
 	
@@ -25,6 +26,11 @@ class TrackerThread extends Thread{
 	
 	@Override
 	public void run() {
+		if (!Info.CamAttached) {
+			Daten.addConsole("No Camera\n");
+			return;
+		}
+			
 		pg = new PictureGetter();
 		rg = new Recognizer(3);
 		pw = new PictureWriter();

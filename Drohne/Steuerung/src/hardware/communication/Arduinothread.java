@@ -45,9 +45,6 @@ public class Arduinothread extends Thread{
 				ArduinoData.getArduinoData(Recv);
 			}
 			tot = (int)((System.nanoTime() - startTime)/1000);
-			if (tot > 4200) {
-				System.out.println(cmm+" "+tot);
-			}
 			if (refr > 1000)
 				System.out.println("--------------------------Refresh: "+refr);
 			

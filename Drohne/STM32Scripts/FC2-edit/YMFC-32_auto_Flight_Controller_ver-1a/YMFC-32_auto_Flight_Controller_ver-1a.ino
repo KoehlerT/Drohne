@@ -14,7 +14,7 @@
 //Always remove the propellers and stay away from the motors unless you
 //are 100% certain of what you are doing.
 ///////////////////////////////////////////////////////////////////////////////////////
-#define deb
+//#define deb
 
 #ifdef deb
   #define DEBUGa(x) Serial.println(x);

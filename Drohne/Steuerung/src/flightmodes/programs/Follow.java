@@ -7,11 +7,12 @@ import utility.ArduinoInstruction;
 
 public class Follow implements Flightmode{
 	
-	private final int operationRange = 200;
+	private final int operationRange = 80;
 	
 	@Override
 	public void onEnable() {
 		System.out.println("Modus: Follow");
+		Daten.addConsole("Modus: Follow\n");
 		ArduinoInstruction.getInst().setControl((byte)0x31);
 		ArduinoInstruction.getInst().setData(new byte[] {0,0,0,0,0,0,0,0,0}); //Send Altitude Hold, 0 to disable all Automatic modes
 		ArduinoInstruction.getInst().enable();
