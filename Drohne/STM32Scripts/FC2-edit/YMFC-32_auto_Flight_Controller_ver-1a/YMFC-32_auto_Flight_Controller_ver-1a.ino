@@ -21,7 +21,7 @@
   #define DEBUGb(x,y) Serial.print(x); Serial.println(y);
 #else
   #define DEBUGa(x) 
-  #define DEBUGb(x,y) 
+  #define DEBUGb(x,y)
 #endif
 
 #define HWire WIRE
